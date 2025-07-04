@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MenuLateral from "../src/pages/DashBoard/DashBoardComponents/DashA/MenuLateral";
 import HomeDash from "../src/pages/DashBoard/HomeDash";
 import ActivBot from "../src/pages/DashBoard/DashBoardComponents/DashA/ActivBot";
-import Alquiler from "../src/pages/Alquiler/Alquiler";
+import Alquiler from "../src/pages/Alquiler/CatalogoDisponible";
 import CalendarioAdmin from "../src/pages/CalendarioAdmin/CalendarioAp";
 import DetallesAlquiler from "../src/pages/DetallesAlquiler/DetallerAlquiler";
 import ConstanciaCertificado from "../src/pages/ConstanciaCertificado/ConstanciaCR";
@@ -30,6 +30,7 @@ import "../src/styles/BotHp.css";
 import "../src/styles/ColaViento.css";
 import "../src/styles/Resposive.css";
 import "../src/styles/global.css";
+import RegistrarElemento from "../src/pages/Elementos/RegistrarElemento";
 
 export default function DashBoard() {
   const [menuAbierto, setMenuAbierto] = useState(true);
@@ -117,6 +118,7 @@ export default function DashBoard() {
         {contenidoActual === "config" && <ConfigView />}
         {contenidoActual === "analisisia" && <AnalisisIA />}
         {contenidoActual === "cambiarrol" && <CambiarRol />}
+         {contenidoActual === "registrarelemento" && <RegistrarElemento />}
         {contenidoActual === "solicitudapoyo" && <Administrador />}
         {contenidoActual === "gestioncatalogo" && <GestionCatalogo />}
         {contenidoActual === "formulariocatalogo" && <FormularioCatalogo />}

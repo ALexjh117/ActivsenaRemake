@@ -6,7 +6,7 @@ import MenuLateralAp from "../src/pages/DashBoard/DashBoardComponents/DashAp/Men
 import HomeDash from "../src/pages/DashBoard/HomeDash";
 import ActivBot from "../src/pages/DashBoard/DashBoardComponents/DashA/ActivBot";
 //import NavbarAp from "../src/pages/DashBoard/DashBoardComponents/DashAp/NavbarAp";
-import Alquiler from "../src/pages/Alquiler/Alquiler";
+
 import Feedbacks from "../src/pages/Feedback/Feedbacks";
 import Ludicas from "../src/pages/Ludicas/Ludicas";
 import HorasLudicas from "../src/pages/HorasLudicas/HorasLudicas";

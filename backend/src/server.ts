@@ -25,8 +25,9 @@ import path from 'path';
 import NotiPruebaRouter from "./routes/NotiPruebaRouter";
 import  ResumenEventoIARouter from './routes/ResumenEventoIARouter';
 import tokenTestRouter from './routes/TokenTestRouter'; 
-
-
+import ElementoRouter from './routes/ElementoRouter'
+import qrcode from "./routes/qrcode"
+import PerfilInstructorRouter  from './routes/PerfilInstructorRouter';
 
 async function connectDB() {
     try {
@@ -53,6 +54,13 @@ const app = express();
 app.use(cors());
 app.use(morgan('dev'));
 
+const rutaPublic = path.resolve(__dirname, '../public');
+app.use(express.static(rutaPublic));
+
+app.use('/qrcodes', express.static(path.join(__dirname, '../public/qrcodes')));
+//acepta peticiones hasta de 10mb
+app.use(express.json({ limit: '10mb' }));
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use(express.json());
 app.use('/api/actividad', ActividadRouter);
@@ -72,8 +80,10 @@ app.use("/api/planificacionevento", PlanificacionEventoRouter)
 app.use("/api/relusuarioevento", RelUsuarioEventoRouter)
 app.use("/api/solicitudapoyo", SolicitudApoyoRouter);
 app.use("/api/historial", HistorialSolicitudRouter);
-
+app.use("/api/elemento", ElementoRouter);
+app.use("/api/qrcode", qrcode);
 app.use("/api/prueba-socket", NotiPruebaRouter);
+app.use("/api/perfil-instructor", PerfilInstructorRouter);
 app.use("/api/analisisia", AnalisisIARouter);
 app.use("/api/resumenia", ResumenEventoIARouter);
 app.use("/api/comentario", analizarComentarioIARouter);

@@ -1,21 +1,42 @@
 import type { Request, Response } from "express";
 import { AlquilerElementos } from "../models/AlquilerElementos";
 import { Usuario } from "../models/Usuario";
-
+import { Elemento } from "../models/Elemento";
+import { Aprendiz } from "../models/Aprendiz";
 export class AlquilerElementosControllers {
   
-  static getAlquilerElementosAll = async (req: Request, res: Response) => {
-    try {
-      const alquiler = await AlquilerElementos.findAll({
-        order: [['createdAt', 'ASC']],
-        include: [Usuario],  // Trae datos del usuario que hizo el alquiler
-      });
-      res.json(alquiler);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Hubo un error' });
-    }
-  };
+static getAlquilerElementosAll = async (req: Request, res: Response) => {
+  try {
+    const alquileres = await AlquilerElementos.findAll({
+      include: [
+        {
+          model: Usuario,
+          as: 'usuario',
+          attributes: ['IdUsuario', 'Nombre', 'Correo'],
+          include: [
+            {
+              model: Aprendiz,
+              as: 'aprendiz',
+              attributes: ['Ficha', 'Jornada', 'ProgramaFormacion'],
+            },
+          ],
+        },
+        {
+          model: Elemento,
+          as: 'elemento',
+          attributes: ['IdElemento', 'Nombre', 'Imagen'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    res.json(alquileres);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Hubo un error al obtener los alquileres' });
+  }
+};
+
 
   static getIdAlquiler = async (req: Request, res: Response) => {
     try {
@@ -33,16 +54,41 @@ export class AlquilerElementosControllers {
     }
   };
 
-  static crearAlquiler = async (req: Request, res: Response) => {
-    try {
-      const alquiler = new AlquilerElementos(req.body);
-      await alquiler.save();
-      res.status(201).json('Alquiler creado exitosamente');
-    } catch (error) {
-      console.error('Error al crear alquiler:', error);
-      res.status(500).json({ error: 'Hubo un error al crear el Alquiler' });
+ static crearAlquiler = async (req: Request, res: Response) => {
+  try {
+    const {
+      NombreElemento,
+      FechaSolicitud,
+      FechaDevolucion,
+      RegistradoPor,
+      Observaciones,
+      IdUsuario,
+      IdElemento
+    } = req.body;
+
+    // Validación básica
+    if (!IdElemento || !IdUsuario) {
+   res.status(400).json({ error: "Faltan datos obligatorios." });
+   return;
     }
-  };
+
+    const nuevo = await AlquilerElementos.create({
+      NombreElemento,
+      FechaSolicitud,
+      FechaDevolucion,
+      RegistradoPor,
+      Observaciones,
+      IdUsuario,
+      IdElemento
+    });
+
+    res.status(201).json({ mensaje: "Alquiler registrado correctamente", alquiler: nuevo });
+  } catch (error) {
+    console.error("Error al registrar alquiler:", error);
+    res.status(500).json({ error: "Error interno al registrar el alquiler" });
+  }
+};
+
 
   static actualizarIdAlquiler = async (req: Request, res: Response) => {
     try {
@@ -73,7 +119,56 @@ export class AlquilerElementosControllers {
       res.status(500).json({ error: 'Hubo un error al Eliminar el Alquiler' });
     }
   };
+static registrarDesdeQR = async (req: Request, res: Response) => {
+  try {
+    const { IdElemento, nombreElemento, nombreAprendiz, fechaDevolucion, observaciones, codigo } = req.body;
+    const IdUsuario = (req as any).usuario?.IdUsuario || 0;
 
+    const usuario = await Usuario.findByPk(IdUsuario);
+    const nombreRegistrador = usuario ? usuario.Nombre : `Usuario ID ${IdUsuario}`;
+
+    // Buscar elemento catálogo por IdElemento, no por IdAlquiler
+    const elementoCatalogo = await AlquilerElementos.findOne({
+      where: {
+        Observaciones: 'catalogo',
+        IdElemento: IdElemento
+      }
+    });
+
+    if (!elementoCatalogo) {
+      res.status(404).json({ error: "Elemento no encontrado en el catálogo" });
+      return;
+    }
+
+    if (!elementoCatalogo.CantidadDisponible || elementoCatalogo.CantidadDisponible <= 0) {
+       res.status(400).json({ error: "No hay unidades disponibles de este elemento" });
+       return;
+    }
+
+    const nuevoAlquiler = await AlquilerElementos.create({
+      NombreElemento: nombreElemento,
+      FechaSolicitud: new Date(),
+      FechaDevolucion: fechaDevolucion,
+      RegistradoPor: nombreRegistrador,
+      Observaciones: observaciones,
+      IdUsuario,
+      Imagen: elementoCatalogo.Imagen,
+      IdElemento: IdElemento
+    });
+
+    elementoCatalogo.CantidadDisponible -= 1;
+    await elementoCatalogo.save();
+
+    res.status(201).json({
+      mensaje: 'Alquiler registrado exitosamente desde QR.',
+      alquiler: nuevoAlquiler
+    });
+
+  } catch (error) {
+    console.error('❌ Error al registrar alquiler desde QR:', error);
+    res.status(500).json({ error: 'Error interno al registrar alquiler desde QR.' });
+  }
+};
   // Nuevo método: obtener alquileres filtrados por IdUsuario prestaran atencion zungas
   static getAlquileresPorUsuario = async (req: Request, res: Response) => {
     try {
@@ -87,68 +182,69 @@ export class AlquilerElementosControllers {
       res.status(500).json({ error: 'Error al obtener alquileres por usuario' });
     }
   };
-static registrarDesdeQR = async (req: Request, res: Response) => {
-  try {
-    const IdUsuario = req.usuario?.IdUsuario;
-    const { IdElemento } = req.body;
-
-    if (!IdUsuario || !IdElemento) {
-      res.status(400).json({ error: "Faltan datos del usuario o del elemento." });
-      return;
-    }
-
-    // Validar que no esté ya alquilado sin devolución
-    const yaAlquilado = await AlquilerElementos.findOne({
-      where: {
-        IdUsuario,
-        Elemento: `Elemento ID ${IdElemento}`,
-        FechaDevolucion: null,
-      },
-    });
-
-    if (yaAlquilado) {
-       res.status(400).json({ error: "Este elemento ya está alquilado y no ha sido devuelto." });
-      return;
-    }
-
-    await AlquilerElementos.create({
-      IdUsuario,
-      Elemento: `Elemento ID ${IdElemento}`,
-      FechaEntrega: new Date(),
-      FechaDevolucion: null,
-      Observaciones: "Registrado automáticamente desde QR",
-    });
-
-    res.json({ mensaje: "Alquiler registrado exitosamente desde QR." });
-  } catch (error) {
-    console.error("Error al registrar desde QR:", error);
-    res.status(500).json({ error: "Error interno al registrar el alquiler desde QR." });
-  }
-};
-
 
 static devolverElemento = async (req: Request, res: Response) => {
   try {
     const { IdAlquiler } = req.params;
+
     const alquiler = await AlquilerElementos.findByPk(IdAlquiler);
 
+    if (!alquiler) {
+     res.status(404).json({ error: 'Alquiler no encontrado' });
+     return;
+    }
+
+    if (!alquiler.IdElemento) {
+       res.status(400).json({ error: 'Este alquiler no tiene un elemento asociado para devolver' });
+       return;
+    }
+
+    const elementoCatalogo = await AlquilerElementos.findOne({
+      where: {
+        Observaciones: 'catalogo',
+        IdAlquiler: alquiler.IdElemento
+      }
+    });
+
+    //  1. Aumentar stock si se encontró el catálogo
+    if (elementoCatalogo) {
+      elementoCatalogo.CantidadDisponible = (elementoCatalogo.CantidadDisponible || 0) + 1;
+      await elementoCatalogo.save();
+    }
+
+    //  2. Marcar como entregado correctamente
+    alquiler.CumplioConEntrega = true;
+    await alquiler.save();
+
+    res.json({ mensaje: 'Elemento devuelto correctamente, stock actualizado y entrega confirmada ✅' });
+    return;
+  } catch (error) {
+    console.error('Error al devolver elemento:', error);
+    res.status(500).json({ error: 'Error interno al devolver elemento' });
+    return;
+  }
+};
+
+
+static marcarComoCumplido = async (req: Request, res: Response) => {
+  try {
+    const { IdAlquiler } = req.params;
+
+    const alquiler = await AlquilerElementos.findByPk(IdAlquiler);
     if (!alquiler) {
       res.status(404).json({ error: "Alquiler no encontrado" });
       return;
     }
 
-    if (alquiler.FechaDevolucion) {
-      res.status(400).json({ error: "Este elemento ya fue devuelto" });
-      return;
-    }
-
-    alquiler.FechaDevolucion = new Date();
+    alquiler.CumplioConEntrega = true;
     await alquiler.save();
 
-    res.json({ mensaje: "Elemento devuelto exitosamente", alquiler });
+   res.json({ mensaje: "Alquiler marcado como cumplido correctamente." });
+   return;
   } catch (error) {
-    console.error("Error al devolver:", error);
-    res.status(500).json({ error: "Error interno al devolver el alquiler" });
+    console.error("Error al marcar como cumplido:", error);
+    res.status(500).json({ error: "Error al actualizar el estado del alquiler." });
+    return;
   }
 };
 }

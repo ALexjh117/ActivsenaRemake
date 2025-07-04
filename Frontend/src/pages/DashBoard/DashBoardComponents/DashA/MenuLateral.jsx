@@ -121,8 +121,13 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
                 <FaBoxOpen className="iconodash" /> Elementos Subidos
               </button>
               <button onClick={() => setContenidoActual("formulariocatalogo")} className="opciondash">
+                <FaUpload className="iconodash" /> SubirCarrusel
+              </button>
+
+               <button onClick={() => setContenidoActual("registrarelemento")} className="opciondash">
                 <FaUpload className="iconodash" /> SubirElemento
               </button>
+
 
 
             </>

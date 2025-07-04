@@ -22,6 +22,7 @@ import { RelUsuarioEvento } from './RelUsuarioEvento';
 import { RelUsuarioFeedback } from './RelUsuarioFeedback';
 import { SolicitudApoyo } from './SolicitudApoyo';
 import { Actividad } from './Actividad';
+import { PerfilInstructor } from './PerfilInstructor';
 
 @Table({ tableName: 'Usuario' })
 export class Usuario extends Model {
@@ -95,6 +96,10 @@ export class Usuario extends Model {
   declare relUsuarioFeedbacks: RelUsuarioFeedback[];
 @HasMany(() => Actividad, { foreignKey: 'IdUsuario' })
 declare actividades: Actividad[];
+@HasOne(() => PerfilInstructor, { foreignKey: 'UsuarioId', as: 'perfil' })
+declare perfil: PerfilInstructor;
+
+
   @HasMany(() => SolicitudApoyo)
   declare solicitudesApoyo: SolicitudApoyo[];
 }

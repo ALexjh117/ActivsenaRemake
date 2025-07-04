@@ -13,12 +13,12 @@ import Aplicacion from "../src/pages/Aplicacion/Aplicacion";
 import AprendizRun from "../src/pages/AprendizC/AprendizRun";
 import PlanificarEvento from "../src/pages/PlanificarEv/PlanificarEvento";
 import RegistroA from "../src/pages/RegistroAsistencia/RegistroA";
-import CartaContacto from "../src/pages/CartasContacto/CartaContacto";
+import CartaContacto from "../src/pages/CartasContacto/CartaInstructor";
 import ChromaGrid from "../src/Components/ChromaGrid/ChromaGrid";
 import ChatAI from "../src/pages/ChatAI/ChatAI";
 import UserViewIn from "../src/pages/UserView/UserViewIn";
 import ConfigViewIn from "../src/pages/ConfigView/ConfigViewIn";
-import Alquiler from "../src/pages/Alquiler/Alquiler";
+
 import MisActividades from "../src/pages/Actividades/Instructor/MisActividades";
 import AsistenciasActividad from "../src/pages/Asistencia/Instructor/AsistenciasActividad";
 // import UserView from "../src/pages/UserView/UserView"; // Descomenta si lo necesitas

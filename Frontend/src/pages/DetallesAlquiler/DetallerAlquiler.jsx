@@ -1,166 +1,173 @@
-import React, { useState } from 'react';
-import "./styles/DetallesAlquiler.css";
+import React, { useEffect, useState } from 'react';
+import "./styles/DetallesAlquiler.css"
+const BACKEND_URL = "http://localhost:3001";
 
 const DetallesAlquiler = () => {
-  const [registrosAlquiler, setRegistrosAlquiler] = useState([
-    {
-      id: 1,
-      nombre: "Balón de voleibol",
-      nombreAprendiz: "Juan Pérez",
-      fechaEntrega: "2025-03-25",
-      fechaDevolucion: "2025-04-25",
-      observaciones: "En perfecto estado",
-      cumplioConEntrega: true,
-      codigo: "ALQ123",
-      estado: "En uso"
-    },
-    {
-      id: 2,
-      nombre: "Vestido de danza",
-      nombreAprendiz: "Ana Gómez",
-      fechaEntrega: "2025-03-20",
-      fechaDevolucion: "2025-04-20",
-      observaciones: "Con algunos detalles en la tela",
-      cumplioConEntrega: false,
-      codigo: "ALQ124",
-      estado: "Pendiente"
-    },
-    {
-      id: 3,
-      nombre: "Parques, juegos de mesa",
-      nombreAprendiz: "Carlos López",
-      fechaEntrega: "2025-03-30",
-      fechaDevolucion: "2025-04-30",
-      observaciones: "Buen estado, sin daños",
-      cumplioConEntrega: true,
-      codigo: "ALQ125",
-      estado: "En uso"
-    },
-    {
-      id: 4,
-      nombre: "Balón de fútbol",
-      nombreAprendiz: "Marta Ramírez",
-      fechaEntrega: "2025-03-28",
-      fechaDevolucion: "2025-04-28",
-      observaciones: "Agujero pequeño",
-      cumplioConEntrega: false,
-      codigo: "ALQ126",
-      estado: "Pendiente"
-    },
-  ]);
-
+  const [registrosAlquiler, setRegistrosAlquiler] = useState([]);
   const [searchNombre, setSearchNombre] = useState('');
-  const [searchId, setSearchId] = useState('');
-  const [searchFechaEntrega, setSearchFechaEntrega] = useState('');
-  const [searchFechaDevolucion, setSearchFechaDevolucion] = useState('');
+  const [searchEstado, setSearchEstado] = useState('');
 
-  const eliminarRegistro = (id) => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este registro?");
-    if (confirmar) {
-      setRegistrosAlquiler(registrosAlquiler.filter(registro => registro.id !== id));
+  // Modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [observacionEdit, setObservacionEdit] = useState('');
+  const [alquilerEditId, setAlquilerEditId] = useState(null);
+
+  useEffect(() => {
+    const cargarAlquileres = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${BACKEND_URL}/api/alquilerelementos`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+         console.log("Datos recibidos backend:", data);
+        setRegistrosAlquiler(data);
+      } catch (err) {
+        console.error("Error cargando alquileres:", err);
+      }
+    };
+    cargarAlquileres();
+  }, []);
+
+  const marcarComoEntregado = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${BACKEND_URL}/api/alquilerelementos/alquiler/${id}/cumplido`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRegistrosAlquiler((prev) => prev.map(reg =>
+        reg.IdAlquiler === id ? { ...reg, CumplioConEntrega: true, Estado: 'Entregado' } : reg
+      ));
+    } catch (error) {
+      console.error("Error marcando como entregado:", error);
+    }
+  };
+
+  // Abrir modal y cargar observacion actual
+  const abrirModalEdicion = (id, observacionActual) => {
+    setAlquilerEditId(id);
+    setObservacionEdit(observacionActual || "");
+    setModalVisible(true);
+  };
+
+  // Guardar observación editada
+  const guardarObservacion = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${BACKEND_URL}/api/alquilerelementos/${alquilerEditId}`, {
+        method: 'PUT',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ Observaciones: observacionEdit }),
+      });
+      setRegistrosAlquiler((prev) =>
+        prev.map((reg) =>
+          reg.IdAlquiler === alquilerEditId
+            ? { ...reg, Observaciones: observacionEdit }
+            : reg
+        )
+      );
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Error guardando observación:", error);
     }
   };
 
   const filteredRegistros = registrosAlquiler.filter((registro) =>
-    registro.nombre.toLowerCase().includes(searchNombre.toLowerCase()) &&
-    registro.nombreAprendiz.toLowerCase().includes(searchNombre.toLowerCase()) &&
-    registro.codigo.toLowerCase().includes(searchId.toLowerCase()) &&
-    registro.fechaEntrega.includes(searchFechaEntrega) &&
-    registro.fechaDevolucion.includes(searchFechaDevolucion)
+    (registro.NombreElemento?.toLowerCase() || "").includes(searchNombre.toLowerCase()) ||
+    (registro.usuario?.Nombre?.toLowerCase() || "").includes(searchNombre.toLowerCase()) ||
+    (registro.usuario?.aprendiz?.Ficha?.toLowerCase() || "").includes(searchNombre.toLowerCase()) ||
+    (registro.Estado?.toLowerCase() || "").includes(searchEstado.toLowerCase())
   );
 
   return (
     <div className="contenedor-alquiler">
-      {/* Encabezado */}
-      <header className="titulo-alquiler">
-        <h1>📋 Registros de Préstamos</h1>
-        <p style={{ fontWeight: 'normal', fontSize: '1.1rem', color: '#555' }}>
-          Consulta, filtra o elimina los registros de alquiler de elementos
-        </p>
-      </header>
+      <h1>📋 Registros de Préstamos</h1>
 
-      {/* Barra de búsqueda */}
-      <div className="barra-busqueda">
-        <div className="campos-busqueda">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Elemento o Aprendiz"
-            value={searchNombre}
-            onChange={(e) => setSearchNombre(e.target.value)}
-          />
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Código"
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-          />
-          <input
-            type="date"
-            className="search-input"
-            value={searchFechaEntrega}
-            onChange={(e) => setSearchFechaEntrega(e.target.value)}
-          />
-          <input
-            type="date"
-            className="search-input"
-            value={searchFechaDevolucion}
-            onChange={(e) => setSearchFechaDevolucion(e.target.value)}
-          />
-        </div>
-      </div>
+      <input
+        type="text"
+        placeholder="Buscar por elemento, aprendiz o ficha"
+        value={searchNombre}
+        onChange={(e) => setSearchNombre(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Filtrar por estado (En uso, Entregado)"
+        value={searchEstado}
+        onChange={(e) => setSearchEstado(e.target.value)}
+      />
 
-      {/* Tabla */}
       <table className="tabla-alquiler">
         <thead>
           <tr>
             <th>Elemento</th>
             <th>Aprendiz</th>
-            <th>Código</th>
+            <th>Ficha</th>
+            <th>Programa</th>
             <th>Estado</th>
-            <th>Entrega</th>
-            <th>Devolución</th>
+            <th>Cumplió Entrega</th>
             <th>Observaciones</th>
-            <th>¿Cumplió?</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {filteredRegistros.length > 0 ? (
-            filteredRegistros.map((registro) => (
-              <tr key={registro.id}>
-                <td>{registro.nombre}</td>
-                <td>{registro.nombreAprendiz}</td>
-                <td>{registro.codigo}</td>
-                <td className={`estado ${registro.estado.toLowerCase()}`}>
-                  {registro.estado}
-                </td>
-                <td>{registro.fechaEntrega}</td>
-                <td>{registro.fechaDevolucion}</td>
-                <td>{registro.observaciones}</td>
-                <td className={`estado-cumplimiento ${registro.cumplioConEntrega ? 'true' : 'false'}`}>
-                  {registro.cumplioConEntrega ? 'Sí' : 'No'}
-                </td>
-                <td>
-                  <button
-                    className="btn-eliminar"
-                    onClick={() => eliminarRegistro(registro.id)}
-                  >
-                    Eliminar
+          {filteredRegistros.map((registro) => (
+            <tr key={registro.IdAlquiler}>
+              <td>{registro.NombreElemento}</td>
+              <td>{registro.usuario?.Nombre || "Sin nombre"}</td>
+              <td>{registro.usuario?.aprendiz?.Ficha || "Sin ficha"}</td>
+              <td>{registro.usuario?.aprendiz?.ProgramaFormacion || "Sin programa"}</td>
+              <td>{registro.Estado || "En uso"}</td>
+              <td>{registro.CumplioConEntrega ? "Sí" : "No"}</td>
+              <td>{registro.Observaciones || "Sin observaciones"}</td>
+              <td>
+                {!registro.CumplioConEntrega && (
+                  <button onClick={() => marcarComoEntregado(registro.IdAlquiler)}>
+                    Marcar como entregado
                   </button>
-                </td>
-              </tr>
-            ))
-          ) : (
+                )}
+                <button
+                  style={{ marginLeft: '8px' }}
+                  onClick={() => abrirModalEdicion(registro.IdAlquiler, registro.Observaciones)}
+                >
+                  Editar observaciones
+                </button>
+              </td>
+            </tr>
+          ))}
+          {filteredRegistros.length === 0 && (
             <tr>
-              <td colSpan="9" className="mensaje-sin-registros">
+              <td colSpan="8" style={{ textAlign: 'center' }}>
                 No se encontraron registros que coincidan con la búsqueda.
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
+      {/* Modal */}
+      {modalVisible && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Editar Observaciones</h2>
+            <textarea
+              value={observacionEdit}
+              onChange={(e) => setObservacionEdit(e.target.value)}
+              rows={5}
+              style={{ width: '100%' }}
+            />
+            <div style={{ marginTop: '1rem' }}>
+              <button onClick={guardarObservacion}>Guardar</button>
+              <button onClick={() => setModalVisible(false)} style={{ marginLeft: '1rem' }}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
