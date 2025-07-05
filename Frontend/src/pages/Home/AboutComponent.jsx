@@ -1,6 +1,6 @@
 import React from 'react'
 import "./styles/AboutComponent.css"
-import imagen from "../Home/img/equipo.avif"
+
 
 export default function AboutComponent() {
   return (
@@ -10,7 +10,9 @@ export default function AboutComponent() {
         
         <div className="about-content-home">
           <div className="about-image-home">
-            <img src={imagen} alt="Sobre ActivSena" className='img-home' />
+
+           <img src="/img/equipo.avif" alt="Equipo" className='img-home' />
+
       
           </div>
           <div className="about-text-home">

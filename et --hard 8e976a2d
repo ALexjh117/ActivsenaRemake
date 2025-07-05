@@ -1,0 +1,24 @@
+[33m586716d8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32malex[m[33m, [m[1;31morigin/alex[m[33m)[m HEAD@{0}: checkout: moving from alex to alex
+[33m586716d8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32malex[m[33m, [m[1;31morigin/alex[m[33m)[m HEAD@{1}: pull origin alex: Merge made by the 'ort' strategy.
+[33m8e976a2d[m HEAD@{2}: commit: cambio y nueva funcionalidad
+[33mc7eb8d83[m HEAD@{3}: checkout: moving from master to alex
+[33m301fdaa5[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{4}: checkout: moving from alex to master
+[33mc7eb8d83[m HEAD@{5}: commit: cambios y base de datos
+[33mf3b8f6b8[m HEAD@{6}: commit: qr-scanner eliminado y limpieza del nodemodules
+[33m12bb94f7[m HEAD@{7}: commit: funcionalidades y estilos
+[33mb04c7e12[m HEAD@{8}: checkout: moving from master to alex
+[33m301fdaa5[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{9}: pull origin master: Fast-forward
+[33mca865564[m HEAD@{10}: checkout: moving from alex to master
+[33mb04c7e12[m HEAD@{11}: commit: dependencias actualizadas
+[33mca865564[m HEAD@{12}: merge master: Fast-forward
+[33m00f7f7cd[m HEAD@{13}: checkout: moving from master to alex
+[33mca865564[m HEAD@{14}: pull: Fast-forward
+[33mf2995ac7[m HEAD@{15}: checkout: moving from alex to master
+[33m00f7f7cd[m HEAD@{16}: pull origin master: Fast-forward
+[33m5713d567[m HEAD@{17}: commit: Registro alquiler
+[33m009d8586[m HEAD@{18}: commit: cambios
+[33ma0f75277[m HEAD@{19}: pull origin master: Fast-forward
+[33mf2995ac7[m HEAD@{20}: checkout: moving from master to alex
+[33mf2995ac7[m HEAD@{21}: commit: qr y asistencia
+[33m6566ebb8[m HEAD@{22}: commit: funcionalidad1
+[33meff633d8[m HEAD@{23}: commit (initial): proyectov2

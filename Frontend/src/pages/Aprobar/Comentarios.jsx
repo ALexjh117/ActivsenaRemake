@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import './styles/ComtentarStyle.css';
 import axios from 'axios';
 
-import dbz4 from '../../../public/img/dragon.jpeg'; //
+
 
 import { useIA } from "../AnalisisIA/IAcontext";
 
 export default function ComentarFeedback() {
-  const [usuarios, setUsuarios] = useState([
-    { name: "Pepe Gorra", imagen: dbz4, comentarios: "Excelente", reseñas: "★★★★★" },
-    { name: "Juan Pérez", imagen: dbz4, comentarios: "Casi no me gustó, faltó emoción", reseñas: "★☆☆☆☆" },
-    { name: "Ana López", imagen: dbz4, comentarios: "Me gustó", reseñas: "★★★☆☆" }
-  ]);
+ const [usuarios, setUsuarios] = useState([
+  { name: "Pepe Gorra", imagen: "/img/dragon.jpeg", comentarios: "Excelente", reseñas: "★★★★★" },
+  { name: "Juan Pérez", imagen: "/img/dragon.jpeg", comentarios: "Casi no me gustó, faltó emoción", reseñas: "★☆☆☆☆" },
+  { name: "Ana López", imagen: "/img/dragon.jpeg", comentarios: "Me gustó", reseñas: "★★★☆☆" }
+]);
+
 
   const [nuevoComentario, setNuevoComentario] = useState("");
   const { setRecargarAnalisis } = useIA();
