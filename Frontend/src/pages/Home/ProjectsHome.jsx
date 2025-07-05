@@ -1,24 +1,23 @@
 import React from 'react'
 import "./styles/ProjectsHome.css"
 import ProjectCardComponent from './HomeComponents/ProjectCardComponent'
-import img1 from "../Home/img/actividades.jpg"
-import img2 from "../Home/img/Comunidad.avif"
-import img3 from "../../../public/img/image.png"
+
+
 let projects = [
   {
     title: "Gestion Eficiente",
     description: "Optimiza tus procesos y gestiona tus actividades de manera efectiva.",
-    image: img1
+    image: "/img/actividades.jpg"
   },
   {
     title: "Comunidad Activa",
     description: "Conéctate con otros usuarios y comparte conocimientos.",
-    image: img2
+    image: "/img/comunidad.avif"
   },
   {
     title: "Eventos y Actividades",
     description: "Participa en eventos y actividades exclusivas para nuestros usuarios.",
-    image: img3
+       image: "/img/eventos.jpg"
   }
 ]
 

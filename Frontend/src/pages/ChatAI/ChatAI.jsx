@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./styles/ChatStyle.css";
-import chatai from "../ChatAI/img/robotica.png";
+
 
 const BOT = "bot";
 const USER = "user";
@@ -67,7 +67,8 @@ export default function ChatAI() {
     <div className="chat-container">
       <div className="chat-box">
         <div className="chat-header">
-          <img src={chatai} alt="Bot" className="chat-logo" />
+        <img src="/robotica.png" alt="Bot" className="chat-logo" />
+
           <h2 className="chat-title">ACTIV BOT</h2>
         </div>
 

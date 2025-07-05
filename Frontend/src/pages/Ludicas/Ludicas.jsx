@@ -1,21 +1,15 @@
 import React from 'react';
 import './style/Ludicas.css';
-import baloncestoimg from "./img/baloncesto.jpg";
-import futbolimg from "./img/futbol.jpg";
-import tenisimg from "./img/tenis.jpg";
-import voleibolimg from "./img/voleibol.jpg";
-import ajedrezimg from "./img/ajedrez.jpg";
-import atletismoimg from "./img/atletismo.jpg";
 
 const App = () => {
-  const activities = [
-    { id: 1, title: "Fútbol", image: futbolimg, location: "Cancha fútbol CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "14:00 - 15:00"] },
-    { id: 2, title: "Baloncesto", image: baloncestoimg, location: "Polideportivo CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "15:00 - 16:00"] },
-    { id: 3, title: "Tenis", image: tenisimg, location: "Cancha de Tenis CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "16:00 - 17:00"] },
-    { id: 4, title: "Voleibol", image: voleibolimg, location: "Cancha múltiple CTPI", schedule: ["09:00 - 10:00", "13:00 - 14:00"] },
-    { id: 5, title: "Ajedrez", image: ajedrezimg, location: "Biblioteca CTPI", schedule: ["08:00 - 09:00", "12:00 - 13:00"] },
-    { id: 6, title: "Atletismo", image: atletismoimg, location: "Pista atlética CTPI", schedule: ["07:00 - 08:00", "17:00 - 18:00"] }
-  ];
+const activities = [
+  { id: 1, title: "Fútbol", image: "/img/futbol.jpg", location: "Cancha fútbol CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "14:00 - 15:00"] },
+  { id: 2, title: "Baloncesto", image: "/img/baloncesto.jpg", location: "Polideportivo CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "15:00 - 16:00"] },
+  { id: 3, title: "Tenis", image: "/img/tenis.jpg", location: "Cancha de Tenis CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "16:00 - 17:00"] },
+  { id: 4, title: "Voleibol", image: "/img/voleibol.jpg", location: "Cancha múltiple CTPI", schedule: ["09:00 - 10:00", "13:00 - 14:00"] },
+  { id: 5, title: "Ajedrez", image: "/img/ajedrez.jpg", location: "Biblioteca CTPI", schedule: ["08:00 - 09:00", "12:00 - 13:00"] },
+  { id: 6, title: "Atletismo", image: "/img/atletismo.jpg", location: "Pista atlética CTPI", schedule: ["07:00 - 08:00", "17:00 - 18:00"] }
+];
 
   return (
     <div className="ludicas-container">

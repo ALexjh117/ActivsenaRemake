@@ -3,6 +3,7 @@ import { transport } from "../config/nodemailer";
 type EmailType = {
   Nombre: string;
   Correo: string;
+  
   token: string;
 };
 

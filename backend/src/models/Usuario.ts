@@ -100,6 +100,7 @@ declare actividades: Actividad[];
 declare perfil: PerfilInstructor;
 
 
+
   @HasMany(() => SolicitudApoyo)
   declare solicitudesApoyo: SolicitudApoyo[];
 }
