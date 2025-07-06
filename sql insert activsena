@@ -1,3 +1,11 @@
+///***** no se olviden de insertar estos campos en todas las tablas ***
+ALTER TABLE HistorialSolicitud
+ADD COLUMN createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+
+
 -- 1. Tablas bases sin dependencias
 CREATE TABLE RolUsuario (
   IdRol INT AUTO_INCREMENT PRIMARY KEY,
