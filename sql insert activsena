@@ -1,0 +1,301 @@
+-- 1. Tablas bases sin dependencias
+CREATE TABLE RolUsuario (
+  IdRol INT AUTO_INCREMENT PRIMARY KEY,
+  NombreRol ENUM('Administrador', 'Aprendiz', 'Instructor') NOT NULL
+);
+
+CREATE TABLE GestionEvento (
+  IdGestionE INT AUTO_INCREMENT PRIMARY KEY,
+  Aprobar ENUM('Aprobado', 'Pendiente') NOT NULL
+);
+
+-- 2. Tablas que dependen solo de las anteriores
+CREATE TABLE Usuario (
+  IdUsuario INT AUTO_INCREMENT PRIMARY KEY,
+  IdRol INT NOT NULL,
+  IdentificacionUsuario VARCHAR(50) NOT NULL,
+  Nombre VARCHAR(100) NOT NULL,
+  Apellido VARCHAR(100) NOT NULL,
+  Correo VARCHAR(255) NOT NULL,
+  Telefono VARCHAR(20) NOT NULL,
+  Contrasena VARCHAR(255) NOT NULL,
+  FechaRegistro DATE NOT NULL,
+  token VARCHAR(6),
+  confirmed BOOLEAN DEFAULT FALSE,
+  CONSTRAINT FK_Usuario_RolUsuario FOREIGN KEY (IdRol) REFERENCES RolUsuario(IdRol)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE planificacionevento (
+  IdPlanificarE INT AUTO_INCREMENT PRIMARY KEY,
+  NombreEvento VARCHAR(150) NOT NULL,
+  FechaEvento DATETIME NOT NULL,
+  LugarDeEvento VARCHAR(50) NOT NULL,
+  Recursos TEXT,
+  IdGestionE INT NOT NULL,
+  CONSTRAINT FK_PlanificacionEvento_Gestion FOREIGN KEY (IdGestionE) REFERENCES GestionEvento(IdGestionE)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 3. Tablas que dependen de Usuario y PlanificacionEvento
+CREATE TABLE Evento (
+  IdEvento INT AUTO_INCREMENT PRIMARY KEY,
+  NombreEvento VARCHAR(255) NOT NULL,
+  FechaInicio DATE NOT NULL,
+  FechaFin DATE NOT NULL,
+  HoraInicio TIME NOT NULL,
+  HoraFin TIME NOT NULL,
+  UbicacionEvento VARCHAR(255) NOT NULL,
+  IdPlanificarE INT,
+  DescripcionEvento TEXT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_Evento_Planificacion FOREIGN KEY (IdPlanificarE) REFERENCES PlanificacionEvento(IdPlanificarE)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE Aprendiz (
+  IdUsuario INT NOT NULL,
+  IdRolUsuario INT DEFAULT NULL,
+  Ficha VARCHAR(255),
+  Jornada VARCHAR(255),
+  ProgramaFormacion VARCHAR(255),
+  PRIMARY KEY (IdUsuario),
+  CONSTRAINT FK_Aprendiz_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_Aprendiz_RolUsuario FOREIGN KEY (IdRolUsuario) REFERENCES RolUsuario(IdRol)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE PerfilInstructor (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  UsuarioId INT NOT NULL,
+  profesion VARCHAR(100),
+  ubicacion VARCHAR(150),
+  imagen TEXT,
+  CONSTRAINT FK_PerfilInstructor_Usuario FOREIGN KEY (UsuarioId) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 4. Tablas que dependen de Evento y Usuario
+CREATE TABLE Actividad (
+  IdActividad INT AUTO_INCREMENT PRIMARY KEY,
+  NombreActi VARCHAR(150) NOT NULL,
+  FechaInicio DATE NOT NULL,
+  FechaFin DATE NOT NULL,
+  HoraInicio TIME NOT NULL,
+  HoraFin TIME NOT NULL,
+  TipoLudica VARCHAR(50) NOT NULL,
+  Descripcion TEXT,
+  Imagen VARCHAR(255),
+  Ubicacion VARCHAR(150),
+  CodigoQR TEXT,
+  CodigoQRSalida TEXT,
+  IdEvento INT,
+  IdUsuario INT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_Actividad_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_Actividad_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE Elemento (
+  IdElemento INT AUTO_INCREMENT PRIMARY KEY,
+  Nombre VARCHAR(100) NOT NULL,
+  Descripcion TEXT,
+  Imagen VARCHAR(255),
+  Disponible BOOLEAN DEFAULT TRUE,
+  CantidadTotal INT NOT NULL DEFAULT 1,
+  CantidadDisponible INT NOT NULL DEFAULT 1,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL
+);
+
+CREATE TABLE SolicitudApoyo (
+  IdSolicitud INT AUTO_INCREMENT PRIMARY KEY,
+  Descripcion TEXT NOT NULL,
+  ContactoEmergencia VARCHAR(100),
+  TipoAyuda ENUM('Psicologica', 'Emocional', 'Economica', 'Otra') NOT NULL,
+  Estado ENUM('Pendiente', 'En Proceso', 'Atendido', 'Finalizado'),
+  IdUsuario INT NOT NULL,
+  CONSTRAINT FK_SolicitudApoyo_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 5. Tablas que dependen de Usuario, Actividad, Evento, SolicitudApoyo...
+CREATE TABLE Asistencia (
+  AsiId INT AUTO_INCREMENT PRIMARY KEY,
+  AsiFecha DATETIME NOT NULL,
+  AsiHorasAsistidas INT,
+  QREntrada DATETIME,
+  QRSalida DATETIME,
+  tipo VARCHAR(20) NOT NULL,
+  AsiEntrada BOOLEAN,
+  AsiHoraEntrada DATETIME,
+  AsiEstado VARCHAR(20) DEFAULT 'Incompleta',
+  IdUsuario INT NOT NULL,
+  IdActividad INT NOT NULL,
+  IdRegistradorEntrada INT,
+  IdRegistradorSalida INT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_Asistencia_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_Asistencia_Actividad FOREIGN KEY (IdActividad) REFERENCES Actividad(IdActividad)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_Asistencia_RegistradorEntrada FOREIGN KEY (IdRegistradorEntrada) REFERENCES Usuario(IdUsuario)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_Asistencia_RegistradorSalida FOREIGN KEY (IdRegistradorSalida) REFERENCES Usuario(IdUsuario)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE Constancia (
+  ConstanciaId INT AUTO_INCREMENT PRIMARY KEY,
+  ConstanciaHorasCert INT NOT NULL,
+  ConstanciaEstado ENUM('Aprobado', 'Pendiente') NOT NULL,
+  ConstanciaFecha DATETIME NOT NULL,
+  IdUsuario INT NOT NULL,
+  CONSTRAINT FK_Constancia_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE consultaia (
+  IdConsultaIA INT AUTO_INCREMENT PRIMARY KEY,
+  Pregunta TEXT NOT NULL,
+  Respuesta TEXT NOT NULL,
+  Fecha DATE NOT NULL,
+  Descripcion TEXT,
+  IdUsuario INT NOT NULL,
+  CONSTRAINT FK_ConsultaIA_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE ComentariosIA (
+  IdComentario INT AUTO_INCREMENT PRIMARY KEY,
+  Comentario TEXT NOT NULL,
+  RecomendacionIA VARCHAR(255),
+  ComentarioNormalizado TEXT,
+  IdUsuario INT,
+  IdEvento INT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_ComentariosIA_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_ComentariosIA_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE Feedback (
+  IdFeedback INT AUTO_INCREMENT PRIMARY KEY,
+  ComentarioFeedback TEXT NOT NULL,
+  FechaEnvio DATETIME,
+  Calificacion INT,
+  IdEvento INT,
+  IdActividad INT,
+  IdUsuario INT NOT NULL,
+  CONSTRAINT FK_Feedback_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_Feedback_Actividad FOREIGN KEY (IdActividad) REFERENCES Actividad(IdActividad)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_Feedback_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE RelUsuarioEvento (
+  IdUsuario INT NOT NULL,
+  IdEvento INT NOT NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (IdUsuario, IdEvento),
+  CONSTRAINT FK_RelUsuarioEvento_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_RelUsuarioEvento_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE RelUsuarioFeedback (
+  IdUsuario INT NOT NULL,
+  IdFeedback INT NOT NULL,
+  FechaRelUsuaFeed DATE,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  PRIMARY KEY (IdUsuario, IdFeedback),
+  CONSTRAINT FK_RelUsuarioFeedback_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_RelUsuarioFeedback_Feedback FOREIGN KEY (IdFeedback) REFERENCES Feedback(IdFeedback)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE ResumenEventoIA (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  IdActividad INT NOT NULL,
+  IdEvento INT NOT NULL,
+  totalInscritos INT,
+  totalAsistentes INT,
+  porcentajeParticipacion FLOAT,
+  fichaMayorParticipacion VARCHAR(255),
+  jornadaDestacada VARCHAR(255),
+  resumenIA TEXT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_ResumenEventoIA_Actividad FOREIGN KEY (IdActividad) REFERENCES Actividad(IdActividad)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_ResumenEventoIA_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 6. Tablas que dependen de Usuario y Elemento
+CREATE TABLE PrestamoElementos (
+  IdAlquiler INT AUTO_INCREMENT PRIMARY KEY,
+  CantidadDisponible INT DEFAULT 1,
+  NombreElemento VARCHAR(50) NOT NULL,
+  FechaSolicitud DATETIME NOT NULL,
+  FechaDevolucion DATETIME NOT NULL,
+  RegistradoPor VARCHAR(50) NOT NULL,
+  Observaciones TEXT,
+  Imagen VARCHAR(255),
+  CumplioConEntrega BOOLEAN DEFAULT FALSE,
+  IdUsuario INT,
+  IdElemento INT,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_PrestamoElementos_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_PrestamoElementos_Elemento FOREIGN KEY (IdElemento) REFERENCES Elemento(IdElemento)
+    ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- 7. HistorialSolicitud que depende de SolicitudApoyo y Usuario
+CREATE TABLE HistorialSolicitud (
+  IdHistorial INT AUTO_INCREMENT PRIMARY KEY,
+  IdSolicitud INT NOT NULL,
+  EstadoNuevo ENUM('Pendiente', 'En Proceso', 'Atendido', 'Finalizado') NOT NULL,
+  Comentario TEXT,
+  IdUsuario INT NOT NULL,
+  CONSTRAINT FK_HistorialSolicitud_Solicitud FOREIGN KEY (IdSolicitud) REFERENCES SolicitudApoyo(IdSolicitud)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT FK_HistorialSolicitud_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- 8. Notificaciones que dependen de Usuario y Evento
+CREATE TABLE Notificaciones (
+  IdNotificacion INT AUTO_INCREMENT PRIMARY KEY,
+  Titulo VARCHAR(100) NOT NULL,
+  Mensaje TEXT NOT NULL,
+  TipoNotificacion ENUM('Evento', 'Actividad', 'Anuncio', 'Solicitud', 'Respuesta') NOT NULL,
+  FechaDeEnvio DATE NOT NULL,
+  IdEvento INT,
+  RutaDestino VARCHAR(255),
+  imagenUrl VARCHAR(255),
+  IdUsuario INT NOT NULL,
+  Confirmado BOOLEAN NOT NULL DEFAULT FALSE,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL,
+  CONSTRAINT FK_Notificaciones_Evento FOREIGN KEY (IdEvento) REFERENCES Evento(IdEvento)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT FK_Notificaciones_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
