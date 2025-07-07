@@ -6,13 +6,11 @@ import { generateJWT } from "../utils/jwt";
 import { AuthEmail } from "../emails/AuthEmail";
 import { RolUsuario } from "../models/RolUsuario";
 import { Aprendiz } from "../models/Aprendiz";
+import type { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 
-// Controlador encargado de gestionar operaciones relacionadas con el modelo Usuario
 export class UsuarioController {
-  // Obtener todos los usuarios ordenados por fecha de creación
   static getAll = async (req: Request, res: Response) => {
     try {
-      console.log("GET /api/usuario - Obtener todos los usuarios");
       const usuarios = await Usuario.findAll({
         order: [["createdAt", "ASC"]],
       });
@@ -22,113 +20,100 @@ export class UsuarioController {
     }
   };
 
-  // Obtener un usuario por su ID
   static getUsuarioId = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const usuario = await Usuario.findByPk(id);
-
       if (!usuario) {
         res.status(404).json({ error: "Usuario no encontrado." });
         return;
       }
-
       res.json(usuario);
     } catch (error) {
       res.status(500).json({ error: "Hubo un error al buscar el usuario." });
     }
   };
 
-  // Crear un nuevo usuario
   static crearUsuario = async (req: Request, res: Response) => {
-  try {
-    const {
-      IdentificacionUsuario,
-      Nombre,
-      Apellido,
-      Correo,
-      Telefono,
-      Contrasena,
-      FechaRegistro,
-      Ficha,
-      ProgramaFormacion,
-      Jornada,
-    } = req.body;
-
-    // Validación de campos obligatorios
-    if (
-      !IdentificacionUsuario ||
-      !Nombre ||
-      !Apellido ||
-      !Correo ||
-      !Telefono ||
-      !Contrasena ||
-      !FechaRegistro
-    ) {
-      res.status(400).json({ error: "Todos los campos son obligatorios" });
-      return;
-    }
-
-    // Encriptar contraseña y generar token de verificación
-    const hashedPassword = await hashPassword(Contrasena);
-    const token = generateToken();
-
-    // Crear usuario base
-    const usuario = await Usuario.create({
-      IdentificacionUsuario,
-      Nombre,
-      Apellido,
-      Correo,
-      Telefono,
-      Contrasena: hashedPassword,
-      FechaRegistro,
-      token,
-      IdRol: 2, // Asignamos rol de aprendiz
-      confirmed: false,
-    });
-
-    // 👉 Crear RolUsuario
-    const rolUsuario = await RolUsuario.create({
-      IdUsuario: usuario.IdUsuario,
-      NombreRol: "Aprendiz",
-    });
-
-    // 👉 Crear Aprendiz (solo si llegan datos)
-    if (Ficha && ProgramaFormacion && Jornada) {
-      await Aprendiz.create({
-        IdUsuario: usuario.IdUsuario,
-        IdRolUsuario: rolUsuario.IdRol,
+    try {
+      const {
+        IdentificacionUsuario,
+        Nombre,
+        Apellido,
+        Correo,
+        Telefono,
+        Contrasena,
+        FechaRegistro,
         Ficha,
         ProgramaFormacion,
         Jornada,
+      } = req.body;
+
+      if (
+        !IdentificacionUsuario ||
+        !Nombre ||
+        !Apellido ||
+        !Correo ||
+        !Telefono ||
+        !Contrasena ||
+        !FechaRegistro
+      ) {
+        res.status(400).json({ error: "Todos los campos son obligatorios" });
+        return;
+      }
+
+      const hashedPassword = await hashPassword(Contrasena);
+      const token = generateToken();
+
+      const usuario = await Usuario.create({
+        IdentificacionUsuario,
+        Nombre,
+        Apellido,
+        Correo,
+        Telefono,
+        Contrasena: hashedPassword,
+        FechaRegistro,
+        token,
+        IdRol: 2,
+        confirmed: false,
       });
+
+      const rolUsuario = await RolUsuario.create({
+        IdUsuario: usuario.IdUsuario,
+        NombreRol: "Aprendiz",
+      });
+
+      if (Ficha && ProgramaFormacion && Jornada) {
+        await Aprendiz.create({
+          IdUsuario: usuario.IdUsuario,
+          IdRolUsuario: rolUsuario.IdRol,
+          Ficha,
+          ProgramaFormacion,
+          Jornada,
+        });
+      }
+
+      await AuthEmail.sendConfirmationEmail({
+        Nombre: usuario.Nombre,
+        Correo: usuario.Correo,
+        token: usuario.token ?? "",
+      });
+
+      res.status(201).json({ mensaje: "Usuario y aprendiz creados correctamente." });
+    } catch (error) {
+      console.error("Error en crearUsuario:", error);
+      res.status(500).json({ error: "Error al crear usuario." });
     }
+  };
 
-    // Enviar correo
-    await AuthEmail.sendConfirmationEmail({
-      Nombre: usuario.Nombre,
-      Correo: usuario.Correo,
-      token: usuario.token ?? "",
-    });
-
-    res.status(201).json({ mensaje: "Usuario y aprendiz creados correctamente." });
-  } catch (error) {
-    console.error("Error en crearUsuario:", error);
-    res.status(500).json({ error: "Error al crear usuario." });
-  }
-};
-
-  // Actualizar usuario por ID
   static actualizarUsuarioId = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const usuario = await Usuario.findByPk(id);
-
       if (!usuario) {
         res.status(404).json({ error: "Usuario no encontrado." });
         return;
       }
-
       await usuario.update(req.body);
       res.json("Usuario actualizado exitosamente.");
     } catch (error) {
@@ -136,17 +121,14 @@ export class UsuarioController {
     }
   };
 
-  // Eliminar usuario por ID
   static borrarUsuarioId = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const usuario = await Usuario.findByPk(id);
-
       if (!usuario) {
         res.status(404).json({ error: "Usuario no encontrado." });
         return;
       }
-
       await usuario.destroy();
       res.json("Usuario eliminado exitosamente.");
     } catch (error) {
@@ -154,27 +136,21 @@ export class UsuarioController {
     }
   };
 
-  // Confirmar cuenta con token
   static confirmAccount = async (req: Request, res: Response) => {
     const { token } = req.body;
     const usuario = await Usuario.findOne({ where: { token } });
-
     if (!usuario) {
       res.status(401).json({ error: "Token no válido" });
       return;
     }
-
     usuario.confirmed = true;
     usuario.token = "";
     await usuario.save();
-
     res.json("Cuenta confirmada correctamente");
   };
 
-  // Iniciar sesión
   static login = async (req: Request, res: Response) => {
     const { Correo, Contrasena } = req.body;
-
     const usuario = await Usuario.findOne({ where: { Correo } });
 
     if (!usuario) {
@@ -187,11 +163,7 @@ export class UsuarioController {
       return;
     }
 
-    const isContrasenaCorrecta = await checkcontrasena(
-      Contrasena,
-      usuario.Contrasena
-    );
-
+    const isContrasenaCorrecta = await checkcontrasena(Contrasena, usuario.Contrasena);
     if (!isContrasenaCorrecta) {
       res.status(401).json({ error: "Contraseña incorrecta" });
       return;
@@ -199,25 +171,20 @@ export class UsuarioController {
 
     const token = generateJWT(usuario.IdUsuario, usuario.IdRol);
 
-res.status(200).json({
-  token,
-  usuario: {
-    IdUsuario: usuario.IdUsuario,
-    Nombre: usuario.Nombre,
-    Correo: usuario.Correo,
-    IdRol: usuario.IdRol
- 
-  }
-});
-
-
+    res.status(200).json({
+      token,
+      usuario: {
+        IdUsuario: usuario.IdUsuario,
+        Nombre: usuario.Nombre,
+        Correo: usuario.Correo,
+        IdRol: usuario.IdRol,
+      },
+    });
   };
 
-  // Solicitar cambio de contraseña
   static forgotContrasena = async (req: Request, res: Response) => {
     const { Correo } = req.body;
     const usuario = await Usuario.findOne({ where: { Correo } });
-
     if (!usuario) {
       res.status(409).json({ error: "Usuario no encontrado" });
       return;
@@ -235,132 +202,183 @@ res.status(200).json({
     res.json("Revisa tu correo para instrucciones");
   };
 
-  // Validar token de recuperación de contraseña
   static validateToken = async (req: Request, res: Response) => {
     const { token } = req.body;
     const tokenExists = await Usuario.findOne({ where: { token } });
-
     if (!tokenExists) {
       res.status(404).json({ error: "Token no válido" });
       return;
     }
-
     res.json("Token válido...");
   };
 
-  // Resetear contraseña usando token
-  static resetpasswordWithToken = async (req: Request, res: Response) => {
-    const { token } = req.params;
-    const { Contrasena } = req.body;
-
-    const usuario = await Usuario.findOne({ where: { token } });
-
-    if (!usuario) {
-      res.status(404).json({ error: "Token no válido" });
-      return;
-    }
-
-    usuario.Contrasena = await hashPassword(Contrasena);
-    usuario.token = null;
-    await usuario.save();
-
-    res.json("La contraseña se modificó correctamente");
-  };
-
-  // Obtener usuario autenticado desde el token JWT
-  static usertraer = async (req: Request, res: Response) => {
+  
+static usertraer = async (req: AuthenticatedRequest, res: Response) => {
+  try {
     if (!req.usuario) {
-      res.status(404).json({ error: "Usuario no encontrado" });
-      return;
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    res.json(req.usuario);
-  };
+    const usuario = await Usuario.findByPk(req.usuario.IdUsuario, {
+      attributes: { exclude: ['Contrasena', 'token'] },
+      include: [
+        {
+          model: RolUsuario,
+          as: "rol",
+          attributes: ["NombreRol"],
+        },
+        {
+          model: Aprendiz,
+          as: "aprendiz",
+          attributes: ["Ficha", "Jornada", "ProgramaFormacion"],
+        },
+      ],
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    return res.json(usuario); 
+  } catch (error) {
+    console.error("Error al obtener usuario:", error);
+    return res.status(500).json({ error: "Error al obtener datos del usuario" }); 
+  }
+};
+
+
   static updateCurrentPassword = async (req: Request, res: Response) => {
-  const { Actualizar_Contrasena, Contrasena } = req.body;
+    const { Actualizar_Contrasena, Contrasena } = req.body;
 
-  if (!req.usuario) {
-    res.status(401).json({ error: "No autorizado" });
-    return;
-  }
-
-  const id = req.usuario.IdUsuario;
-
-  try {
-    const usuario = await Usuario.findByPk(id);
-
-    if (!usuario) {
-      res.status(404).json({ error: "Usuario no encontrado" });
-      return
-    }
-
-    const isContrasenaCorrecta = await checkcontrasena(
-      Actualizar_Contrasena,
-      usuario.Contrasena
-    );
-
-    if (!isContrasenaCorrecta) {
-      res.status(401).json({ error: "La contraseña actual es incorrecta" });
+    if (!req.usuario) {
+      res.status(401).json({ error: "No autorizado" });
       return;
     }
 
- 
-    const nuevaHash = await hashPassword(Contrasena); 
-    usuario.Contrasena = nuevaHash;
-    await usuario.save();
+    const id = req.usuario.IdUsuario;
 
-    res.json({ mensaje: "Contraseña actualizada correctamente" });
-  } catch (error) {
-    console.error("Error al actualizar la contraseña:", error);
-    res.status(500).json({ error: "Error del servidor" });
-  }
-};
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) {
+        res.status(404).json({ error: "Usuario no encontrado" });
+        return;
+      }
 
+      const isContrasenaCorrecta = await checkcontrasena(
+        Actualizar_Contrasena,
+        usuario.Contrasena
+      );
 
-// src/controllers/UsuarioController.ts
-static actualizarTelefono = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { Telefono } = req.body;
+      if (!isContrasenaCorrecta) {
+        res.status(401).json({ error: "La contraseña actual es incorrecta" });
+        return;
+      }
 
-  try {
-    const usuario = await Usuario.findByPk(id);
-    if (!usuario) {
-       res.status(404).json({ error: 'Usuario no encontrado' });
-       return;
+      const nuevaHash = await hashPassword(Contrasena);
+      usuario.Contrasena = nuevaHash;
+      await usuario.save();
+
+      res.json({ mensaje: "Contraseña actualizada correctamente" });
+    } catch (error) {
+      console.error("Error al actualizar la contraseña:", error);
+      res.status(500).json({ error: "Error del servidor" });
     }
+  };
 
-    usuario.Telefono = Telefono;
-    await usuario.save();
+  static actualizarTelefono = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { Telefono } = req.body;
 
-    res.json(usuario);
-  } catch (error) {
-    console.error("Error al actualizar teléfono:", error);
-    res.status(500).json({ error: 'Error al actualizar número' });
-  }
-};
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) {
+        res.status(404).json({ error: "Usuario no encontrado" });
+        return;
+      }
 
+      usuario.Telefono = Telefono;
+      await usuario.save();
 
-// src/controllers/UsuarioController.ts
-
-static cambiarRolUsuario = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { IdRol } = req.body;
-
-  try {
-    const usuario = await Usuario.findByPk(id);
-
-    if (!usuario) {
-       res.status(404).json({ error: "Usuario no encontrado" });
-       return;
+      res.json(usuario);
+    } catch (error) {
+      console.error("Error al actualizar teléfono:", error);
+      res.status(500).json({ error: "Error al actualizar número" });
     }
+  };
 
-    usuario.IdRol = IdRol;
-    await usuario.save();
+  static cambiarRolUsuario = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { IdRol } = req.body;
 
-    res.json({ mensaje: "Rol actualizado correctamente", usuario });
-  } catch (error) {
-    console.error("Error al cambiar rol:", error);
-    res.status(500).json({ error: "Error al cambiar el rol" });
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) {
+        res.status(404).json({ error: "Usuario no encontrado" });
+        return;
+      }
+
+      usuario.IdRol = IdRol;
+      await usuario.save();
+
+      res.json({ mensaje: "Rol actualizado correctamente", usuario });
+    } catch (error) {
+      console.error("Error al cambiar rol:", error);
+      res.status(500).json({ error: "Error al cambiar el rol" });
+    }
+  };
+
+  static async actualizarNombre(req: AuthenticatedRequest, res: Response) {
+    const { Nombre } = req.body;
+    const id = req.usuario?.IdUsuario;
+
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+      usuario.Nombre = Nombre;
+      await usuario.save();
+
+      res.json({ mensaje: "Nombre actualizado", Nombre });
+    } catch (error) {
+      res.status(500).json({ error: "Error al actualizar el nombre" });
+    }
   }
-};
+
+  static async actualizarCorreo(req: AuthenticatedRequest, res: Response) {
+    const { Correo } = req.body;
+    const id = req.usuario?.IdUsuario;
+
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+      usuario.Correo = Correo;
+      await usuario.save();
+
+      res.json({ mensaje: "Correo actualizado", Correo });
+    } catch (error) {
+      res.status(500).json({ error: "Error al actualizar el correo" });
+    }
+  }
+
+  static async actualizarImagen(req: AuthenticatedRequest, res: Response) {
+    const id = req.usuario?.IdUsuario;
+
+    if (!req.file) return res.status(400).json({ error: "No se proporcionó una imagen" });
+
+    try {
+      const usuario = await Usuario.findByPk(id);
+      if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+      usuario.Imagen = req.file.filename;
+      await usuario.save();
+
+      res.json({ mensaje: "Imagen actualizada", imagen: usuario.Imagen });
+    } catch (error) {
+      res.status(500).json({ error: "Error al actualizar la imagen" });
+    }
+  }
+
+
+
 }

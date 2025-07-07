@@ -13,6 +13,11 @@ import { authenticate } from "../middleware/auth";
 // Configuración
 import { limiter } from "../config/limiter";
 
+import { upload } from "../middleware/Upload";
+import type { RequestHandler } from "express";
+
+
+
 // Inicialización del enrutador
 const UsuarioRouter = Router();
 
@@ -24,122 +29,40 @@ UsuarioRouter.use(limiter);
 ----------------------------------------------*/
 
 // Obtener todos los usuarios
-UsuarioRouter.get(
-  "/",
-  
-  handleInputErrors,
-  UsuarioController.getAll
-);
+UsuarioRouter.get("/", handleInputErrors, UsuarioController.getAll);
 
 // Obtener el perfil del usuario autenticado
 UsuarioRouter.get(
   "/user",
   authenticate,
-  UsuarioController.usertraer
+  UsuarioController.usertraer as unknown as RequestHandler<any, any, any, any>
 );
-UsuarioRouter.put('/usuarios/:id', UsuarioController.actualizarTelefono);
-// Obtener usuario por ID
-UsuarioRouter.get(
-  "/:id",
-  authenticate, 
-  validateUsuarioId,
+
+
+// Cambiar nombre
+UsuarioRouter.put("/cambiar-nombre",
+  authenticate,
+  body("Nombre").notEmpty().withMessage("Nombre requerido"),
   handleInputErrors,
-  UsuarioController.getUsuarioId
+  UsuarioController.actualizarNombre as unknown as RequestHandler
 );
 
-// Crear un nuevo usuario
-UsuarioRouter.post(
-  "/",
-  validateUsuarioNoExiste,
-  validateUsuarioBody,
+// Cambiar correo
+UsuarioRouter.put("/cambiar-correo",
+  authenticate,
+  body("Correo").isEmail().withMessage("Correo no válido"),
   handleInputErrors,
-  UsuarioController.crearUsuario
+  UsuarioController.actualizarCorreo as unknown as RequestHandler
 );
 
-
-// Actualizar usuario por ID
-UsuarioRouter.put(
-  "/:id",
-  authenticate, 
-  validateUsuarioId,
-  validateUsuarioNoExiste,
-  validateUsuarioBody,
-  handleInputErrors,
-  UsuarioController.actualizarUsuarioId
+// Subir nueva imagen
+UsuarioRouter.put("/cambiar-imagen",
+  authenticate,
+  upload.single("imagen"),
+  UsuarioController.actualizarImagen as unknown as RequestHandler
 );
 
-// Eliminar usuario por ID
-UsuarioRouter.delete(
-  "/:id",
-  validateUsuarioId,
-  authenticate, 
-  handleInputErrors,
-  UsuarioController.borrarUsuarioId
-);
-
-/* ---------------------------------------------
-   AUTENTICACIÓN Y CUENTAS
-----------------------------------------------*/
-
-// Confirmar cuenta con token
-UsuarioRouter.post(
-  "/confirm-account",
-  body("token")
-    .notEmpty()
-    .isLength({ min: 6, max: 6 })
-    .withMessage("Token no válido"),
-  handleInputErrors,
-  UsuarioController.confirmAccount
-);
-
-// Iniciar sesión
-UsuarioRouter.post(
-  "/login",
-  body("Correo")
-    .isEmail()
-    .withMessage("Correo no válido"),
-  body("Contrasena")
-    .notEmpty()
-    .withMessage("La contraseña es obligatoria"),
-  handleInputErrors,
-  UsuarioController.login
-);
-
-// Solicitar restablecimiento de contraseña
-UsuarioRouter.post(
-  "/forgot-password",
-  body("Correo")
-    .isEmail()
-    .withMessage("Correo no válido"),
-  handleInputErrors,
-  UsuarioController.forgotContrasena
-);
-
-// Validar token de recuperación
-UsuarioRouter.post(
-  "/validate-token",
-  body("token")
-    .notEmpty()
-    .isLength({ min: 6, max: 6 })
-    .withMessage("Token no válido"),
-  handleInputErrors,
-  UsuarioController.validateToken
-);
-
-// Restablecer contraseña con token
-UsuarioRouter.post(
-  "/reset-password/:token",
-  param("token")
-    .notEmpty()
-    .isLength({ min: 6, max: 6 })
-    .withMessage("Token no válido"),
-  body("Contrasena")
-    .isLength({ min: 8 })
-    .withMessage("La contraseña es muy corta, mínimo 8 caracteres"),
-  handleInputErrors,
-  UsuarioController.resetpasswordWithToken
-);
-
+// Actualizar contraseña actual
 UsuarioRouter.post('/update-password',
   authenticate,
   body("Actualizar_Contrasena")
@@ -151,17 +74,83 @@ UsuarioRouter.post('/update-password',
   UsuarioController.updateCurrentPassword
 );
 
+// Confirmar cuenta con token
+UsuarioRouter.post("/confirm-account",
+  body("token")
+    .notEmpty()
+    .isLength({ min: 6, max: 6 })
+    .withMessage("Token no válido"),
+  handleInputErrors,
+  UsuarioController.confirmAccount
+);
 
-UsuarioRouter.put(
-  "/cambiar-rol/:id",
+// Iniciar sesión
+UsuarioRouter.post("/login",
+  body("Correo").isEmail().withMessage("Correo no válido"),
+  body("Contrasena").notEmpty().withMessage("La contraseña es obligatoria"),
+  handleInputErrors,
+  UsuarioController.login
+);
+
+// Solicitar restablecimiento de contraseña
+UsuarioRouter.post("/forgot-password",
+  body("Correo").isEmail().withMessage("Correo no válido"),
+  handleInputErrors,
+  UsuarioController.forgotContrasena
+);
+
+// Validar token de recuperación
+UsuarioRouter.post("/validate-token",
+  body("token").notEmpty().isLength({ min: 6, max: 6 }).withMessage("Token no válido"),
+  handleInputErrors,
+  UsuarioController.validateToken
+);
+
+// Restablecer contraseña con token
+
+
+// Cambiar rol (solo admins)
+UsuarioRouter.put("/cambiar-rol/:id",
   authenticate,
   authorizeAdmin,
   UsuarioController.cambiarRolUsuario
 );
 
+// Crear un nuevo usuario
+UsuarioRouter.post("/",
+  validateUsuarioNoExiste,
+  validateUsuarioBody,
+  handleInputErrors,
+  UsuarioController.crearUsuario
+);
 
+// Actualizar solo teléfono
+UsuarioRouter.put('/usuarios/:id', UsuarioController.actualizarTelefono);
 
+// Obtener usuario por ID
+UsuarioRouter.get("/:id",
+  authenticate,
+  validateUsuarioId,
+  handleInputErrors,
+  UsuarioController.getUsuarioId
+);
 
+// Actualizar usuario por ID (GENÉRICA, DEBE IR AL FINAL)
+UsuarioRouter.put("/:id",
+  authenticate,
+  validateUsuarioId,
+  validateUsuarioNoExiste,
+  validateUsuarioBody,
+  handleInputErrors,
+  UsuarioController.actualizarUsuarioId
+);
 
-// Exportar el router
+// Eliminar usuario por ID
+UsuarioRouter.delete("/:id",
+  validateUsuarioId,
+  authenticate,
+  handleInputErrors,
+  UsuarioController.borrarUsuarioId
+);
+
 export default UsuarioRouter;

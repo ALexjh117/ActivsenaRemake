@@ -63,6 +63,8 @@ export default function InicioSesion() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("IdUsuario", usuario.IdUsuario);
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+
 
       setMensaje("✅ Inicio de sesión exitoso");
       setTipoMensaje("exito");

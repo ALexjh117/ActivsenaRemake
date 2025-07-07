@@ -68,6 +68,11 @@ export class Usuario extends Model {
   @Column({ type: DataType.BOOLEAN })
   declare confirmed: boolean;
 
+  
+  @Column({ type: DataType.STRING(255), allowNull: true })
+  declare Imagen: string; 
+
+
   //  Asociación correcta con RolUsuario
   @BelongsTo(() => RolUsuario, { foreignKey: 'IdRol', as: 'rol' })
   declare rol: RolUsuario;
