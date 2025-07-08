@@ -47,7 +47,7 @@
 .rotating-text-main {
   padding-left: 0.5rem;   /* px-2 */
   padding-right: 0.5rem;  /* px-2 */
-  background-color: #3be9af; /* bg-cyan-300 */
+  background-color: #f4f2fc; /* bg-cyan-300 */
   color: black;           /* text-black */
   overflow: hidden;
 
@@ -111,7 +111,7 @@
 }
 
 .texto-activ{
-  color: rgb(249, 250, 249);
+  color: rgb(16, 17, 16);
   font-size: 18px;
   
 }

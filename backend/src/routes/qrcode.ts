@@ -1,6 +1,6 @@
 import express from "express";
 import QRCode from "qrcode";
-import { AlquilerElementos } from "../models/AlquilerElementos";
+import { PrestamoElementos } from "../models/PrestamoElementos";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router.get("/:idAlquiler", async (req, res) => {
   const { idAlquiler } = req.params;
 
   try {
-    const alquiler = await AlquilerElementos.findByPk(idAlquiler);
+    const alquiler = await PrestamoElementos.findByPk(idAlquiler);
 
     if (!alquiler) {
       res.status(404).json({ error: "Elemento de alquiler no encontrado" });
@@ -20,7 +20,7 @@ router.get("/:idAlquiler", async (req, res) => {
       tipo: "alquiler",
       nombreElemento: alquiler.NombreElemento,
       nombreAprendiz: "Aprendiz Test",
-      codigo: `ALQ-${Date.now()}`
+      codigo: `ALQ-${Date.now()}`,
     };
 
     console.log("📦 Payload generado para QR:", qrPayload);
@@ -30,11 +30,10 @@ router.get("/:idAlquiler", async (req, res) => {
 
     res.writeHead(200, {
       "Content-Type": "image/png",
-      "Content-Length": img.length
+      "Content-Length": img.length,
     });
     res.end(img);
     return;
-
   } catch (err) {
     console.error("❌ Error generando QR:", err);
     res.status(500).json({ error: "Error generando QR" });

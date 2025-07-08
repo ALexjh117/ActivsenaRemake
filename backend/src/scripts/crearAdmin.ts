@@ -29,7 +29,7 @@ import { db } from "../config/db";
       FechaRegistro: new Date(),
       token: "",
       confirmed: true,
-      IdRol: 2, // INSTRUCTOR
+      IdRol: 3, // INSTRUCTOR
     });
 
     console.log("Usuarios creados:");

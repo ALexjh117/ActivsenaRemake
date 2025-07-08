@@ -33,7 +33,7 @@
 .icono-input-registro {
   position: absolute;
   left: 0.75rem;
-  top: 0.75rem;
+  top: 1px;
   height: 1rem;
   width: 1rem;
   color: #9ca3af;
@@ -64,11 +64,11 @@
 }
 
 .campo-input-registro:invalid {
-  border-color: #ef4444;
+  border-color: #59595f;
 }
 
 .campo-input-registro:invalid:focus {
-  border-color: #ef4444;
+  border-color: #44ef6f;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
@@ -140,7 +140,7 @@
 }
 
 .boton-registro:hover {
-  background-color: #059669;
+  background-color: #21ce3e;
 }
 
 .boton-registro:active {

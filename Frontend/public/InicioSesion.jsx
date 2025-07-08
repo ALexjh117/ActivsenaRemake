@@ -4,7 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "./styles/inicio.css";
 import api from "../src/services/api";
 
-// Iconos SVG
+//  Importa el contexto
+import { useAuth } from "../src/Context/AuthContext"; // Ajusta la ruta si es necesario
+
 const IconoMail = () => (
   <svg className="icono-input-inicio" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path
@@ -36,9 +38,10 @@ export default function InicioSesion() {
 
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState(""); // 'exito' o 'error'
+  const [tipoMensaje, setTipoMensaje] = useState("");
 
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ usar login del contexto
 
   const manejarCambio = (evento) => {
     const { name, value, type, checked } = evento.target;
@@ -60,23 +63,27 @@ export default function InicioSesion() {
       });
 
       const { token, usuario } = response.data;
+console.log ( "usuario recibido" , usuario);
+     
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("IdUsuario", usuario.IdUsuario);
+
+
+
+      login(token, usuario); // ✅ guardar en el contexto
 
       setMensaje("✅ Inicio de sesión exitoso");
       setTipoMensaje("exito");
 
-      // Redirigir después de breve espera
-    setTimeout(() => {
-        if (usuario.IdRol === 1) {
-          navigate("/dash");
-        } else if (usuario.IdRol === 3) {
-          navigate("/dashin");
-        } else {
-          navigate("/dashap"); // aprendices
-        }
-      }, 1200);
+ setTimeout(() => {
+  if (usuario.IdRol === 1) {
+    navigate("/dash"); // Admin
+  } else if (usuario.IdRol === 2) {
+    navigate("/dashap"); // Instructor
+  } else if (usuario.IdRol === 3) {
+    navigate("/dashin"); // Aprendiz
+  }
+}, 1200);
+
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       setMensaje("❌ Usuario o contraseña incorrectos");
@@ -84,9 +91,7 @@ export default function InicioSesion() {
     } finally {
       setCargando(false);
     }
-  }; //  cierre del manejarEnvio
-
- 
+  };
 
   return (
     <form className="formulario-inicio-sesion" onSubmit={manejarEnvio}>

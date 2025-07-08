@@ -20,6 +20,9 @@ import logo from "../../../../../public/img/logodef.png";
 import avatar from "../img/avatar.png";
 import "../DashA/style/MenuLateral.css";
 
+
+import { useAuth } from "../../../../Context/AuthContext";
+
 export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActual }) {
   const [mostrarMenu, setMostrarMenu] = useState(false);
   const [openSection, setOpenSection] = useState({
@@ -27,6 +30,8 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
     gestion: true,
     otros: true,
   });
+
+  const { logout } = useAuth(); // ✅ usamos logout
 
   const toggleDropdown = () => setMostrarMenu((prev) => !prev);
   const toggleSection = (section) =>
@@ -59,7 +64,7 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
             <ul>
               <li className="opcionesm" onClick={irAPerfil}>Perfil</li>
               <li className="opcionesm" onClick={irConfig}>Configuración</li>
-              <li className="opcionesm">Cerrar sesión</li>
+              <li className="opcionesm" onClick={logout}>Cerrar sesión</li> {/* ✅ funcional */}
             </ul>
           </div>
         )}
@@ -68,12 +73,10 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
       {/* Menú principal */}
       <nav className="menudash">
 
-        {/* Inicio directo */}
         <button onClick={() => setContenidoActual("userviewin")} className="opciondash">
           <FaHome className="iconodash" /> Inicio
         </button>
 
-        {/* Sección: Participación */}
         <div className="grupo-menu">
           <button className="tituloseccion" onClick={() => toggleSection("participacion")}>
             {openSection.participacion ? <FaChevronDown /> : <FaChevronRight />} Participación
@@ -99,7 +102,6 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
           )}
         </div>
 
-        {/* Sección: Gestión */}
         <div className="grupo-menu">
           <button className="tituloseccion" onClick={() => toggleSection("gestion")}>
             {openSection.gestion ? <FaChevronDown /> : <FaChevronRight />} Gestión
@@ -115,14 +117,13 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
               <button onClick={() => setContenidoActual("constanciacr")} className="opciondash">
                 <FaUserGraduate className="iconodash" /> Constancia
               </button>
-               <button onClick={() => setContenidoActual("solicitudapoyoaprendiz")} className="opciondash">
+              <button onClick={() => setContenidoActual("solicitudapoyoaprendiz")} className="opciondash">
                 <FaUserGraduate className="iconodash" /> Apoyos
               </button>
             </>
           )}
         </div>
 
-        {/* Sección: Otros */}
         <div className="grupo-menu">
           <button className="tituloseccion" onClick={() => toggleSection("otros")}>
             {openSection.otros ? <FaChevronDown /> : <FaChevronRight />} Otros
@@ -138,11 +139,8 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
             </>
           )}
         </div>
-
-        {/* Logo */}
-       
       </nav>
-       <img src={logo} alt="Logo" className="logo-dashboard-general"/>
+      <img src={logo} alt="Logo" className="logo-dashboard-general" />
     </aside>
   );
 }

@@ -22,11 +22,12 @@ export class Actividad extends Model {
   @Column({ type: DataType.STRING(150), allowNull: false })
   declare NombreActi: string;
 
-  @Column({ type: DataType.DATE, allowNull: false })
-  declare FechaInicio: Date;
+ @Column({ type: DataType.DATEONLY, allowNull: false })
+declare FechaInicio: string;
 
-  @Column({ type: DataType.DATE, allowNull: false })
-  declare FechaFin: Date;
+@Column({ type: DataType.DATEONLY, allowNull: false })
+declare FechaFin: string;
+
 
   @Column({ type: DataType.TIME, allowNull: false })
   declare HoraInicio: string;

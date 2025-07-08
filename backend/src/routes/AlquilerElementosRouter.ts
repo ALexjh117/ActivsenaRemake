@@ -8,14 +8,14 @@ import {
   validateIdUsuario
 } from '../middleware/AlquilerElementos';
 import { verificarToken } from '../middleware/VerificarToken'; 
-import { AlquilerElementosControllers } from '../controllers/AlquilerElementoControllers'; // <-- corregido import
+import { PrestamoElementosControllers } from '../controllers/PrestamoElementosControllers'; // <-- corregido import
 import multer from 'multer';
 import { CatalogoController } from '../controllers/CatalogoAlquiler';
 
 const router = Router();
 
 // Obtener todos los alquileres
-router.get('/', AlquilerElementosControllers.getAlquilerElementosAll);
+router.get('/', PrestamoElementosControllers.getPrestamoElementosAll);
 
 // Crear un alquiler
 router.post(
@@ -23,7 +23,7 @@ router.post(
   validateIdAlquilerYaExiste,
   validateAlquilerBody,
   handleInputErrors,
-  AlquilerElementosControllers.crearAlquiler
+  PrestamoElementosControllers.crearAlquiler
 );
 
 // Actualizar un alquiler por ID
@@ -32,7 +32,7 @@ router.put(
   validateIdAlquiler,
   validateAlquilerBody,
   handleInputErrors,
-  AlquilerElementosControllers.actualizarIdAlquiler
+  PrestamoElementosControllers.actualizarIdAlquiler
 );
 
 // Eliminar un alquiler por ID
@@ -40,7 +40,7 @@ router.delete(
   '/:IdAlquiler',
   validateIdAlquiler,
   handleInputErrors,
-  AlquilerElementosControllers.eliminarIdAlquiler
+  PrestamoElementosControllers.eliminarIdAlquiler
 );
 
 // Obtener alquileres por usuario
@@ -48,23 +48,23 @@ router.get(
   '/usuario/:IdUsuario',
   validateIdUsuario,
   handleInputErrors,
-  AlquilerElementosControllers.getAlquileresPorUsuario
+  PrestamoElementosControllers.getAlquileresPorUsuario
 );
 
 // Marcar devolución
-router.put("/alquiler/:IdAlquiler/devolver", AlquilerElementosControllers.devolverElemento);
+router.put("/alquiler/:IdAlquiler/devolver", PrestamoElementosControllers.devolverElemento);
 
 // Marcar cumplido
-router.put("/alquiler/:IdAlquiler/cumplido", AlquilerElementosControllers.marcarComoCumplido);
+router.put("/alquiler/:IdAlquiler/cumplido", PrestamoElementosControllers.marcarComoCumplido);
 
 // Registrar alquiler desde QR
 router.post(
   '/desde-qr',
   verificarToken, // extrae IdUsuario desde token
-  AlquilerElementosControllers.registrarDesdeQR
+  PrestamoElementosControllers.registrarDesdeQR
 );
 
-router.post('/qr', verificarToken, AlquilerElementosControllers.registrarDesdeQR);
+router.post('/qr', verificarToken, PrestamoElementosControllers.registrarDesdeQR);
 
 // Configuración Multer para subida de imágenes
 const storage = multer.diskStorage({

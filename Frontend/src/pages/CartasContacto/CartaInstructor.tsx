@@ -129,11 +129,10 @@ const PerfilInstructorForm = () => {
     setInstructores(res.data);
   };
 
-  // Filtrar instructores por nombre y ubicación
-  const instructoresFiltrados = instructores.filter(inst =>
-    inst.nombre.toLowerCase().includes(filtroNombre.toLowerCase()) &&
-    inst.ubicacion.toLowerCase().includes(filtroUbicacion.toLowerCase())
-  );
+const instructoresFiltrados = instructores.filter(inst =>
+  (inst.nombre ?? "").toLowerCase().includes(filtroNombre.toLowerCase()) &&
+  (inst.ubicacion ?? "").toLowerCase().includes(filtroUbicacion.toLowerCase())
+);
 
   return (
     <div className="contenedor-form-perfil">

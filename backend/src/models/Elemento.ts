@@ -1,8 +1,8 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
-import { AlquilerElementos } from './AlquilerElementos';
+import { Table, Column, Model, DataType, HasMany } from "sequelize-typescript";
+import {   PrestamoElementos } from "./PrestamoElementos";
 
 @Table({
-  tableName: 'Elemento',
+  tableName: "Elemento",
   timestamps: true,
 })
 export class Elemento extends Model {
@@ -27,6 +27,6 @@ export class Elemento extends Model {
   @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 1 })
   declare CantidadDisponible: number;
 
-  @HasMany(() => AlquilerElementos)
-  declare alquileres: AlquilerElementos[];
+  @HasMany(() => PrestamoElementos)
+  declare alquileres: PrestamoElementos[];
 }

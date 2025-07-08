@@ -615,3 +615,69 @@
 .btn-feedback:hover {
   background-color: #084cba;
 }
+.feedback-lista {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ccc;
+}
+
+.feedback-item {
+  margin-bottom: 1rem;
+  background-color: #f6f6f6;
+  padding: 0.8rem;
+  border-radius: 8px;
+}
+
+.feedback-stars {
+  color: #f5c518; /* color dorado */
+  font-size: 1.1rem;
+  margin-top: 0.3rem;
+}
+
+.feedback-fecha {
+  font-size: 0.75rem;
+  color: #777;
+}
+.estrellas-selector {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.estrella {
+  margin-right: 4px;
+  transition: transform 0.2s ease;
+}
+
+.estrella:hover {
+  transform: scale(1.2);
+}
+
+.estrella.activa {
+  color: #f5c518;
+}
+.estrellas-selector {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.estrella {
+  margin-right: 4px;
+  transition: transform 0.2s ease;
+}
+
+.estrella:hover {
+  transform: scale(1.2);
+}
+
+.estrella.activa {
+  color: #f5c518;
+}
+.promedio-calificacion {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
