@@ -43,7 +43,7 @@ static crearActividad = async (req: Request, res: Response) => {
   try {
     console.log("💡 Middleware alcanzado");
 
-    // ✅ Normalizar body para evitar problemas con "null prototype"
+    // Normalizar body para evitar problemas con "null prototype"
     const body = JSON.parse(JSON.stringify(req.body));
 
     const {
@@ -60,8 +60,8 @@ static crearActividad = async (req: Request, res: Response) => {
 
     const image = req.file?.filename;
 
-    // 🔍 Logs de tipo de cada campo
-    console.log("🧪 Tipo de cada campo:");
+    //  Logs de tipo de cada campo
+    console.log(" Tipo de cada campo:");
     console.log("NombreActi:", NombreActi, typeof NombreActi);
     console.log("FechaInicio:", FechaInicio, typeof FechaInicio);
     console.log("FechaFin:", FechaFin, typeof FechaFin);
@@ -104,12 +104,12 @@ static crearActividad = async (req: Request, res: Response) => {
       return;
     }
 
-    // ✅ Crear actividad
+    //  Crear actividad
     const nuevaActividad = await Actividad.create({
       NombreActi,
       Descripcion: Descripcion || null,
-      FechaInicio: new Date(FechaInicio),
-      FechaFin: new Date(FechaFin),
+      FechaInicio, // <-- Ya es string 'YYYY-MM-DD', Sequelize lo maneja bien
+  FechaFin,
       HoraInicio,
       HoraFin,
       TipoLudica,
@@ -119,7 +119,7 @@ static crearActividad = async (req: Request, res: Response) => {
       IdUsuario: parseInt(body.IdUsuario)  
     });
 
-    // 🔍 Buscar evento (si viene)
+    //  Buscar evento (si viene)
     const evento = IdEvento ? await Evento.findByPk(parseInt(IdEvento)) : null;
 
     // 🧾 Payload para QR entrada y salida
@@ -136,19 +136,19 @@ static crearActividad = async (req: Request, res: Response) => {
       nombreEvento: evento?.NombreEvento || 'Evento sin nombre'
     };
 
-    // 🧬 Generar QRs
+    // Generar QRs
     const qrEntrada = await QRCode.toDataURL(JSON.stringify(payloadEntrada));
     const qrSalida = await QRCode.toDataURL(JSON.stringify(payloadSalida));
 
-    // 💾 Guardar QRs en actividad
+    // Guardar QRs en actividad
     nuevaActividad.CodigoQR = qrEntrada;
     nuevaActividad.CodigoQRSalida = qrSalida;
     await nuevaActividad.save();
-// 🧠 Buscar todos los aprendices para notificarles
+//  Buscar todos los aprendices para notificarles
 const aprendices = await Usuario.findAll({ where: { IdRol: 2 } }); // 🔁
 const idsAprendices = aprendices.map(u => u.IdUsuario);
 
-// 📩 Enviar notificaciones a los aprendices
+//  Enviar notificaciones a los aprendices
 await enviarNotificacion({
   titulo: 'Nueva actividad disponible',
   mensaje: `Participa en la actividad "${nuevaActividad.NombreActi}" del evento "${evento?.NombreEvento || 'Sin evento'}".`,
@@ -157,7 +157,7 @@ await enviarNotificacion({
   idEvento: nuevaActividad.IdEvento ?? null // <-- si no hay evento, se pasa null
 });
 
-    // ✅ Respuesta final
+    // Respuesta final
     res.status(201).json({
       message: "✅ Actividad creada exitosamente con QRs",
       actividad: nuevaActividad

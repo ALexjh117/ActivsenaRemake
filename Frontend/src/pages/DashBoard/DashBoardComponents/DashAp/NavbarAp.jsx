@@ -15,6 +15,7 @@ export default function Navbar({ toggleMenu, setContenidoActual, cerrarSesion })
   const sonidoAlerta = useRef(new Audio("/audio/notificacion.mp3"));
 
   const idUsuario = JSON.parse(localStorage.getItem("usuario"))?.IdUsuario;
+console.log("🆔 Usuario actual:", idUsuario);
 
   const toggleDropdown = () => setMostrarMenu((prev) => !prev);
   const irAPerfil = () => {
@@ -39,7 +40,8 @@ export default function Navbar({ toggleMenu, setContenidoActual, cerrarSesion })
       setNotificaciones(data);
 
       const nuevasNoLeidas = data.filter((n) => !n.Confirmado).length;
-
+console.log("🔢 Cantidad de no leídas:", nuevasNoLeidas);
+  
       if (nuevasNoLeidas > cantidadNoLeidas) {
         sonidoAlerta.current.play().catch((e) =>
           console.warn("No se pudo reproducir el sonido:", e)
@@ -50,6 +52,7 @@ export default function Navbar({ toggleMenu, setContenidoActual, cerrarSesion })
       }
 
       setCantidadNoLeidas(nuevasNoLeidas);
+
     } catch (err) {
       console.error("Error al obtener notificaciones:", err);
     }
@@ -57,6 +60,12 @@ export default function Navbar({ toggleMenu, setContenidoActual, cerrarSesion })
 
   useEffect(() => {
     const socket = io("http://localhost:3001");
+      console.log("🧪 Intentando conectar a socket...");
+
+  socket.on("connect", () => {
+    console.log("🟢 Conectado al socket:", socket.id);
+  });
+
     socket.on("nuevaNotificacion", (data) => {
       console.log("🔔 Nueva notificación recibida:", data);
       sonidoAlerta.current.play().catch((e) =>

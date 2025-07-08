@@ -3,6 +3,16 @@ import "./style/RegistroActividades.css";
 import cuadradoImg from './img/cuadrado.jpg';
 import axios from "axios";
 
+const formatearFecha = (fechaStr) => {
+  if (!fechaStr) return "";
+  const [year, month, day] = fechaStr.split("-");
+  const meses = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+  ];
+  return `${parseInt(day)} de ${meses[parseInt(month) - 1]} de ${year}`;
+};
+
 const ActivityRegistration = () => {
   const [activityData, setActivityData] = useState({
     activityName: "",
@@ -50,6 +60,17 @@ const ActivityRegistration = () => {
       return;
     }
 
+    const hoy = new Date();
+const hoySinHora = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+const [year, month, day] = activityData.date.split("-");
+const fechaSeleccionada = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+
+if (fechaSeleccionada < hoySinHora) {
+  alert("⚠️ No puedes registrar una actividad en una fecha pasada.");
+  return;
+}
+
+
     setShowModal(true);
   };
 
@@ -57,7 +78,6 @@ const ActivityRegistration = () => {
     setShowModal(false);
 
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("⚠️ Debes iniciar sesión.");
       return;
@@ -65,8 +85,6 @@ const ActivityRegistration = () => {
 
     try {
       const decoded = JSON.parse(atob(token.split('.')[1]));
-      console.log("✅ Token decodificado:", decoded);
-
       const idUsuario = decoded?.IdUsuario;
       const rolUsuario = decoded?.rol;
 
@@ -188,7 +206,7 @@ const ActivityRegistration = () => {
             <h3>Confirma la información de la actividad</h3>
             <p><strong>Nombre:</strong> {activityData.activityName}</p>
             <p><strong>Descripción:</strong> {activityData.description}</p>
-            <p><strong>Fecha:</strong> {activityData.date}</p>
+            <p><strong>Fecha:</strong> {formatearFecha(activityData.date)}</p>
             <p><strong>Hora inicio:</strong> {activityData.startTime}</p>
             <p><strong>Hora fin:</strong> {activityData.endTime}</p>
             <p><strong>Ubicación:</strong> {activityData.location}</p>

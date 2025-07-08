@@ -79,7 +79,7 @@ export default function DashBoard() {
         {contenidoActual === "registroactividades" && <RegistroActividades/>}
   {contenidoActual === "misactividades" && <MisActividades/>}
         {contenidoActual === "config" && <ConfigViewIn />}
-        {contenidoActual === "alquiler" && <Alquiler />}
+       
         {contenidoActual === "asistenciasactividad" && (
           <AsistenciasActividad IdActividad={idSeleccionada} />
         )}

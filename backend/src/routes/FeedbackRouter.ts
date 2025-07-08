@@ -3,6 +3,8 @@ import { FeedbackController } from '../controllers/FeedbackController';
 import { handleInputErrors } from '../middleware/validation';
 import {validateIdFeedback,validateComentarioFeedbackUnico,validateFeedbackBody} from '../middleware/Feedback';
 
+import { authFeedback } from '../middleware/authFeedback';
+
 const router = Router();
 
 // Obtener todos los feedbacks
@@ -41,5 +43,27 @@ router.delete(
   handleInputErrors,
   FeedbackController.eliminarFeedbackById
 );
+// ----------------- RUTAS NUEVAS -----------------
+
+// Obtener feedbacks por IdActividad (para mostrar en detalle de la actividad)
+router.get(
+  "/actividad/:IdActividad",
+  handleInputErrors, // opcional: puedes omitir si no haces validación
+  FeedbackController.getFeedbacksByActividad
+);
+
+// Obtener feedbacks de las actividades creadas por un usuario
+router.get(
+  '/mis-feedbacks/:IdUsuario',
+  FeedbackController.getFeedbacksDeMisActividades
+);
+
+// Crear feedback asociado a una actividad
+router.post(
+  '/actividad',
+  authFeedback,
+  FeedbackController.crearFeedbackActividad
+);
+
 
 export default router;

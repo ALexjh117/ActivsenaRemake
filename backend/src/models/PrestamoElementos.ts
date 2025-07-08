@@ -10,10 +10,10 @@ import { Usuario } from './Usuario';
 import { Elemento } from './Elemento';
 
 @Table({
-  tableName: 'AlquilerElementos',
+  tableName: 'PrestamoElementos',
   timestamps: true,
 })
-export class AlquilerElementos extends Model {
+export class  PrestamoElementos extends Model {
   @Column({ primaryKey: true, autoIncrement: true })
   declare IdAlquiler: number;
 @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: 1 })

@@ -15,7 +15,7 @@ const VerificarToken = () => {
     try {
       await api.post('/usuario/confirm-account', { correo, token });
       setMensaje('✅ Verificación exitosa. Puedes iniciar sesión');
-      setTimeout(() => navigate('/iniciosesion'), 2000);
+      setTimeout(() => navigate('/Cuenta'), 2000);
     } catch (error) {
       console.error(error);
       setMensaje('❌ Token incorrecto o expirado');

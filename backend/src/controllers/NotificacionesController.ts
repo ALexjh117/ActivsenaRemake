@@ -4,34 +4,45 @@ import { Notificaciones } from "../models/Notificaciones";
 export class NotificacionController {
   // ✅ Crear notificación
   static async crear(req: Request, res: Response) {
-    try {
-      const {
-        Titulo,
-        Mensaje,
-        TipoNotificacion,
-        FechaDeEnvio,
-        IdEvento,
-        IdUsuario,
-      } = req.body;
+  try {
+    const {
+      Titulo,
+      Mensaje,
+      TipoNotificacion,
+      FechaDeEnvio,
+      IdEvento,
+      IdUsuario,
+      RutaDestino,
+      imagenUrl
+    } = req.body;
 
-      const nueva = await Notificaciones.create({
-        Titulo,
-        Mensaje,
-        TipoNotificacion,
-        FechaDeEnvio,
-        IdEvento,
-        IdUsuario,
-      });
+    const nueva = await Notificaciones.create({
+      Titulo,
+      Mensaje,
+      TipoNotificacion,
+      FechaDeEnvio,
+      IdEvento,
+      IdUsuario,
+      RutaDestino,
+      imagenUrl
+    });
 
-      res.status(201).json({
-        msg: "Notificación creada",
-        notificacion: nueva,
-      });
-    } catch (error) {
-      console.error("❌ Error al crear notificación:", error);
-      res.status(500).json({ error: "Error al crear notificación" });
-    }
+    // 🔥 Emitir notificación en tiempo real usando el socket guardado en app
+    const io = req.app.get("io");
+    io.emit("nuevaNotificacion", {
+      ...nueva.toJSON() // envías toda la info al frontend
+    });
+
+    res.status(201).json({
+      msg: "Notificación creada",
+      notificacion: nueva,
+    });
+  } catch (error) {
+    console.error("❌ Error al crear notificación:", error);
+    res.status(500).json({ error: "Error al crear notificación" });
   }
+}
+
 
   // ✅ Obtener todas las notificaciones de un usuario
  static async listarPorUsuario(req: Request, res: Response) {

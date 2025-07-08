@@ -68,11 +68,12 @@ const VerContactosInstructores = () => {
     fetchPerfiles();
   }, []);
 
-  const filtrados = perfiles.filter((perfil) =>
-    perfil.nombre.toLowerCase().includes(filtroNombre.toLowerCase()) &&
-    perfil.ubicacion.toLowerCase().includes(filtroUbicacion.toLowerCase()) &&
-    perfil.profesion.toLowerCase().includes(filtroProfesion.toLowerCase())
-  );
+const filtrados = perfiles.filter((perfil) =>
+  (perfil.nombre ?? "").toLowerCase().includes(filtroNombre.toLowerCase()) &&
+  (perfil.ubicacion ?? "").toLowerCase().includes(filtroUbicacion.toLowerCase()) &&
+  (perfil.profesion ?? "").toLowerCase().includes(filtroProfesion.toLowerCase())
+);
+
 
   return (
     <div className="pagina-contacto-unica">

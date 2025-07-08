@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 
 export default function HeroHomeSection() {
   let images = [
-    "url(../../../../public/img/fondo1.jpeg)",
-    "url(../../../../public/img/fondo2.jpeg)",
-    "url(../../../../public/img/fondo3.jpeg)",
+    "url(../../../../public/img/portada5.jpeg)",
+    "url(../../../../public/img/portada6.jpeg)",
+    "url(../../../../public/img/portada4.jpeg)",
   ];
+  
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
