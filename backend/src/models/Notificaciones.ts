@@ -25,7 +25,7 @@ export class Notificaciones extends Model {
 
   // CAMBIADO: Nombre actualizado del campo ENUM
   @Column({
-    type: DataType.ENUM('Evento', 'Actividad', 'Anuncio', 'Solicitud', 'Respuesta'),
+    type: DataType.ENUM('Evento', 'Actividad', 'Anuncio', 'Solicitud', 'Respuesta', 'Lúdica'),
     allowNull: false,
   })
   declare TipoNotificacion: string;

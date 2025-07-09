@@ -7,6 +7,7 @@ import { UsuarioController } from "../controllers/UsuarioController";
 
 // Middlewares personalizados
 import { handleInputErrors } from "../middleware/validation";
+import { upload } from '../middleware/uploadConfig';
 import { validateUsuarioBody, validateUsuarioNoExiste, validateUsuarioId } from "../middleware/Usuario";
 import { authenticate } from "../middleware/auth";
 
@@ -55,7 +56,11 @@ UsuarioRouter.post(
   handleInputErrors,
   UsuarioController.crearUsuario
 );
-
+UsuarioRouter.post(
+  '/crear-usuario',
+  upload.single('imagen'), // ⬅ este es el campo del form-data
+  UsuarioController.registrarUsuarioPorAdmin
+);
 
 // Actualizar usuario por ID
 UsuarioRouter.put(

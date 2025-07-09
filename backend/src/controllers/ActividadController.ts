@@ -83,7 +83,7 @@ static crearActividad = async (req: Request, res: Response) => {
       isEmpty(FechaFin) ||
       isEmpty(HoraInicio) ||
       isEmpty(HoraFin) ||
-      isEmpty(TipoLudica) ||
+      
       isEmpty(Ubicacion)
     ) {
       console.log("❌ Validación fallida - campos inválidos:", {
@@ -122,7 +122,7 @@ static crearActividad = async (req: Request, res: Response) => {
     //  Buscar evento (si viene)
     const evento = IdEvento ? await Evento.findByPk(parseInt(IdEvento)) : null;
 
-    // 🧾 Payload para QR entrada y salida
+    // Payload para QR entrada y salida
     const payloadEntrada = {
       IdActividad: nuevaActividad.IdActividad,
       tipo: 'entrada',
@@ -152,7 +152,7 @@ const idsAprendices = aprendices.map(u => u.IdUsuario);
 await enviarNotificacion({
   titulo: 'Nueva actividad disponible',
   mensaje: `Participa en la actividad "${nuevaActividad.NombreActi}" del evento "${evento?.NombreEvento || 'Sin evento'}".`,
-  tipo: 'Actividad',
+    tipo: TipoLudica ? 'Lúdica' : 'Actividad',
   idUsuarios: idsAprendices,
   idEvento: nuevaActividad.IdEvento ?? null // <-- si no hay evento, se pasa null
 });

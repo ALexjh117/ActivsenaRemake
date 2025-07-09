@@ -48,7 +48,7 @@ router.delete(
   handleInputErrors,
   AsistenciaControllers.eliminarIdAsistencia
 );
-
+router.get("/usuario/:id", AsistenciaControllers.getAsistenciasPorUsuario); // << esta
 
 
 // 📌 Registrar por QR con token y validación de tipo
