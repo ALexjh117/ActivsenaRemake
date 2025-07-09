@@ -4,9 +4,9 @@ import type { Server as IOServer } from 'socket.io';
 interface NotificacionData {
   titulo: string;
   mensaje: string;
-  tipo: 'Evento' | 'Actividad' | 'Anuncio' | 'Solicitud' | 'Respuesta' | 'Catalogo';
+  tipo: 'Evento' | 'Actividad' | 'Anuncio' | 'Solicitud' | 'Respuesta' | 'Catalogo' |'Lúdica' |'Asistencia';
   idUsuarios: number[];
-  idEvento?: number;
+  idEvento?: number |null;
 }
 
 // ahora recibe io como parámetro

@@ -18,8 +18,9 @@ import ChromaGrid from "../src/Components/ChromaGrid/ChromaGrid";
 import ChatAI from "../src/pages/ChatAI/ChatAI";
 import UserViewIn from "../src/pages/UserView/UserViewIn";
 import ConfigViewIn from "../src/pages/ConfigView/ConfigViewIn";
-
+import Registroludicas from "../src/pages/RegistroLudicas/Registroludicas";
 import MisActividades from "../src/pages/Actividades/Instructor/MisActividades";
+import MisLudicas from "../src/pages/RegistroLudicas/MisLudicas";
 import AsistenciasActividad from "../src/pages/Asistencia/Instructor/AsistenciasActividad";
 // import UserView from "../src/pages/UserView/UserView"; // Descomenta si lo necesitas
 
@@ -77,7 +78,9 @@ export default function DashBoard() {
         {contenidoActual === "chatai" && <ChatAI />}
         {contenidoActual === "perfil" && <HomeDash />}
         {contenidoActual === "registroactividades" && <RegistroActividades/>}
+          {contenidoActual === "registroLudicas" && <Registroludicas/>}
   {contenidoActual === "misactividades" && <MisActividades/>}
+   {contenidoActual === "misludicas" && <MisLudicas/>}
         {contenidoActual === "config" && <ConfigViewIn />}
        
         {contenidoActual === "asistenciasactividad" && (

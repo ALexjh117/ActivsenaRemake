@@ -118,7 +118,7 @@ if (fechaSeleccionada < hoySinHora) {
       formData.append("FechaFin", activityData.date);
       formData.append("HoraInicio", startTime);
       formData.append("HoraFin", endTime);
-      formData.append("TipoLudica", "Recreativa");
+    
       formData.append("Ubicacion", activityData.location);
       formData.append("Imagen", imageFile);
       formData.append("IdUsuario", idUsuario);

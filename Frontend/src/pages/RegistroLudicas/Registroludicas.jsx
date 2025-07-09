@@ -1,109 +1,185 @@
 import React, { useState } from "react";
-import "./style/RegistroLudicas.css"; 
+import axios from "axios";
+import { QRCodeCanvas } from "qrcode.react";
+import "./style/RegistroLudicas.css"
+import cuadradoImg from "../RegistroActividades/img/cuadrado.jpg";
 
-import cuadradoImg  from './img/cuadrado.jpg'
-
-const ActivityRegistration = () => {
-  const [activityData, setActivityData] = useState({
-    activityName: "",
-    description: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-    location: "",
-    capacity: "",
-    organizer: "",
-    infoLink: "",
-    image: true,
+const RegistroLudica = () => {
+  const [form, setForm] = useState({
+    NombreActi: "",
+    Descripcion: "",
+    Fecha: "",
+    HoraInicio: "",
+    HoraFin: "",
+    TipoLudica: "Recreativa",
+    Ubicacion: "",
+    HorarioContinuo: false, // ✅ Añadido al estado
   });
 
+  const [imagen, setImagen] = useState(null);
+  const [preview, setPreview] = useState(cuadradoImg);
+  const [showModal, setShowModal] = useState(false);
+  const [actividadCreada, setActividadCreada] = useState(null);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setActivityData({ ...activityData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setActivityData({ ...activityData, image: true });
+      setImagen(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (activityData.startTime >= activityData.endTime) {
-      alert("⚠️ La hora de inicio debe ser anterior a la hora de fin.");
+
+    if (form.HoraInicio >= form.HoraFin) {
+      alert("⚠️ La hora de inicio debe ser menor que la de fin.");
       return;
     }
-    alert(`✅ Actividad registrada: ${activityData.activityName}`);
+
+    setShowModal(true);
+  };
+
+  const handleConfirm = async () => {
+    setShowModal(false);
+
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Debes iniciar sesión");
+
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const IdUsuario = decoded?.IdUsuario;
+
+    const formData = new FormData();
+    formData.append("NombreActi", form.NombreActi);
+    formData.append("Descripcion", form.Descripcion);
+    formData.append("FechaInicio", form.Fecha);
+    formData.append("FechaFin", form.Fecha);
+    formData.append("HoraInicio", form.HoraInicio);
+    formData.append("HoraFin", form.HoraFin);
+    formData.append("TipoLudica", form.TipoLudica);
+    formData.append("Ubicacion", form.Ubicacion);
+    formData.append("IdUsuario", IdUsuario);
+    formData.append("HorarioContinuo", form.HorarioContinuo ? "true" : "false"); // ✅ FIX
+
+    if (imagen) {
+      formData.append("Imagen", imagen);
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/ludica", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert("✅ Lúdica registrada con éxito");
+      setActividadCreada(response.data.actividad); // 👈 Guardamos los datos con QR
+    } catch (error) {
+      console.error("❌ Error al registrar lúdica:", error);
+      alert("Hubo un error al registrar la lúdica.");
+    }
   };
 
   return (
     <div className="activity-wrapper">
-     <h1></h1>
       <div className="image-container">
-      <img src={cuadradoImg} alt="Vista previa" className="preview-image" />
-      <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
-
+        <img src={preview} alt="Vista previa" className="preview-image" />
+        <input type="file" name="imagen" accept="image/*" onChange={handleImageChange} />
       </div>
 
       <div className="activity-container">
-        <h2>📅 Registro de Actividad</h2>
+        <h2>🎈 Registro de Lúdica</h2>
         <form onSubmit={handleSubmit}>
           <label>
-            🏆 Nombre de la actividad
-            <input type="text" name="activityName" value={activityData.activityName} onChange={handleChange} required />
+            🎯 Nombre
+            <input type="text" name="NombreActi" value={form.NombreActi} onChange={handleChange} required />
           </label>
-          
+
           <label>
-            📝 Descripción de la actividad
-            <textarea name="description" value={activityData.description} onChange={handleChange} required rows="3"></textarea>
+            📝 Descripción
+            <textarea name="Descripcion" value={form.Descripcion} onChange={handleChange} required />
           </label>
 
           <label>
             📅 Fecha
-            <input type="date" name="date" value={activityData.date} onChange={handleChange} required />
+            <input type="date" name="Fecha" value={form.Fecha} onChange={handleChange} required />
           </label>
+<div className="registro-checkbox-unico">
+  <input
+    type="checkbox"
+    name="HorarioContinuo"
+    checked={form.HorarioContinuo}
+    onChange={handleChange}
+  />
+  <span>¿Es un horario continuo?</span>
+</div>
 
+   
           <div className="time-container">
             <label>
               ⏰ Hora de inicio
-              <input type="time" name="startTime" value={activityData.startTime} onChange={handleChange} required />
+              <input type="time" name="HoraInicio" value={form.HoraInicio} onChange={handleChange} required />
             </label>
             <label>
               ⏳ Hora de fin
-              <input type="time" name="endTime" value={activityData.endTime} onChange={handleChange} required />
+              <input type="time" name="HoraFin" value={form.HoraFin} onChange={handleChange} required />
             </label>
           </div>
 
           <label>
+            🧩 Tipo de lúdica
+            <select name="TipoLudica" value={form.TipoLudica} onChange={handleChange}>
+              <option value="Recreativa">Recreativa</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Deportiva">Deportiva</option>
+            </select>
+          </label>
+
+          <label>
             📍 Ubicación
-            <input type="text" name="location" value={activityData.location} onChange={handleChange} required />
+            <input type="text" name="Ubicacion" value={form.Ubicacion} onChange={handleChange} required />
           </label>
 
-          <label>
-            👥 Cupos Disponibles
-            <input type="number" name="capacity" value={activityData.capacity} onChange={handleChange} required min="1" />
-          </label>
-
-          <label>
-            👤 Nombre del organizador
-            <input type="text" name="organizer" value={activityData.organizer} onChange={handleChange} required />
-          </label>
-
-          <label>
-          
-          </label>
-
-          <label>
-          </label>
-          
-          <button type="submit">✅ Registrar Actividad</button>
+          <button type="submit">Registrar Lúdica</button>
         </form>
       </div>
+
+      {/* Modal de confirmación */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirma los datos</h3>
+            <p><strong>Nombre:</strong> {form.NombreActi}</p>
+            <p><strong>Descripción:</strong> {form.Descripcion}</p>
+            <p><strong>Fecha:</strong> {form.Fecha}</p>
+            <p><strong>Hora:</strong> {form.HoraInicio} - {form.HoraFin}</p>
+            <p><strong>Ubicación:</strong> {form.Ubicacion}</p>
+            <p><strong>Tipo:</strong> {form.TipoLudica}</p>
+            <p><strong>Horario continuo:</strong> {form.HorarioContinuo ? "Sí" : "No"}</p>
+            <button onClick={handleConfirm}>Aceptar</button>
+            <button onClick={() => setShowModal(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {/* Mostrar los QR generados */}
+      {actividadCreada && (
+        <div className="qr-section">
+          <h3>📲 Código QR de Entrada</h3>
+          <QRCodeCanvas value={actividadCreada.CodigoQR} size={200} />
+
+          <h3>🚪 Código QR de Salida</h3>
+          <QRCodeCanvas value={actividadCreada.CodigoQRSalida} size={200} />
+        </div>
+      )}
     </div>
   );
 };
 
-export default ActivityRegistration;
+export default RegistroLudica;

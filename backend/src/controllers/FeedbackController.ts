@@ -107,9 +107,9 @@ static crearFeedbackActividad = async (req: Request, res: Response) => {
       IdUsuario,
     });
 
-    res.status(201).json({ message: '✅ Feedback creado', feedback });
+    res.status(201).json({ message: ' Feedback creado', feedback });
   } catch (error) {
-    console.error('❌ Error creando feedback de actividad:', error);
+    console.error(' Error creando feedback de actividad:', error);
     res.status(500).json({ error: 'Hubo un error al crear feedback para actividad' });
   }
 };

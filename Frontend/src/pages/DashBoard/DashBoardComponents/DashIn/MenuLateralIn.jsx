@@ -101,12 +101,16 @@ export default function MenuLateralIn({ menuAbierto, setContenidoActual }) {
               <button onClick={() => setContenidoActual("registroactividades")} className="opciondash">
                 <FaCheckSquare className="iconodash" /> Registro Actividades
               </button>
+                <button onClick={() => setContenidoActual("registroLudicas")} className="opciondash">
+                <FaCheckSquare className="iconodash" /> Registro Ludicas
+              </button>
             
                <button onClick={() => setContenidoActual("chromagrid")} className="opciondash">
                 <FaThumbsUp className="iconodash" /> Aprobados
               </button>
-                <button onClick={() => setContenidoActual("misactividades")} className="opciondash">
-                <FaThumbsUp className="iconodash" /> mis actividades
+              
+               <button onClick={() => setContenidoActual("misludicas")} className="opciondash">
+                <FaThumbsUp className="iconodash" /> mis ludicas
               </button>
             </>
           )}
