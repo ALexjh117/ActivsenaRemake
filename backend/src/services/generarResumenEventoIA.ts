@@ -15,13 +15,13 @@ const inscritos = await RelUsuarioEvento.findAll({
       model: Usuario,
       include: [
         {
-          model: Aprendiz, // 👈 relación directa
+          model: Aprendiz, // relación directa
           required: false,
         },
         {
           model: RolUsuario,
           as: 'rol',
-          where: { NombreRol: 'Aprendiz' }, // 👈 mejor filtrar por nombre
+          where: { NombreRol: 'Aprendiz' }, //  mejor filtrar por nombre
           required: true,
         },
       ],

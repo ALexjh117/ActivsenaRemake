@@ -4,7 +4,7 @@ import { db } from "../config/db";
 
 (async () => {
   try {
-    await db.sync(); // sincroniza por si acaso
+    await db.sync(); // sincroniza por si las moscas
 
     const admin = await Usuario.create({
       IdentificacionUsuario: "admin001",
@@ -33,12 +33,12 @@ import { db } from "../config/db";
     });
 
     console.log("Usuarios creados:");
-    console.log("🛠️ Admin:", admin.IdUsuario);
-    console.log("📘 Instructor:", instructor.IdUsuario);
+    console.log(" Admin:", admin.IdUsuario);
+    console.log(" Instructor:", instructor.IdUsuario);
 
     process.exit();
   } catch (err) {
-    console.error("❌ Error al crear usuarios", err);
+    console.error(" Error al crear usuarios", err);
     process.exit(1);
   }
 })();

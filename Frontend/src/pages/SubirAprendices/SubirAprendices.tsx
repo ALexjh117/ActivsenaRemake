@@ -32,17 +32,17 @@ export default function SubirAprendices() {
 
 
       setTipoMensaje('exito');
-      setMensaje(res.data.mensaje || "✅ Archivo subido con éxito.");
+      setMensaje(res.data.mensaje || " Archivo subido con éxito.");
     } catch (error) {
       console.error("Error al subir archivo:", error);
       setTipoMensaje('error');
-      setMensaje("❌ Error al subir el archivo. Verifica que el formato sea correcto.");
+      setMensaje(" Error al subir el archivo. Verifica que el formato sea correcto.");
     }
   };
 
   return (
     <div className="contenedor-subida">
-      <h2>📤 Subir aprendices desde Excel</h2>
+      <h2> Subir aprendices desde Excel</h2>
 
       <input type="file" accept=".xlsx,.xls,.csv" onChange={handleArchivo} />
       <button onClick={subirArchivo}>Subir archivo</button>
