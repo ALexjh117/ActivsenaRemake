@@ -2,7 +2,9 @@ import { Router } from 'express';
 import { EventoControllers } from '../controllers/EventoController';
 import {validateEventoBody,validateIdEvento,validateNombreEventoUnico} from '../middleware/Evento';
 import { handleInputErrors } from '../middleware/validation';
-
+import { verificarToken } from "../middleware/VerificarToken"; // si usas token
+import { authenticate } from '../middleware/auth';
+import { AsistenciaControllers } from "../controllers/AsistenciaController";
 const router = Router();
 
 // Obtener todos los eventos
@@ -15,6 +17,7 @@ router.get('/:IdEvento',
   EventoControllers.getIdEvento
 );
 
+router.get("/usuario/:id", verificarToken, EventoControllers.obtenerEventosPorUsuario);
 // Crear un nuevo evento (valida campos y nombre único)
 router.post('/',
   validateEventoBody,
@@ -30,7 +33,8 @@ router.put('/:IdEvento',
   handleInputErrors,
   EventoControllers.actualizarIdEvento
 );
-
+router.get('/evento/mis-eventos', authenticate, EventoControllers.obtenerMisEventos);
+router.post("/evento/qr", verificarToken, AsistenciaControllers.registrarDesdeQREvento);
 // Eliminar un evento por ID
 router.delete('/:IdEvento',
   validateIdEvento,

@@ -1,8 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, HasMany ,BelongsTo} from 'sequelize-typescript';
 import { PlanificacionEvento } from './PlanificacionEvento';
 import { Actividad } from './Actividad';
 import { Notificaciones } from './Notificaciones';
 import { RelUsuarioEvento } from './RelUsuarioEvento';
+import { Usuario } from './Usuario';
 @Table({ tableName: 'Evento', timestamps: true }) // Habilitar timestamps
 export class Evento extends Model {
   @Column({ primaryKey: true, autoIncrement: true })
@@ -27,8 +28,9 @@ export class Evento extends Model {
   declare UbicacionEvento: string;
 
   @ForeignKey(() => PlanificacionEvento)
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  declare IdPlanificarE: number;
+ @Column({ type: DataType.INTEGER, allowNull: false, unique: true })
+declare IdPlanificarE: number;
+
 
   @Column({ type: DataType.TEXT, allowNull: true })
   declare DescripcionEvento: string;
@@ -38,10 +40,22 @@ export class Evento extends Model {
     onDelete:'CASCADE'
   })
   declare actividades: Actividad[];
+@Column({ type: DataType.TEXT, allowNull: true })
+declare QREntrada: string;
+
+@Column({ type: DataType.TEXT, allowNull: true })
+declare QRSalida: string;
 
   @HasMany(() => Notificaciones)
   declare notificaciones: Notificaciones[];
 
   @HasMany(() => RelUsuarioEvento)
   declare relUsuarioEventos: RelUsuarioEvento[];
+  
+@ForeignKey(() => Usuario)
+@Column({ type: DataType.INTEGER, allowNull: true })
+declare IdUsuario: number;
+
+@BelongsTo(() => Usuario, { foreignKey: "IdUsuario" })
+declare creador: Usuario;
 }

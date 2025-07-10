@@ -8,6 +8,7 @@ import {
 } from 'sequelize-typescript';
 import { Usuario } from './Usuario';
 import { Actividad } from './Actividad';
+import { PlanificacionEvento } from './PlanificacionEvento';
 
 @Table({ tableName: 'Asistencia', timestamps: true })
 export class Asistencia extends Model {
@@ -26,8 +27,8 @@ declare QREntrada: Date;
 @Column({ type: DataType.DATE, allowNull: true })
 declare QRSalida: Date;
 
-  @Column({ type: DataType.STRING(20), allowNull: false })
-  declare tipo: string;
+@Column({ type: DataType.STRING(20), allowNull: true })
+declare tipo: string;
 
   @Column({ type: DataType.BOOLEAN, allowNull: true })
   declare AsiEntrada: boolean;
@@ -47,9 +48,9 @@ declare AsiEstado: string;
   declare usuario: Usuario;
 
   
-  @ForeignKey(() => Actividad)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  declare IdActividad: number;
+@ForeignKey(() => Actividad)
+@Column({ type: DataType.INTEGER, allowNull: true })
+declare IdActividad: number;
 
   @BelongsTo(() => Actividad)
   declare actividad: Actividad;
@@ -69,4 +70,10 @@ declare AsiEstado: string;
 
   @BelongsTo(() => Usuario, { foreignKey: 'IdRegistradorSalida', as: 'RegistradorSalida' })
   declare RegistradorSalida: Usuario;
+  @ForeignKey(() => PlanificacionEvento)
+@Column({ type: DataType.INTEGER, allowNull: true })
+declare IdPlanificarE: number;
+
+@BelongsTo(() => PlanificacionEvento)
+declare planificacionEvento: PlanificacionEvento;
 }

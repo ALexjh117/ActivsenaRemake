@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import "./style/Escaner.css";
+import './style/Escaner.css';
 
 const QRScannerHtml5 = () => {
   const qrCodeRegionId = 'reader';
@@ -11,39 +11,37 @@ const QRScannerHtml5 = () => {
   const [exito, setExito] = useState(false);
   const [escaneando, setEscaneando] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-
   const navigate = useNavigate();
 
   const procesarQR = async (textoQR: string) => {
-    
     console.log("📦 Contenido decodificado:", textoQR);
 
     try {
       const payload = JSON.parse(textoQR);
-        console.log("📌 Objeto decodificado:", payload); // 
+      const tipo = (payload.tipo || "").toLowerCase();
       const token = localStorage.getItem('token');
+      console.log("📌 Objeto decodificado:", payload);
 
-      if (payload.tipo === "alquiler") {
-        // 🟢 Registro de alquiler desde QR
-      const response = await axios.post(
-  "http://localhost:3001/api/alquilerelementos/desde-qr",
-  {
-    IdElemento: payload.IdElemento,
-    nombreElemento: payload.nombreElemento, // viene en el QR
-    nombreAprendiz: payload.nombreAprendiz || "Aprendiz desconocido",
-    fechaDevolucion: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // ejemplo: 2 días después
-    observaciones: "Desde escáner QR",
-    codigo: payload.codigo || `ALQ-${Date.now()}`
-  },
-  { headers: { Authorization: `Bearer ${token}` } }
-);
+      if (tipo === "alquiler") {
+        // 🟢 Registro de alquiler
+        const response = await axios.post(
+          "http://localhost:3001/api/alquilerelementos/desde-qr",
+          {
+            IdElemento: payload.IdElemento,
+            nombreElemento: payload.nombreElemento,
+            nombreAprendiz: payload.nombreAprendiz || "Aprendiz desconocido",
+            fechaDevolucion: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+            observaciones: "Desde escáner QR",
+            codigo: payload.codigo || `ALQ-${Date.now()}`
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-        // Guardar datos para DetallesAlquiler
         localStorage.setItem("nuevoAlquiler", JSON.stringify({
-          nombre: payload.nombre || "Elemento desconocido",
+          nombre: payload.nombreElemento || "Elemento desconocido",
           nombreAprendiz: payload.nombreAprendiz || "Aprendiz",
           fechaEntrega: new Date().toISOString().split('T')[0],
-          fechaDevolucion: "", // Pendiente
+          fechaDevolucion: "",
           observaciones: "Desde escáner QR",
           cumplioConEntrega: false,
           codigo: payload.codigo || `ALQ-${Date.now()}`,
@@ -59,19 +57,40 @@ const QRScannerHtml5 = () => {
           navigate("/detalles-alquiler");
         }, 2500);
 
-      } else {
-        // 🔵 Registro de asistencia
+      } else if (tipo === "evento") {
+        // 🔵 Registro de asistencia a evento
         const response = await axios.post(
-          "http://192.168.10.111:3001/api/asistencia/qr",
-          
-           payload,
-
+          "http://192.168.10.111:3001/api/asistencia/evento/qr",
+          payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-// 🚨 Por ahora sin tipo, solo si viene entrada y salida
-if (payload.QREntrada && payload.QRSalida) {
-  localStorage.setItem("refrescarHorasLudicas", "true");
-}
+
+        // Si se desea actualizar estado de ludicas (opcional)
+        if (payload.accion === "entrada" || payload.accion === "salida") {
+          localStorage.setItem("refrescarHorasLudicas", "true");
+        }
+
+        setMensaje(response.data.mensaje || "✅ Asistencia a evento registrada");
+        setColor("text-green-600");
+        setExito(true);
+        setEscaneando(false);
+
+        setTimeout(() => {
+          navigate("/historial");
+        }, 2500);
+
+      } else {
+        // 🟡 Asistencia regular
+        const response = await axios.post(
+          "http://192.168.10.111:3001/api/asistencia/qr",
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (payload.QREntrada && payload.QRSalida) {
+          localStorage.setItem("refrescarHorasLudicas", "true");
+        }
+
         setMensaje(response.data.mensaje || "✅ Asistencia registrada");
         setColor("text-green-600");
         setExito(true);
@@ -82,34 +101,31 @@ if (payload.QREntrada && payload.QRSalida) {
         }, 2500);
       }
 
-  } catch (error: any) {
-  console.error("❌ Error procesando QR:", error);
-  if (error.response) {
-    const data = error.response.data;
-    const backendError =
-      data?.error ||
-      data?.message ||
-      (Array.isArray(data?.errors) && data.errors.length > 0
-        ? data.errors.map((e: any) => e.msg || JSON.stringify(e)).join(" | ")
-        : "Error desconocido del servidor");
+    } catch (error: any) {
+      console.error("❌ Error procesando QR:", error);
 
-    console.log("🧾 Detalles del error:", backendError);
-    setMensaje(`❌ ${backendError}`);
-  }
+      if (error.response) {
+        const data = error.response.data;
+        const backendError =
+          data?.error ||
+          data?.message ||
+          (Array.isArray(data?.errors) && data.errors.length > 0
+            ? data.errors.map((e: any) => e.msg || JSON.stringify(e)).join(" | ")
+            : "Error desconocido del servidor");
 
-  else if (error.request) {
-    console.log("📡 No se recibió respuesta del servidor:", error.request);
-    setMensaje("❌ No se recibió respuesta del servidor");
-  } else {
-    console.log("⚠️ Error al enviar la solicitud:", error.message);
-    setMensaje("❌ Error al enviar la solicitud");
-  }
+        console.log("🧾 Detalles del error:", backendError);
+        setMensaje(`❌ ${backendError}`);
+      } else if (error.request) {
+        console.log("📡 No se recibió respuesta del servidor:", error.request);
+        setMensaje("❌ No se recibió respuesta del servidor");
+      } else {
+        console.log("⚠️ Error al enviar la solicitud:", error.message);
+        setMensaje("❌ Error al enviar la solicitud");
+      }
 
-  setColor("text-red-600");
-  setEscaneando(false);
-}
-
-
+      setColor("text-red-600");
+      setEscaneando(false);
+    }
   };
 
   const iniciarEscaneo = () => {

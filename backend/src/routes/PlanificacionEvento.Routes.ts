@@ -1,45 +1,19 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
-import { PlanificacionEventoControllers } from '../controllers/PlanificacionEventoController'; 
+import { PlanificacionEventoControllers } from '../controllers/PlanificacionEventoController';
+import { body } from 'express-validator';
 import { handleInputErrors } from '../middleware/validation';
-import {validatePlanificarEventoBody,validateIdPlanificarEvento,validateIdPlanificarEventoYaExiste,} from '../middleware/PlanificacionEvento'; 
+import { authenticate } from '../middleware/auth'; // <-- aquí usas tu middleware
 
 const router = Router();
 
-
-router.get('/', PlanificacionEventoControllers.getPlanificarEventoAll);
-
-
-router.get('/:IdPlanificarE',
-  validateIdPlanificarEvento,
-  handleInputErrors,
-  PlanificacionEventoControllers.getIdPlanificarEvento
-);
-
-
 router.post(
   '/',
-  validateIdPlanificarEventoYaExiste,
-  validatePlanificarEventoBody,
+  authenticate,
+  body('NombreEvento').notEmpty().withMessage('El nombre del evento es requerido'),
+  body('FechaEvento').notEmpty().withMessage('La fecha es requerida'),
+  body('LugarDeEvento').notEmpty().withMessage('La ubicación es requerida'),
   handleInputErrors,
-  PlanificacionEventoControllers.crearPlanificarEvento
-);
-
-
-router.put(
-  '/:IdPlanificarE',
-  validateIdPlanificarEvento,
-  validatePlanificarEventoBody,
-  handleInputErrors,
-  PlanificacionEventoControllers.actualizarIdPlanificarEvento
-);
-
-
-router.delete(
-  '/:IdPlanificarE',
-  validateIdPlanificarEvento,
-  handleInputErrors,
-  PlanificacionEventoControllers.eliminarIdPlanificarEvento
+  PlanificacionEventoControllers.crearPlanificacion
 );
 
 export default router;

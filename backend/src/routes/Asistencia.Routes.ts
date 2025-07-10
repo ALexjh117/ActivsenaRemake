@@ -63,7 +63,8 @@ router.post(
 // 🧾 Historial por usuario
 router.get("/historial/:IdUsuario", AsistenciaControllers.getHistorialAsistenciaPorUsuario);
 router.get("/actividad/:IdActividad",authenticate,AsistenciaControllers.obtenerAsistenciasPorActividad);
+router.post("/evento/qr", verificarToken, AsistenciaControllers.registrarDesdeQREvento);
 
-
+router.get("/evento/:idEvento", AsistenciaControllers.getAsistenciaPorEvento);
 
 export default router;
