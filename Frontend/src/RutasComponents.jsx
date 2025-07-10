@@ -21,12 +21,17 @@ import HistorialAsistencia from "./pages/Asistencia/HistorialAsistencia";
 import QRGeneratorSalida from "./Components/QrGenerador.jsx/QRGeneratorSalida";
 import FormularioCatalogo from "./pages/AlquierAP/FormularioCatalogo";
 import GestionCatalogo from "./pages/AlquierAP/GestionFormulario";
+
+import ApoyoSostenimiento from "./pages/ApoyoSostenimiento/ApoyoSostenimiento";
+
+
 import SubirAprendices from "./pages/SubirAprendices/SubirAprendices"
 import AprendicesCargados from "./pages/SubirAprendices/AprendicesCargados"
+
 export default function RutasComponents() {
   return (
     <BrowserRouter>
-      <AuthProvider> {/* ⬅️ AQUÍ envuelves todo */}
+      <AuthProvider> {/* Se envuelve todo*/}
         <IAProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -48,6 +53,7 @@ export default function RutasComponents() {
              <Route path="/subiraprendiz" element={<SubirAprendices />} />
                <Route path="/aprendices" element={<AprendicesCargados />} />
             <Route path="/historial" element={<HistorialAsistencia IdUsuario={1} />} />
+            <Route path="/apoyo-sostenimiento" element={<ApoyoSostenimiento />} />
           </Routes>
         </IAProvider>
       </AuthProvider>
