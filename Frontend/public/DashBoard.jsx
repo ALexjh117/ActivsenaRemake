@@ -23,7 +23,7 @@ import CambiarRol from "../src/pages/CambiarRol/CambiarRol";
 import DashThemed from "../src/pages/Dashtheme/DashThemed";
 
 // ✅ Nuevo: componente de resumen IA
-import ResumenIA from "../src/components/ResumenIA/ResumenIA";
+import ResumenIA from "../src/Components/ResumenIA/ResumenIA";
 
 // Estilos globales
 import "../src/styles/BotHp.css";
