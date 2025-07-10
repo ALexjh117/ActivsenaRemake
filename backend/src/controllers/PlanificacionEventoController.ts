@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import { PlanificacionEvento } from "../models/PlanificacionEvento"; // Importa el modelo adecuado
+import { GestionEvento } from "../models/GestionEvento";
+
 import { error } from "console";
 // esto esta bien , falta es traer al usuario quiem hizo esta peticion 
 export class PlanificacionEventoControllers {
@@ -40,17 +42,7 @@ export class PlanificacionEventoControllers {
     };
 
     
-    static crearPlanificarEvento = async (req: Request, res: Response) => {
-        try {
-            const evento = new PlanificacionEvento(req.body);
-            await evento.save();
-            res.status(201).json('Evento planificado creado exitosamente');
-        } catch (error) {
-            console.error('Error al crear evento planificado:', error);
-            res.status(500).json({ error: 'Hubo un error' });
-        }
-    };
-
+  
     
     static actualizarIdPlanificarEvento = async (req: Request, res: Response) => {
         try {
@@ -85,4 +77,65 @@ export class PlanificacionEventoControllers {
             res.status(500).json({ error: 'Hubo un error' });
         }
     };
+
+
+
+ 
+
+static crearPlanificacion = async (req: Request, res: Response) => {
+  try {
+    console.log("📌 Middleware alcanzado - crearPlanificacion");
+
+    const {
+      NombreEvento,
+      FechaEvento,
+      LugarDeEvento,
+      TipoEvento,
+      
+      Recursos
+    } = req.body;
+
+    const IdUsuario = req.usuario?.IdUsuario;
+
+    // Validar campos requeridos
+    if (!NombreEvento || !FechaEvento || !LugarDeEvento || !IdUsuario) {
+      const error = new Error("Faltan campos requeridos");
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    // ✅ Primero crear gestión (autoincrementable)
+    const nuevaGestion = await GestionEvento.create({
+      Aprobar: "Pendiente"  // o el valor por defecto que uses
+    });
+
+    // ✅ Luego crear planificación con el IdGestionE generado
+    const nuevaPlanificacion = await PlanificacionEvento.create({
+      NombreEvento,
+      FechaEvento,
+      LugarDeEvento,
+      Recursos: Recursos || null,
+      TipoEvento,
+      IdUsuario,
+      IdGestionE: nuevaGestion.IdGestionE
+    });
+
+    res.status(201).json({
+      message: "✅ Planificación creada exitosamente con gestión",
+      planificacion: nuevaPlanificacion
+    });
+    return;
+
+  } catch (error) {
+    console.error("❌ Error al crear planificación:", error);
+    res.status(500).json({
+      error: "Error del servidor",
+      message: (error as Error).message
+    });
+    return;
+  }
+};
+// Asegúrate de tener esta línea arriba
+
+
 }

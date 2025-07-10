@@ -81,6 +81,9 @@ export class FeedbackController {
             res.status(500).json({ error: 'Hubo un error al eliminar el feedback' });
         }
     };
+
+
+    ////empezamos
 static crearFeedbackActividad = async (req: Request, res: Response) => {
   try {
     const usuario = req.usuario; // viene desde el middleware auth

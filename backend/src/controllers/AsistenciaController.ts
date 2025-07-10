@@ -423,4 +423,137 @@ static getAsistenciasPorUsuario = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error del servidor" });
   }
 };
+static registrarDesdeQREvento = async (req: Request, res: Response) => {
+  try {
+    const IdUsuario = req.usuario?.IdUsuario;
+    const { tipo, accion, IdPlanificarE } = req.body;
+
+    if (!IdUsuario) {
+      res.status(401).json({ error: "No autenticado" });
+      return;
+    }
+
+    if (!tipo || !accion || !IdPlanificarE) {
+      res.status(400).json({ error: "Faltan datos requeridos (tipo, accion o IdPlanificarE)" });
+      return;
+    }
+
+    const evento = await Evento.findOne({ where: { IdPlanificarE } });
+    if (!evento) {
+      res.status(404).json({ error: "Evento no encontrado" });
+      return;
+    }
+
+    let asistencia = await Asistencia.findOne({
+      where: { IdUsuario, IdPlanificarE },
+    });
+
+    const ahora = new Date();
+
+    if (!asistencia) {
+      asistencia = await Asistencia.create({
+        IdUsuario,
+        IdPlanificarE,
+        AsiFecha: ahora,
+        AsiEstado: accion === "entrada" ? "Incompleta" : null,
+        AsiEntrada: accion === "entrada",
+        AsiHoraEntrada: accion === "entrada" ? ahora : null,
+        QREntrada: accion === "entrada" ? ahora : null,
+        QRSalida: accion === "salida" ? ahora : null,
+        IdRegistradorEntrada: accion === "entrada" ? IdUsuario : null,
+        IdRegistradorSalida: accion === "salida" ? IdUsuario : null,
+      });
+
+      res.status(201).json({
+        mensaje: `✅ ${accion === "entrada" ? "Entrada" : "Salida"} registrada correctamente`,
+        asistencia,
+      });
+      return;
+    }
+
+    if (accion === "entrada") {
+      if (asistencia.QREntrada) {
+        res.status(400).json({ error: "⚠️ Ya se registró la entrada" });
+        return;
+      }
+      asistencia.QREntrada = ahora;
+      asistencia.AsiEntrada = true;
+      asistencia.AsiHoraEntrada = ahora;
+      asistencia.IdRegistradorEntrada = IdUsuario;
+      asistencia.AsiEstado = "Incompleta";
+    } else if (accion === "salida") {
+      if (!asistencia.QREntrada) {
+        res.status(400).json({ error: "⚠️ Primero debes registrar la entrada" });
+        return;
+      }
+      if (asistencia.QRSalida) {
+        res.status(400).json({ error: "⚠️ Ya se registró la salida" });
+        return;
+      }
+      asistencia.QRSalida = ahora;
+      asistencia.IdRegistradorSalida = IdUsuario;
+      asistencia.AsiHorasAsistidas = calcularHoras(new Date(asistencia.QREntrada), ahora);
+      asistencia.AsiEstado = "Completa";
+    }
+
+    await asistencia.save();
+
+    res.status(200).json({
+      mensaje: `✅ ${accion === "entrada" ? "Entrada" : "Salida"} registrada correctamente`,
+      asistencia,
+    });
+    return;
+  } catch (error) {
+    console.error("❌ Error en registrarDesdeQREvento:", error);
+    res.status(500).json({ error: "Error al registrar asistencia desde QR (evento)" });
+    return;
+  }
+};
+
+static getAsistenciaPorEvento = async (req: Request, res: Response) => {
+  try {
+    const { idEvento } = req.params;
+
+    // 1. Buscar el evento para extraer su IdPlanificarE
+    const evento = await Evento.findByPk(idEvento);
+    if (!evento) {
+    res.status(404).json({ error: "Evento no encontrado" });
+    return;
+    }
+
+    // 2. Buscar asistencias usando IdPlanificarE
+    const asistencias = await Asistencia.findAll({
+      where: { IdPlanificarE: evento.IdPlanificarE }, // 👈 este es el campo válido
+      include: [
+        {
+          model: Usuario,
+          as: "usuario",
+          attributes: ["Nombre", "Apellido", "Correo"],
+          include: [
+            {
+              model: RolUsuario,
+              as: "rol",
+              attributes: ["NombreRol"],
+            },
+            {
+              model: Aprendiz,
+              as: "aprendiz",
+              attributes: ["Ficha", "ProgramaFormacion", "Jornada"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!asistencias.length) {
+     res.status(404).json({ error: "No hay asistencias registradas para este evento" });
+     return;
+    }
+
+    res.status(200).json(asistencias);
+  } catch (error) {
+    console.error("❌ Error en getAsistenciaPorEvento:", error);
+    res.status(500).json({ error: "Error al obtener asistencias del evento" });
+  }
+};
 }

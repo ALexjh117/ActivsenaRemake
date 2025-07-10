@@ -112,6 +112,9 @@ export default function MenuLateralIn({ menuAbierto, setContenidoActual }) {
                <button onClick={() => setContenidoActual("misludicas")} className="opciondash">
                 <FaThumbsUp className="iconodash" /> mis ludicas
               </button>
+               <button onClick={() => setContenidoActual("miseventos")} className="opciondash">
+                <FaThumbsUp className="iconodash" /> mis eventos
+              </button>
             </>
           )}
         </div>

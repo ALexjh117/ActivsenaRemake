@@ -3,7 +3,7 @@ import { Router } from "express";
 import { GestionEventoController } from "../controllers/GestionEventoController";
 import { handleInputErrors } from "../middleware/validation";
 import { validateGestionEventoBody, validateGestionId } from "../middleware/GestionEvento";
-
+import { verificarToken } from "../middleware/VerificarToken";
 const GestionEventoRoute  = Router()
 
 GestionEventoRoute.get("/",
@@ -30,5 +30,8 @@ GestionEventoRoute.delete("/:id",
     validateGestionId,
     handleInputErrors,
     GestionEventoController.eliminarGestionEventoId)
+
+GestionEventoRoute.put("/aprobar/:id", verificarToken, GestionEventoController.aprobarGestionEvento);
+
 
 export default GestionEventoRoute

@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import { Evento } from "../models/Evento";
+import { RelUsuarioEvento } from "../models/RelUsuarioEvento";
+import { Usuario } from "../models/Usuario";
 // quien creo el evento: un usuario , y a los eventos asistidos de ese usuario
 export class EventoControllers {
     static getEventoAll = async (req: Request, res: Response) => {
@@ -75,4 +77,70 @@ export class EventoControllers {
             res.status(500).json({ error: 'Hubo un error al eliminar el evento' });
         }
     };
+
+
+
+  static async obtenerEventosPorUsuario(req: Request, res: Response) {
+    try {
+      const idUsuario = parseInt(req.params.id);
+
+      if (isNaN(idUsuario)) {
+      res.status(400).json({ error: "ID de usuario inválido" });
+      return;
+      }
+
+      const eventos = await Evento.findAll({
+        include: [
+          {
+            model: RelUsuarioEvento,
+            where: { IdUsuario: idUsuario },
+            required: true,
+            include: [
+              {
+                model: Usuario,
+                attributes: ["Nombre", "Apellido", "Correo"],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (eventos.length === 0) {
+        res.status(404).json({ error: "No se encontraron eventos para el usuario" });
+        return;
+      }
+
+      res.json(eventos);
+    } catch (error) {
+      console.error("❌ Error al obtener eventos del usuario:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
+static async obtenerMisEventos(req: Request, res: Response) {
+  try {
+    const IdUsuario = req.usuario?.IdUsuario;
+
+    if (!IdUsuario) {
+     res.status(401).json({ error: 'Usuario no autenticado' });
+     return;
+    }
+
+    const eventos = await Evento.findAll({
+      where: { IdUsuario },
+      include: [
+        {
+          model: RelUsuarioEvento,
+          include: [{ model: Usuario }]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json(eventos);
+  } catch (error) {
+    console.error('❌ Error obteniendo mis eventos:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 }
+}
+

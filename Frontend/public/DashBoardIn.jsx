@@ -21,6 +21,7 @@ import ConfigViewIn from "../src/pages/ConfigView/ConfigViewIn";
 import Registroludicas from "../src/pages/RegistroLudicas/Registroludicas";
 import MisActividades from "../src/pages/Actividades/Instructor/MisActividades";
 import MisLudicas from "../src/pages/RegistroLudicas/MisLudicas";
+import MisEventos from "../src/pages/Aplicacion/Instructor/MisEventos"
 import AsistenciasActividad from "../src/pages/Asistencia/Instructor/AsistenciasActividad";
 // import UserView from "../src/pages/UserView/UserView"; // Descomenta si lo necesitas
 
@@ -81,6 +82,7 @@ export default function DashBoard() {
           {contenidoActual === "registroLudicas" && <Registroludicas/>}
   {contenidoActual === "misactividades" && <MisActividades/>}
    {contenidoActual === "misludicas" && <MisLudicas/>}
+    {contenidoActual === "miseventos" && <MisEventos/>}
         {contenidoActual === "config" && <ConfigViewIn />}
        
         {contenidoActual === "asistenciasactividad" && (

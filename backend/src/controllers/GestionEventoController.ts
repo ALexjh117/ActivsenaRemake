@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
 import { GestionEvento } from "../models/GestionEvento";
+import { PlanificacionEvento } from "../models/PlanificacionEvento";
+import { Evento } from "../models/Evento";
+import { Usuario } from "../models/Usuario";
+import * as QRCode from "qrcode";
 
 //esto esta bien 
 export class GestionEventoController {
@@ -74,4 +78,84 @@ export class GestionEventoController {
         }
     }
 
+static aprobarGestionEvento = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const idGestion = parseInt(req.params.id);
+    const IdUsuario = req.usuario?.IdUsuario;
+
+    if (!IdUsuario) {
+      res.status(401).json({ error: "Usuario no autenticado" });
+      return;
+    }
+
+    const gestion = await GestionEvento.findOne({ where: { IdGestionE: idGestion } });
+    if (!gestion) {
+      res.status(404).json({ error: "No se encontró la gestión" });
+      return;
+    }
+
+    // Marcar como aprobada
+    gestion.Aprobar = "Aprobado";
+    await gestion.save();
+
+    // Buscar planificación asociada
+    const planificacion = await PlanificacionEvento.findOne({ where: { IdGestionE: idGestion } });
+    if (!planificacion) {
+      res.status(404).json({ error: "No se encontró planificación asociada" });
+      return;
+    }
+
+    // ✅ Validar si ya existe evento creado para esta planificación
+    const eventoExistente = await Evento.findOne({
+      where: { IdPlanificarE: planificacion.IdPlanificarE }
+    });
+
+    if (eventoExistente) {
+       res.status(400).json({ error: "Este plan ya tiene un evento aprobado." });
+       return;
+    }
+
+    // Generar QR payloads
+    const payloadEntrada = {
+      tipo: "evento",
+      accion: "entrada",
+      IdPlanificarE: planificacion.IdPlanificarE,
+      nombreEvento: planificacion.NombreEvento
+    };
+
+    const payloadSalida = {
+      tipo: "evento",
+      accion: "salida",
+      IdPlanificarE: planificacion.IdPlanificarE,
+      nombreEvento: planificacion.NombreEvento
+    };
+
+    const qrEntrada = await QRCode.toDataURL(JSON.stringify(payloadEntrada));
+    const qrSalida = await QRCode.toDataURL(JSON.stringify(payloadSalida));
+
+    // Crear evento
+    const evento = await Evento.create({
+      NombreEvento: planificacion.NombreEvento,
+      FechaInicio: planificacion.FechaEvento,
+      FechaFin: planificacion.FechaEvento,
+      HoraInicio: "08:00",
+      HoraFin: "17:00",
+      UbicacionEvento: planificacion.LugarDeEvento,
+      IdPlanificarE: planificacion.IdPlanificarE,
+      DescripcionEvento: `Evento aprobado automáticamente`,
+      QREntrada: qrEntrada,
+      QRSalida: qrSalida,
+      IdUsuario: IdUsuario
+    });
+
+    res.status(200).json({
+      message: "✅ Evento creado y aprobado con QRs",
+      evento
+    });
+
+  } catch (error) {
+    console.error("❌ Error al aprobar gestión:", error);
+    res.status(500).json({ error: "Error del servidor", message: (error as Error).message });
+  }
+};
 }
