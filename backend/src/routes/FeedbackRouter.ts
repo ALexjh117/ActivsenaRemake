@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { FeedbackController } from '../controllers/FeedbackController';
 import { handleInputErrors } from '../middleware/validation';
-import {validateIdFeedback,validateComentarioFeedbackUnico,validateFeedbackBody} from '../middleware/Feedback';
+import {validateIdFeedback,validateComentarioFeedbackUnico,validateFeedbackBody, validateIdEventoFeedback} from '../middleware/Feedback';
 
 import { authFeedback } from '../middleware/authFeedback';
 
@@ -65,5 +65,22 @@ router.post(
   FeedbackController.crearFeedbackActividad
 );
 
+//--RUTAS DE EVENTOS--
+
+// Obtener feedbacks por ID de Evento, SE OBTINENE EN EL FRONTEND
+router.get(
+  '/evento/:IdEvento',
+  validateIdEventoFeedback,
+  handleInputErrors,
+  FeedbackController.getFeedbacksByEvento
+);
+
+//Crear nuevo feedback por id de eventos
+router.post(
+  '/evento/:IdEvento',
+  validateFeedbackBody,
+  handleInputErrors,
+  FeedbackController.crearFeedback
+)
 
 export default router;

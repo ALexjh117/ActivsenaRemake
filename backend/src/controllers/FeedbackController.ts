@@ -35,7 +35,7 @@ export class FeedbackController {
         }
     };
 
-    static crearFeedback = async (req: Request, res: Response) => {
+    /*static crearFeedback = async (req: Request, res: Response) => {
         try {
             const feedback = new Feedback(req.body);
             await feedback.save();
@@ -43,6 +43,50 @@ export class FeedbackController {
         } catch (error) {
             console.error('Error al crear feedback:', error);
             res.status(500).json({ error: 'Hubo un error al crear el feedback' });
+        }
+    };*/
+
+    //obtener comentarios de feedabck al tipo de eveneto que pertenece
+    static getFeedbacksByEvento = async (req: Request, res: Response) => {
+    const { IdEvento } = req.params;
+
+    try {
+        const feedbacks = await Feedback.findAll({
+            where: { IdEvento },
+            include: [
+                {model: Usuario,attributes: 
+                    ['Nombre', 'Apellido']
+                }],
+            order: [['FechaEnvio', 'ASC']]
+        });
+
+        res.json(feedbacks);
+        } catch (error) {
+        console.error('Error al obtener feedbacks del evento:', error);
+        res.status(500).json({ error: 'Error al obtener los feedbacks del evento' });
+        }
+    };
+
+//FEEDBAKC PARA CREAR COMENTARIOS DE ACUERDO A UN EVENTO
+    static crearFeedback = async (req: Request, res: Response) => {
+        
+        try {
+            const {IdFeedback, IdUsuario=1, IdEvento=5/*DATOS DE PRUEBAS */, ComentarioFeedback, FechaEnvio} = req.body;
+           console.log(IdUsuario, IdEvento)
+
+            const feedback = await Feedback.create({
+                IdUsuario,
+                IdEvento,
+                ComentarioFeedback,
+                FechaEnvio
+            });
+           res.status(201).json(feedback);
+           return;
+
+      
+    }catch (error) {
+             console.error('Error al crear feedback:', error);
+        res.status(500).json({ error: 'Hubo un error al crear el feedback' });
         }
     };
 

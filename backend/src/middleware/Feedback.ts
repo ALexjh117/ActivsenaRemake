@@ -60,3 +60,17 @@ export const validateFeedbackBody = async (req: Request, res: Response, next: Ne
 
   next();
 };
+//--AQUI SE VALIDA EL IDEVENTO--- REvisar la necesidad
+export const validateIdEventoFeedback = async (req: Request, res: Response, next: NextFunction) => {
+  await param('IdEvento')
+    .isInt({ min: 1 }).withMessage('El ID del evento debe ser un número entero positivo')
+    .run(req);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
+  next();
+};
