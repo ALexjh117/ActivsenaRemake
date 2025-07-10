@@ -6,6 +6,7 @@ import { generateJWT } from "../utils/jwt";
 import { AuthEmail } from "../emails/AuthEmail";
 import { RolUsuario } from "../models/RolUsuario";
 import { Aprendiz } from "../models/Aprendiz";
+import { PerfilInstructor } from "../models/PerfilInstructor";
 
 // Controlador encargado de gestionar operaciones relacionadas con el modelo Usuario
 export class UsuarioController {
@@ -361,6 +362,76 @@ static cambiarRolUsuario = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error al cambiar rol:", error);
     res.status(500).json({ error: "Error al cambiar el rol" });
+  }
+};
+
+
+//crear usuarios admin o instructor 
+// UsuarioController.ts
+// UsuarioController.ts
+static registrarUsuarioPorAdmin = async (req: Request, res: Response) => {
+  try {
+    const {
+      IdentificacionUsuario,
+      Nombre,
+      Apellido,
+      Correo,
+      Telefono,
+      Contrasena,
+      Rol,
+      profesion,
+      ubicacion,
+    } = req.body;
+
+    const yaExiste = await Usuario.findOne({ where: { Correo } });
+    if (yaExiste) {
+      res.status(400).json({ error: "El usuario ya existe" });
+      return;
+    }
+
+    let idRol: number | null = null;
+    if (Rol === "Administrador") idRol = 1;
+    else if (Rol === "Instructor") idRol = 3;
+    else {
+      res.status(400).json({ error: "Rol inválido. Solo se permite Administrador o Instructor." });
+      return;
+    }
+
+    const hashed = await hashPassword(Contrasena || "123456");
+    const imagenPath = req.file ? `/uploads/usuarios/${req.file.filename}` : null;
+
+    const usuario = await Usuario.create({
+      IdentificacionUsuario,
+      Nombre,
+      Apellido,
+      Correo,
+      Telefono,
+      Contrasena: hashed,
+      FechaRegistro: new Date(),
+      confirmed: true,
+      IdRol: idRol,
+    });
+
+    await RolUsuario.create({
+      IdUsuario: usuario.IdUsuario,
+      NombreRol: Rol,
+    });
+
+    if (idRol === 3) {
+      await PerfilInstructor.create({
+        UsuarioId: usuario.IdUsuario,
+        profesion,
+        ubicacion,
+        imagen: imagenPath,
+      });
+    }
+
+    res.json({ mensaje: `✅ Usuario ${Rol} creado correctamente.` });
+    return;
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Error al registrar usuario" });
+    return;
   }
 };
 }

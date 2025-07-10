@@ -35,7 +35,7 @@ declare FechaFin: string;
   @Column({ type: DataType.TIME, allowNull: false })
   declare HoraFin: string;
 
-  @Column({ type: DataType.STRING(50), allowNull: false })
+  @Column({ type: DataType.STRING(50), allowNull: true })
   declare TipoLudica: string;
 
   @Column({ type: DataType.TEXT, allowNull: true })
@@ -67,7 +67,8 @@ declare FechaFin: string;
   @ForeignKey(() => Usuario)
   @Column({ type: DataType.INTEGER, allowNull: true })
   declare IdUsuario: number;
-
+@Column({ type: DataType.BOOLEAN, allowNull: false, defaultValue: false })
+declare HorarioContinuo: boolean;
   @BelongsTo(() => Usuario)
 declare usuario: Usuario;
 }

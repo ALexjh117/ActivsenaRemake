@@ -16,9 +16,9 @@ export class Asistencia extends Model {
 
   @Column({ type: DataType.DATE, allowNull: false })
   declare AsiFecha: Date;
+@Column({ type: DataType.FLOAT, allowNull: true, defaultValue: 0 })
+declare AsiHorasAsistidas: number;
 
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  declare AsiHorasAsistidas: number;
 
  @Column({ type: DataType.DATE, allowNull: true })
 declare QREntrada: Date;

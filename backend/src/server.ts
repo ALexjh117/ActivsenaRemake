@@ -3,32 +3,35 @@ import colors from 'colors';
 import cors from 'cors'; 
 import morgan from 'morgan';
 import { db } from './config/db';
-import ActividadRouter from './routes/ActividadRouter'
-import AlquilerElementosRouter from './routes/AlquilerElementosRouter';
-import AsistenciaRouter from './routes/AsistenciaRouter';
-import ConstanciaRouter from './routes/ConstanciaRouter';
-import ConsultaIARouter  from './routes/ConsultaIARouter';
-import EventoRouter  from './routes/EventoRouter';
-import GestionEventoRouter  from './routes/GestionEventoRouter';
-import  RelUsuarioFeedbackRouter  from './routes/RelUsuarioFeedbackRouter';
-import  RolUsuarioRouter  from './routes/RolUsuarioRouter';
-import  UsuarioRouter  from './routes/UsuarioRouter';
-import  FeedbackRouter  from './routes/FeedbackRouter';
-import  NotificacionesRouter  from './routes/NotificacionesRouter';
-import  PlanificacionEventoRouter  from './routes/PlanificacionEventoRouter';
-import  RelUsuarioEventoRouter from './routes/RelUsuarioEventoRouter';
-import SolicitudApoyoRouter from './routes/SolicitudApoyoRouter';
-import AnalisisIARouter from './routes/AnalisisIARouter';
-import  HistorialSolicitudRouter from './routes/HistorialSolicitudRouter';
-import analizarComentarioIARouter from './routes/AnalizarComentarioIARouter';
+import ActividadRouter from './routes/Actividad.routes'
+import AlquilerElementosRouter from './routes/AlquilerElementos.Routes';
+import AsistenciaRouter from './routes/Asistencia.Routes';
+import ConstanciaRouter from './routes/Constancia.Routes';
+import ConsultaIARouter  from './routes/ConsultaIA.Routes';
+import EventoRouter  from './routes/Evento.Routes';
+import GestionEventoRouter  from './routes/GestionEvento.Routes';
+import  RelUsuarioFeedbackRouter  from './routes/RelUsuarioFeedback.Routes';
+import  RolUsuarioRouter  from './routes/RolUsuario.Routes';
+import  UsuarioRouter  from './routes/Usuario.Routes';
+import  FeedbackRouter  from './routes/Feedback.Routes';
+import  NotificacionesRouter  from './routes/Notificaciones.Routes';
+import  PlanificacionEventoRouter  from './routes/PlanificacionEvento.Routes';
+import  RelUsuarioEventoRouter from './routes/RelUsuarioEvento.Routes';
+import SolicitudApoyoRouter from './routes/SolicitudApoyo.Routes';
+import AnalisisIARouter from './routes/AnalisisIA.Routes';
+import  HistorialSolicitudRouter from './routes/HistorialSolicitud.Routes';
+import analizarComentarioIARouter from './routes/AnalizarComentarioIA.Routes';
 import path from 'path';
-import NotiPruebaRouter from "./routes/NotiPruebaRouter";
-import  ResumenEventoIARouter from './routes/ResumenEventoIARouter';
+import NotiPruebaRouter from "./routes/NotiPrueba.Routes";
+import  ResumenEventoIARouter from './routes/ResumenEventoIA.Routes';
 import tokenTestRouter from './routes/TokenTestRouter'; 
-import ElementoRouter from './routes/ElementoRouter'
+import ElementoRouter from './routes/Elemento.Routes'
 import qrcode from "./routes/qrcode"
-import PerfilInstructorRouter  from './routes/PerfilInstructorRouter';
-
+import LudicaRouter from "./routes/Ludica.Routes"
+import { iniciarLudicaDiaria } from './cron/LudicaJob';
+import { revisarAsistenciasIncompletas } from "./cron/RevisarAsistenciasIncompletas";
+import PerfilInstructorRouter  from './routes/PerfilInstructor.Routes';
+import aprendizRoutes from "./routes/Aprendiz.routes";
 async function connectDB() {
     try {
         await db.authenticate(); 
@@ -81,9 +84,15 @@ app.use("/api/relusuarioevento", RelUsuarioEventoRouter)
 app.use("/api/solicitudapoyo", SolicitudApoyoRouter);
 app.use("/api/historial", HistorialSolicitudRouter);
 app.use("/api/elemento", ElementoRouter);
+app.use("/api/aprendices", aprendizRoutes);
 app.use("/api/qrcode", qrcode);
+app.use("/api/ludica",LudicaRouter)
+
 app.use("/api/prueba-socket", NotiPruebaRouter);
+iniciarLudicaDiaria()
+revisarAsistenciasIncompletas();
 app.use("/api/perfil-instructor", PerfilInstructorRouter);
+
 app.use("/api/analisisia", AnalisisIARouter);
 app.use("/api/resumenia", ResumenEventoIARouter);
 app.use("/api/comentario", analizarComentarioIARouter);

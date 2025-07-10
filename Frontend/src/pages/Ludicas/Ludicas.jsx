@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './style/Ludicas.css';
 
-const App = () => {
-const activities = [
-  { id: 1, title: "Fútbol", image: "/img/futbol.jpg", location: "Cancha fútbol CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "14:00 - 15:00"] },
-  { id: 2, title: "Baloncesto", image: "/img/baloncesto.jpg", location: "Polideportivo CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "15:00 - 16:00"] },
-  { id: 3, title: "Tenis", image: "/img/tenis.jpg", location: "Cancha de Tenis CTPI", schedule: ["10:00 - 11:00", "11:00 - 12:00", "16:00 - 17:00"] },
-  { id: 4, title: "Voleibol", image: "/img/voleibol.jpg", location: "Cancha múltiple CTPI", schedule: ["09:00 - 10:00", "13:00 - 14:00"] },
-  { id: 5, title: "Ajedrez", image: "/img/ajedrez.jpg", location: "Biblioteca CTPI", schedule: ["08:00 - 09:00", "12:00 - 13:00"] },
-  { id: 6, title: "Atletismo", image: "/img/atletismo.jpg", location: "Pista atlética CTPI", schedule: ["07:00 - 08:00", "17:00 - 18:00"] }
-];
+const ListaLudicas = () => {
+  const [ludicas, setLudicas] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/api/ludica')
+      .then(res => setLudicas(res.data))
+      .catch(err => console.error("❌ Error cargando lúdicas:", err));
+  }, []);
 
   return (
     <div className="ludicas-container">
@@ -25,26 +25,28 @@ const activities = [
       </header>
 
       <section className="ludicas-grid">
-        {activities.map((activity) => (
-          <div className="ludicas-card" key={activity.id}>
+        {ludicas.map((ludica) => (
+          <div className="ludicas-card" key={ludica.IdActividad}>
             <div className="card-image-container">
-              <img className="ludicas-card-image" src={activity.image} alt={activity.title} />
+              <img
+                className="ludicas-card-image"
+                src={`http://localhost:3001/uploads/${ludica.Imagen}`}
+                alt={ludica.NombreActi}
+              />
               <div className="image-overlay"></div>
             </div>
             <div className="ludicas-card-content">
-              <h3 className="card-title">{activity.title}</h3>
+              <h3 className="card-title">{ludica.NombreActi}</h3>
               <div className="card-info">
                 <p className="info-item">
-                  <i className="fas fa-map-marker-alt"></i> {activity.location}
+                  <i className="fas fa-map-marker-alt"></i> {ludica.Ubicacion}
                 </p>
                 <div className="schedule-section">
                   <p className="schedule-title">
-                    <i className="far fa-clock"></i> Horarios:
+                    <i className="far fa-clock"></i> Horario:
                   </p>
                   <ul className="schedule-list">
-                    {activity.schedule.map((time, index) => (
-                      <li key={index}>{time}</li>
-                    ))}
+                    <li>{ludica.HoraInicio} - {ludica.HoraFin}</li>
                   </ul>
                 </div>
               </div>
@@ -63,4 +65,4 @@ const activities = [
   );
 };
 
-export default App;
+export default ListaLudicas;

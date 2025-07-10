@@ -22,9 +22,10 @@ export class Aprendiz extends Model {
   @Column({ type: DataType.STRING })
   declare ProgramaFormacion: string;
 
-  @BelongsTo(() => Usuario)
-  declare usuario: Usuario;
+@BelongsTo(() => Usuario, { as: 'usuario' })
+declare usuario: Usuario;
 
-  @BelongsTo(() => RolUsuario)
-  declare rolUsuario: RolUsuario;
+@BelongsTo(() => RolUsuario, { as: 'rolUsuario' }) //  alias necesario aquí
+declare rolUsuario: RolUsuario;
+
 }

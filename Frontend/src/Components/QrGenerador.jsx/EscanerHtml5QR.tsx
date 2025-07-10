@@ -15,10 +15,12 @@ const QRScannerHtml5 = () => {
   const navigate = useNavigate();
 
   const procesarQR = async (textoQR: string) => {
+    
     console.log("📦 Contenido decodificado:", textoQR);
 
     try {
       const payload = JSON.parse(textoQR);
+        console.log("📌 Objeto decodificado:", payload); // 
       const token = localStorage.getItem('token');
 
       if (payload.tipo === "alquiler") {
@@ -61,10 +63,15 @@ const QRScannerHtml5 = () => {
         // 🔵 Registro de asistencia
         const response = await axios.post(
           "http://192.168.10.111:3001/api/asistencia/qr",
-          payload,
+          
+           payload,
+
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
+// 🚨 Por ahora sin tipo, solo si viene entrada y salida
+if (payload.QREntrada && payload.QRSalida) {
+  localStorage.setItem("refrescarHorasLudicas", "true");
+}
         setMensaje(response.data.mensaje || "✅ Asistencia registrada");
         setColor("text-green-600");
         setExito(true);
@@ -75,13 +82,34 @@ const QRScannerHtml5 = () => {
         }, 2500);
       }
 
-    } catch (error: any) {
-      console.error("❌ Error procesando QR:", error);
-      const msg = error.response?.data?.error || "Error al procesar el código QR";
-      setMensaje(`❌ ${msg}`);
-      setColor("text-red-600");
-      setEscaneando(false);
-    }
+  } catch (error: any) {
+  console.error("❌ Error procesando QR:", error);
+  if (error.response) {
+    const data = error.response.data;
+    const backendError =
+      data?.error ||
+      data?.message ||
+      (Array.isArray(data?.errors) && data.errors.length > 0
+        ? data.errors.map((e: any) => e.msg || JSON.stringify(e)).join(" | ")
+        : "Error desconocido del servidor");
+
+    console.log("🧾 Detalles del error:", backendError);
+    setMensaje(`❌ ${backendError}`);
+  }
+
+  else if (error.request) {
+    console.log("📡 No se recibió respuesta del servidor:", error.request);
+    setMensaje("❌ No se recibió respuesta del servidor");
+  } else {
+    console.log("⚠️ Error al enviar la solicitud:", error.message);
+    setMensaje("❌ Error al enviar la solicitud");
+  }
+
+  setColor("text-red-600");
+  setEscaneando(false);
+}
+
+
   };
 
   const iniciarEscaneo = () => {

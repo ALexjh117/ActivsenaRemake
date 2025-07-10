@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/MisActividades.css"
-import CodigosQRActividad from "../CodigoActividad"
+import "../styles/MisActividades.css";
 
 export default function MisActividades() {
   const [actividades, setActividades] = useState([]);
@@ -14,38 +13,39 @@ export default function MisActividades() {
       const decoded = JSON.parse(atob(token.split(".")[1]));
       setUsuarioId(decoded.IdUsuario);
 
-      // Cargar actividades del usuario
       axios
         .get("http://localhost:3001/api/actividad")
         .then((res) => {
-          const actividadesUsuario = res.data.filter(
-            (a) => a.IdUsuario === decoded.IdUsuario
-          );
-          setActividades(actividadesUsuario);
+ const actividadesUsuario = res.data.filter(
+  (a) =>
+    a.IdUsuario === decoded.IdUsuario &&
+    (!a.TipoLudica || a.TipoLudica.trim() === "")
+);
+
+setActividades(actividadesUsuario);
         })
         .catch((err) => console.error("❌ Error actividades:", err));
     }
   }, []);
 
-const obtenerAsistencias = async (idActividad) => {
-  try {
-    const token = localStorage.getItem("token");
+  const obtenerAsistencias = async (idActividad) => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await axios.get(
-      `http://localhost:3001/api/asistencia/actividad/${idActividad}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const res = await axios.get(
+        `http://localhost:3001/api/asistencia/actividad/${idActividad}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setAsistencias((prev) => ({ ...prev, [idActividad]: res.data }));
-  } catch (err) {
-    console.error("❌ Error obteniendo asistencia:", err);
-  }
-};
-
+      setAsistencias((prev) => ({ ...prev, [idActividad]: res.data }));
+    } catch (err) {
+      console.error("❌ Error obteniendo asistencia:", err);
+    }
+  };
 
   return (
     <div className="mis-actividades-contenedor">
@@ -56,10 +56,35 @@ const obtenerAsistencias = async (idActividad) => {
       {actividades.map((actividad) => (
         <div key={actividad.IdActividad} className="actividad-card">
           <h3>{actividad.NombreActi}</h3>
-          <p>🗓️ {actividad.FechaInicio} | ⏰ {actividad.HoraInicio} - {actividad.HoraFin}</p>
+          <p>
+            🗓️ {actividad.FechaInicio} | ⏰ {actividad.HoraInicio} -{" "}
+            {actividad.HoraFin}
+          </p>
           <p>📍 {actividad.Ubicacion}</p>
 
-          <CodigosQRActividad actividadId={actividad.IdActividad} />
+          {/* Mostrar QR entrada */}
+          {actividad.CodigoQR && (
+            <div className="qr-contenedor">
+              <h4>📥 QR Entrada</h4>
+              <img
+                src={actividad.CodigoQR}
+                alt="QR Entrada"
+                className="qr-imagen"
+              />
+            </div>
+          )}
+
+          {/* Mostrar QR salida */}
+          {actividad.CodigoQRSalida && (
+            <div className="qr-contenedor">
+              <h4>📤 QR Salida</h4>
+              <img
+                src={actividad.CodigoQRSalida}
+                alt="QR Salida"
+                className="qr-imagen"
+              />
+            </div>
+          )}
 
           <button
             className="btn-ver-asistencia"
@@ -73,52 +98,47 @@ const obtenerAsistencias = async (idActividad) => {
               <h4>📊 Asistencia registrada</h4>
               <table>
                 <thead>
-  <tr>
-    <th>Nombre</th>
-    <th>Correo</th>
-    <th>Ficha</th>
-    <th>Programa</th>
-    <th>Jornada</th>
-    <th>Hora Entrada</th>
-    <th>Hora Salida</th>
-    <th>Estado</th>
-  </tr>
-</thead>
-<tbody>
-  {asistencias[actividad.IdActividad].map((asistente, index) => (
-    <tr key={index}>
-      <td>{asistente.usuario?.Nombre} {asistente.usuario?.Apellido}</td>
-      <td>{asistente.usuario?.Correo}</td>
-
-      {/* NUEVAS COLUMNAS */}
-      <td>{asistente.usuario?.aprendiz?.Ficha || "—"}</td>
-      <td>{asistente.usuario?.aprendiz?.ProgramaFormacion || "—"}</td>
-      <td>{asistente.usuario?.aprendiz?.Jornada || "—"}</td>
-
-      <td>
-        {asistente.AsiHoraEntrada
-          ? new Date(asistente.AsiHoraEntrada).toLocaleTimeString("es-CO")
-          : "—"}
-      </td>
-      <td>
-        {asistente.QRSalida
-          ? new Date(asistente.QRSalida).toLocaleTimeString("es-CO")
-          : "—"}
-      </td>
-      <td>
-        {asistente.AsiHoraEntrada && asistente.QRSalida
-          ? "✅ Completa"
-          : asistente.AsiHoraEntrada
-          ? "🕓 Solo entrada"
-          : "❌ Sin registro"}
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-
-
-
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Ficha</th>
+                    <th>Programa</th>
+                    <th>Jornada</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {asistencias[actividad.IdActividad].map((asistente, index) => (
+                    <tr key={index}>
+                      <td>
+                        {asistente.usuario?.nombre} {asistente.usuario?.apellido}
+                      </td>
+                      <td>{asistente.usuario?.correo}</td>
+                      <td>{asistente.usuario?.aprendiz?.Ficha || "—"}</td>
+                      <td>{asistente.usuario?.aprendiz?.ProgramaFormacion || "—"}</td>
+                      <td>{asistente.usuario?.aprendiz?.Jornada || "—"}</td>
+                      <td>
+                        {asistente.QREntrada
+                          ? new Date(asistente.QREntrada).toLocaleTimeString("es-CO")
+                          : "—"}
+                      </td>
+                      <td>
+                        {asistente.QRSalida
+                          ? new Date(asistente.QRSalida).toLocaleTimeString("es-CO")
+                          : "—"}
+                      </td>
+                      <td>
+                        {asistente.QREntrada && asistente.QRSalida
+                          ? "✅ Completa"
+                          : asistente.QREntrada
+                          ? "🕓 Solo entrada"
+                          : "❌ Sin registro"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           )}

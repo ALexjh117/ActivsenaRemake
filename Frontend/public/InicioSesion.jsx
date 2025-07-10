@@ -78,9 +78,9 @@ console.log ( "usuario recibido" , usuario);
   if (usuario.IdRol === 1) {
     navigate("/dash"); // Admin
   } else if (usuario.IdRol === 2) {
-    navigate("/dashap"); // Instructor
+    navigate("/dashap"); // aprendiz
   } else if (usuario.IdRol === 3) {
-    navigate("/dashin"); // Aprendiz
+    navigate("/dashin"); // instructor
   }
 }, 1200);
 

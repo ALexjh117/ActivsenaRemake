@@ -197,6 +197,36 @@ static registrarDesdeQR = async (req: Request, res: Response) => {
     }
 
     const { IdActividad, tipo } = req.body;
+    // Obtener la actividad
+const actividad = await Actividad.findByPk(IdActividad);
+
+if (!actividad) {
+  res.status(404).json({ error: "Actividad no encontrada" });
+  return;
+}
+
+// ⚠️ Validación SOLO para lúdica diaria
+if (actividad.TipoLudica === "Recreativa" && actividad.NombreActi === "Lúdica continua") {
+  const ahora = new Date();
+  const fechaHoy = ahora.toISOString().split("T")[0];
+
+  // Verificar si la actividad es de hoy
+  if (actividad.FechaInicio !== fechaHoy) {
+    res.status(403).json({ error: "⛔ QR vencido: esta lúdica no es del día de hoy." });
+    return;
+  }
+
+  // Verificar que la hora esté entre 07:00 y 19:00
+  const horaActual = ahora.getHours() + ahora.getMinutes() / 60;
+  const horaInicio = 7;  // 07:00
+  const horaFin = 19;    // 19:00
+
+  if (horaActual < horaInicio || horaActual >= horaFin) {
+    res.status(403).json({ error: "⛔ Fuera del horario de la lúdica (7am a 7pm)." });
+    return;
+  }
+}
+
 
     // Validar que lleguen los datos necesarios
     if (!IdActividad || !tipo || (tipo !== "entrada" && tipo !== "salida")) {
@@ -347,6 +377,50 @@ static obtenerAsistenciasPorActividad = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("❌ Error al obtener asistencias:", error);
     res.status(500).json({ error: "Error al obtener asistencias por actividad." });
+  }
+};
+
+static getAsistenciasPorUsuario = async (req: Request, res: Response) => {
+  console.log("🚀 Entró a getAsistenciasPorUsuario con id:", req.params.id);
+  const { id } = req.params;
+
+  try {
+    const asistencias = await Asistencia.findAll({
+  where: { IdUsuario: id },
+  attributes: [
+    "AsiId",
+    "AsiFecha",
+    "AsiEstado",
+    "AsiHorasAsistidas",
+    "QREntrada",
+    "QRSalida",
+    "IdActividad",
+    "tipo",
+    "IdRegistradorEntrada",
+    "IdRegistradorSalida",
+    "createdAt",
+    "updatedAt"
+  ],
+  include: [
+    {
+      model: Actividad,
+      as: "actividad",
+      attributes: ["NombreActi", "FechaInicio"],
+    },
+  ],
+  order: [["AsiFecha", "DESC"]],
+});
+
+
+    if (!asistencias.length) {
+       res.status(404).json({ mensaje: "No hay asistencias registradas" });
+       return;
+    }
+
+    res.json(asistencias);
+  } catch (error) {
+    console.error("❌ Error al obtener asistencias:", error);
+    res.status(500).json({ error: "Error del servidor" });
   }
 };
 }
