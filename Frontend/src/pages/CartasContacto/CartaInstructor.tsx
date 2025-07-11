@@ -32,6 +32,8 @@ const PerfilInstructorForm = () => {
   const [mensaje, setMensaje] = useState('');
   const [instructores, setInstructores] = useState<Instructor[]>([]);
   const [filtroNombre, setFiltroNombre] = useState('');
+  const [instructorActivo, setInstructorActivo] = useState<Instructor | null>(null);
+
   const [filtroUbicacion, setFiltroUbicacion] = useState('');
 
   // Cargar mi perfil + lista de instructores
@@ -136,6 +138,19 @@ const instructoresFiltrados = instructores.filter(inst =>
 
   return (
     <div className="contenedor-form-perfil">
+      {formData && (
+  <div className="mi-perfil-actual">
+    <h3> Mi perfil actual</h3>
+    <img
+      src={formData.imagen || '/img/defecto.png'}
+      alt="Mi imagen"
+      className="imagen-perfil-propia"
+    />
+    <p><strong>Profesión:</strong> {formData.profesion}</p>
+    <p><strong>Ubicación:</strong> {formData.ubicacion}</p>
+  </div>
+)}
+
       <h2>Crear o Editar Mi Perfil</h2>
       <form onSubmit={handleSubmit}>
         <label>Profesión:</label>
@@ -194,20 +209,40 @@ const instructoresFiltrados = instructores.filter(inst =>
 
       <div className="grid-instructores">
         {instructoresFiltrados.map((inst) => (
-          <div key={inst.UsuarioId} className="card-instructor">
-            <img
-              src={inst.imagen || '/img/defecto.png'}
-              alt={`Foto de ${inst.nombre}`}
-              className="imagen-instructor"
-            />
-            <h3>{inst.nombre}</h3>
-            <p><strong>Profesión:</strong> {inst.profesion || 'Sin definir'}</p>
-            <p><strong>Ubicación:</strong> {inst.ubicacion || 'No especificada'}</p>
-            <p><strong>Correo:</strong> {inst.correo}</p>
-            <p><strong>Teléfono:</strong> {inst.telefono}</p>
-          </div>
-        ))}
+  <div key={inst.UsuarioId} className="card-instructor">
+    <img
+      src={inst.imagen || '/img/defecto.png'}
+      alt={`Foto de ${inst.nombre}`}
+      className="imagen-instructor"
+    />
+    <h3>{inst.nombre}</h3>
+    <p><strong>Profesión:</strong> {inst.profesion || 'Sin definir'}</p>
+    <p><strong>Ubicación:</strong> {inst.ubicacion || 'No especificada'}</p>
+
+    <button
+      className="btn-ver-mas"
+      onClick={() => setInstructorActivo(inst)}
+    >
+      Ver más
+    </button>
+  </div>
+))}
+
       </div>
+      {instructorActivo && (
+  <div className="modal-overlay" onClick={() => setInstructorActivo(null)}>
+    <div className="modal-contenido" onClick={e => e.stopPropagation()}>
+      <button className="cerrar-modal" onClick={() => setInstructorActivo(null)}>×</button>
+      <img src={instructorActivo.imagen || '/img/defecto.png'} className="imagen-modal" />
+      <h2>{instructorActivo.nombre}</h2>
+      <p><strong>Correo:</strong> {instructorActivo.correo}</p>
+      <p><strong>Teléfono:</strong> {instructorActivo.telefono}</p>
+      <p><strong>Profesión:</strong> {instructorActivo.profesion}</p>
+      <p><strong>Ubicación:</strong> {instructorActivo.ubicacion}</p>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

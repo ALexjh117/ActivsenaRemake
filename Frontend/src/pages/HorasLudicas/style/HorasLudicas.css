@@ -178,3 +178,35 @@
   margin-bottom: 1rem;
   text-align: center;
 }
+.horas-ludicas-header {
+  background: linear-gradient(135deg, #e6f9e6, #ffffff);
+  padding: 2.5rem 1rem;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 128, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.intro-banner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.titulo-ludicas {
+  font-size: 2.3rem;
+  color: #2d6a4f; /* Verde SENA */
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+}
+
+.subtitulo-ludicas {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 0.6rem;
+}
+
+.frase-motivacional {
+  font-style: italic;
+  color: #5c7c64;
+  font-size: 0.95rem;
+}

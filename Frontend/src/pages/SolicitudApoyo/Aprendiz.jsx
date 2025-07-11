@@ -156,6 +156,35 @@ const solicitudDelUsuario = solicitudesActivas[0]; // solo la más reciente
               <option value="Emocional">Emocional</option>
               <option value="Económica">Económica</option>
             </select>
+            {TipoAyuda && (
+  <div className="info-ayuda">
+    {TipoAyuda === "Psicológica" && (
+      <>
+        <span className="icono-ayuda">🧠</span>
+        <p className="descripcion-ayuda">
+          Apoyo en temas de salud mental, ansiedad, estrés, entre otros.
+        </p>
+      </>
+    )}
+    {TipoAyuda === "Emocional" && (
+      <>
+        <span className="icono-ayuda">💬</span>
+        <p className="descripcion-ayuda">
+          Ayuda para manejar emociones, conflictos personales o académicos.
+        </p>
+      </>
+    )}
+    {TipoAyuda === "Económica" && (
+      <>
+        <span className="icono-ayuda">💰</span>
+        <p className="descripcion-ayuda">
+          Solicita apoyo económico para materiales, transporte u otras necesidades.
+        </p>
+      </>
+    )}
+  </div>
+)}
+
           </label>
 
           <label>
