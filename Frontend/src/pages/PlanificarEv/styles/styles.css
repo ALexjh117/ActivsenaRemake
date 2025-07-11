@@ -1,149 +1,103 @@
-/* Estilos generales */
-
-  
-  .container {
-    padding: 40px;
-    max-width: 800px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  /* Estilo del título */
-  .title {
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #203ee6;
-  }
-  
-  /* Contenedor de formulario */
-  .form-container {
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Campos de entrada */
-  input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    color: #000;
-  }
-  
-  textarea {
-    height: 100px;
-    resize: none;
-  }
-  
-  /* Botón de agregar */
-  .add-button {
-    width: 100%;
-    padding: 14px;
-    background-color: #15b31d;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 20px;
-    transition: all 0.3s ease-in-out;
-    filter: drop-shadow(5px 5px 5px #51df1d);
-    }
-
-    .add-button:hover {
-        background-color: #0a3ee9; 
-        transform: scale(1.1); 
-      }
-  
-  /* Estilo de los eventos */
-  .event-item {
-    padding: 14px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .event-name {
-    font-weight: bold;
-    font-size: 20px;
-    color: #2e7d32;
-  }
-  
-  .event-date, .event-type {
-    font-size: 18px;
-    color: gray;
-  }
-  
-  .event-description, .event-activities {
-    font-size: 16px;
-    color: #555;
-  }
-  
-  .event-activities {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  /* Botón de eliminar */
-  .delete-button {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #1246f1;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .qr-section {
-  margin-top: 15px;
-  padding: 15px;
-  border: 1px dashed #bbb;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease-in-out;
+.planificar-evento-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", sans-serif;
 }
 
-.qr-placeholder {
-  font-weight: bold;
-  color: #444;
-  margin-bottom: 10px;
+.planificar-evento-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #203ee6;
+  margin-bottom: 2rem;
 }
 
-.event-image img {
+.planificar-evento-form input,
+.planificar-evento-form textarea {
   width: 100%;
-  max-width: 250px;
-  height: auto;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
 }
 
-.attendee-counter {
-  margin-top: 10px;
-  font-size: 16px;
-  color: #1e88e5;
-  font-weight: bold;
+.planificar-evento-form input:focus,
+.planificar-evento-form textarea:focus {
+  border-color: #203ee6;
+  outline: none;
 }
-.activity-select {
-  margin-top: 1rem;
-  border-top: 1px solid #ddd;
+
+.planificar-evento-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.planificar-evento-actividades {
+  margin-top: 1.5rem;
   padding-top: 1rem;
+  border-top: 1px solid #eee;
 }
 
-.activity-checkbox {
+.planificar-evento-actividades h3 {
+  font-size: 1.1rem;
+  color: #203ee6;
+  margin-bottom: 1rem;
+}
+
+.planificar-evento-checkbox {
   display: block;
   margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.planificar-evento-boton {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #15b31d;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  filter: drop-shadow(3px 3px 5px #7be843);
+}
+
+.planificar-evento-boton:hover {
+  background-color: #0a3ee9;
+  transform: scale(1.05);
+}
+.planificar-evento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.planificar-evento-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: #f1f5f9;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 500;
+}
+
+.planificar-evento-card:hover {
+  background-color: #e0e7ff;
+  transform: scale(1.02);
+}
+
+.planificar-evento-card input[type="checkbox"] {
+  transform: scale(1.2);
 }

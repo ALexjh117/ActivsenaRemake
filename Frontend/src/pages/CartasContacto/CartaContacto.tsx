@@ -27,13 +27,17 @@ const FlipCard = ({ perfil }: { perfil: PerfilInstructor }) => {
   return (
     <div className="flip-card-contacto">
       <div className="flip-card-inner-contacto">
-        <div className="flip-card-front-contacto">
-          <img
-            src={perfil.imagen || logoSena}
-            alt="Imagen"
-            className="card-image-contacto"
-          />
-        </div>
+       <div className="flip-card-front-contacto">
+  <span className={`badge-contacto ${perfil.profesion.toLowerCase().replace(/\s+/g, '-')}`}>
+    {perfil.profesion}
+  </span>
+  <img
+    src={perfil.imagen || logoSena}
+    alt="Imagen"
+    className="card-image-contacto"
+  />
+</div>
+
         <div className="flip-card-back-contacto">
           <img src={aleximg} alt="logo sena" className="logo-portada-contacto" />
           <h3>Información de Contacto</h3>
@@ -111,8 +115,11 @@ const filtrados = perfiles.filter((perfil) =>
       <div className="card-container-contacto">
         {filtrados.map((perfil, idx) => (
           <FlipCard key={idx} perfil={perfil} />
+          
         ))}
+        
       </div>
+      
     </div>
   );
 };
