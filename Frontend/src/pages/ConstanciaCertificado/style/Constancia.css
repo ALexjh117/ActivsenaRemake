@@ -1,150 +1,154 @@
 .constancia-wrapper {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-  }
-  
-  .constancia-container {
-    width: 80%;
-    max-width: 700px;
-    padding: 20px;
-    border: 3px solid #004a99;
-    border-radius: 15px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    background-color: white;
-    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3);
-    padding: 30px;
-  }
-  
-  .titulo {
-    font-size: 22px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    color: #004a99;
-  }
-  
-  .texto {
-    font-size: 16px;
-    text-align: justify;
-    margin-bottom: 10px;
-    line-height: 1.5;
-  }
-  
-  .negrita {
-    font-weight: bold;
-  }
-  
-  .subrayado {
-    text-decoration: underline;
-  }
-  
-  .firmas {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
-  }
-  
-  .input-text {
-    width: auto;
-    min-width: 120px;
-    border: none;
-    border-bottom: 2px solid #004a99;
-    outline: none;
-    font-size: 16px;
-    text-align: center;
-    margin: 0 5px;
-    padding: 4px;
-    background: transparent;
-    transition: border-color 0.3s ease-in-out;
-  }
-  
-  .input-text:focus {
-    border-bottom: 2px solid #ff9900;
-  }
-  .constancia-wrapper {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 25px 30px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  max-width: 850px;
+  margin: 50px auto;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  color: #333333;
+}
+
+.constancia-container {
+  border: 2px solid #004a99;
+  border-radius: 12px;
+  padding: 30px;
+  background-color: #fdfdfd;
 }
 
 .titulo {
-  text-align: center;
-  font-size: 2.4rem;
-  margin-bottom: 20px;
-  color: #004080;
+  font-size: 2rem;
   font-weight: 700;
-  letter-spacing: 1.2px;
+  text-align: center;
+  color: #004a99;
+  margin-bottom: 30px;
 }
 
 .texto {
   font-size: 1.1rem;
-  line-height: 1.6;
-  margin: 15px 0;
+  line-height: 1.7;
+  margin: 20px 0;
+  text-align: justify;
 }
 
 .negrita {
-  font-weight: 700;
-  color: #0059b3;
+  font-weight: bold;
+  color: #004a99;
 }
 
 .input-text {
-  margin: 0 8px;
-  padding: 8px 10px;
+  padding: 6px 10px;
+  margin: 0 6px;
+  font-size: 1rem;
   border: 2px solid #ccc;
   border-radius: 6px;
-  font-size: 1rem;
+  transition: border 0.3s;
   width: 180px;
-  transition: border-color 0.3s ease;
 }
 
 .input-text:focus {
+  border: 2px solid #004a99;
   outline: none;
-  border-color: #0059b3;
-  box-shadow: 0 0 6px #80b3ff;
+  background-color: #f0f8ff;
 }
 
 .firmas {
   display: flex;
-  justify-content: space-around;
-  margin-top: 50px;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
 }
 
 .subrayado {
-  border-bottom: 2px solid #004080;
-  width: 220px;
+  font-weight: bold;
   text-align: center;
-  font-weight: 600;
-  padding-bottom: 5px;
-  color: #004080;
-  user-select: none;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #004a99;
+  margin-bottom: 5px;
+}
+
+.nombre-firma {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #444;
 }
 
 .mensaje-no-cumplido {
   text-align: center;
   padding: 40px 20px;
-  background: #ffefef;
-  border: 2px solid #e60000;
+  background: #fff4f4;
+  border: 2px dashed #cc0000;
   border-radius: 12px;
-  color: #b30000;
+  color: #cc0000;
   font-weight: 600;
-  font-size: 1.3rem;
-  box-shadow: 0 0 15px rgba(230, 0, 0, 0.2);
+  font-size: 1.2rem;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
 }
-.input-text {
+
+.btn-descargar {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #28a745;
   border: none;
-  border-bottom: 1px solid #333;
-  padding: 4px 8px;
-  margin: 0 5px;
+  color: white;
+  font-weight: bold;
   font-size: 1rem;
-  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-descargar:hover {
+  background-color: #218838;
+}
+
+.progreso-info {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.barra-progreso {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+  margin: 10px auto;
+}
+
+.progreso {
+  height: 100%;
+  background-color: #28a745;
+  transition: width 0.5s ease;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.estado-aprobado {
+  margin-top: 10px;
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@media print {
+  .input-text {
+    border: none;
+    font-weight: bold;
+    background: transparent;
+  }
+
+  .input-text::placeholder {
+    color: transparent;
+  }
+
+  .btn-descargar {
+    display: none;
+  }
 }

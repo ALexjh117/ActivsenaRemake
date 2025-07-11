@@ -15,7 +15,7 @@ export default function Navbar({ toggleMenu, setContenidoActual, cerrarSesion })
   const sonidoAlerta = useRef(new Audio("/audio/notificacion.mp3"));
 
   const idUsuario = JSON.parse(localStorage.getItem("usuario"))?.IdUsuario;
-console.log("🆔 Usuario actual:", idUsuario);
+console.log(" Usuario actual:", idUsuario);
 
   const toggleDropdown = () => setMostrarMenu((prev) => !prev);
   const irAPerfil = () => {
@@ -40,7 +40,7 @@ console.log("🆔 Usuario actual:", idUsuario);
       setNotificaciones(data);
 
       const nuevasNoLeidas = data.filter((n) => !n.Confirmado).length;
-console.log("🔢 Cantidad de no leídas:", nuevasNoLeidas);
+console.log("Cantidad de no leídas:", nuevasNoLeidas);
   
       if (nuevasNoLeidas > cantidadNoLeidas) {
         sonidoAlerta.current.play().catch((e) =>
@@ -60,10 +60,10 @@ console.log("🔢 Cantidad de no leídas:", nuevasNoLeidas);
 
   useEffect(() => {
     const socket = io("http://localhost:3001");
-      console.log("🧪 Intentando conectar a socket...");
+      console.log(" Intentando conectar a socket...");
 
   socket.on("connect", () => {
-    console.log("🟢 Conectado al socket:", socket.id);
+    console.log("Conectado al socket:", socket.id);
   });
 
     socket.on("nuevaNotificacion", (data) => {
@@ -82,12 +82,15 @@ console.log("🔢 Cantidad de no leídas:", nuevasNoLeidas);
       socket.off("nuevaNotificacion");
     };
   }, []);
+useEffect(() => {
+  cargarNotificaciones(); // ✅ Solo carga inicial sin intervalos
+}, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     cargarNotificaciones();
     const intervalo = setInterval(cargarNotificaciones, 15000);
     return () => clearInterval(intervalo);
-  }, [idUsuario]);
+  }, [idUsuario]);*/
 
   return (
     <header className="encabezadodash">
@@ -127,20 +130,28 @@ console.log("🔢 Cantidad de no leídas:", nuevasNoLeidas);
               ) : (
                 <ul>
                   {notificaciones.map((n) => {
-                    console.log("🧪 Notificación recibida en frontend:", n);
+                    console.log(" Notificación recibida en frontend:", n);
                     return (
                       <li
                         key={n.IdNotificacion}
                         className={`notificacion-item ${n.Confirmado ? "notificacion-confirmada" : ""}`}
                         style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-                       onClick={() => {
+ onClick={() => {
   if (n.RutaDestino) {
-    localStorage.setItem("rutaDesdeNotificacion", n.RutaDestino);
-    window.location.href = "/alquilerap"; // o la ruta principal del dashboard
+    let rutaLimpia = n.RutaDestino.replace(/^\//, "").toLowerCase();
+
+    // 🔁 Mapeo manual de rutas que no coinciden
+    if (rutaLimpia === "usuario/constancia") {
+      rutaLimpia = "constanciacr";
+    }
+
+    console.log("🔁 Redirigiendo a ruta limpia (final):", rutaLimpia);
+    setContenidoActual(rutaLimpia);
   } else {
-    console.log("🔔 Notificación sin ruta. No se redirige.");
+    console.log("❌ Notificación sin ruta destino.");
   }
 }}
+
 
                       >
                         {n.imagenUrl && (

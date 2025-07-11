@@ -24,21 +24,30 @@ export class UsuarioController {
   };
 
   // Obtener un usuario por su ID
-  static getUsuarioId = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const usuario = await Usuario.findByPk(id);
+ static getUsuarioId = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const usuario = await Usuario.findByPk(id, {
+      include: [
+        {
+          model: Aprendiz,
+          attributes: ["Ficha", "Jornada", "ProgramaFormacion"],
+        },
+      ],
+    });
 
-      if (!usuario) {
-        res.status(404).json({ error: "Usuario no encontrado." });
-        return;
-      }
-
-      res.json(usuario);
-    } catch (error) {
-      res.status(500).json({ error: "Hubo un error al buscar el usuario." });
+    if (!usuario) {
+      res.status(404).json({ error: "Usuario no encontrado." });
+      return;
     }
-  };
+
+    res.json(usuario);
+  } catch (error) {
+    console.error("❌ Error al buscar usuario:", error);
+    res.status(500).json({ error: "Hubo un error al buscar el usuario." });
+  }
+};
+
 
   // Crear un nuevo usuario
   static crearUsuario = async (req: Request, res: Response) => {

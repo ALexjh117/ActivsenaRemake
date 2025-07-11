@@ -168,7 +168,7 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
           </button>
           {openSection.documentos && (
             <>
-              <button onClick={() => setContenidoActual("constancia2")} className="opciondash">
+              <button onClick={() => setContenidoActual("adminconstancias")} className="opciondash">
                 <FaUserGraduate className="iconodash" /> ConstanciaAD
               </button>
               <button onClick={() => setContenidoActual("cartacontacto")} className="opciondash">

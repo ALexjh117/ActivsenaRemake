@@ -1,7 +1,7 @@
-import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey,BelongsTo } from 'sequelize-typescript';
 import { Usuario } from './Usuario';
 
-@Table({ tableName: 'Constancia' })
+@Table({ tableName: 'Constancia'  , timestamps:true})
 export class Constancia extends Model {
   @Column({ primaryKey: true, autoIncrement: true })
   declare ConstanciaId: number;
@@ -18,4 +18,6 @@ export class Constancia extends Model {
   @ForeignKey(() => Usuario)
   @Column({ type: DataType.INTEGER, allowNull: false })
   declare IdUsuario: number;
+    @BelongsTo(() => Usuario)
+  declare usuario: Usuario;
 }
