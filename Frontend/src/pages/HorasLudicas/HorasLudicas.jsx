@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./style/HorasLudicas.css";
+import Swal from "sweetalert2";
 
 const objetivo = 80;
 
@@ -58,9 +59,16 @@ const HorasLudicas = () => {
 
   return (
     <section className="horas-ludicas-container">
-      <header className="horas-ludicas-header">
-        <h2>Horas Lúdicas Realizadas</h2>
-      </header>
+     <header className="horas-ludicas-header">
+  <div className="intro-banner">
+    <h1 className="titulo-ludicas"> Tu progreso en actividades lúdicas</h1>
+    <p className="subtitulo-ludicas">
+      Participa, aprende, diviértete y alcanza las <strong>{objetivo} horas</strong> requeridas para tu formación.
+    </p>
+    <p className="frase-motivacional">"Aprender también es jugar, compartir y crecer".</p>
+  </div>
+</header>
+
 
       <div className="horas-ludicas-content">
         <article className="horas-ludicas-activities">
@@ -91,13 +99,25 @@ const HorasLudicas = () => {
           )}
 
           <button
-            className={`btn-certificado ${objetivoAlcanzado ? "" : "btn-disabled"}`}
-            disabled={!objetivoAlcanzado}
-          >
-            {objetivoAlcanzado
-              ? "Descargar Certificado"
-              : "Descarga disponible al alcanzar el objetivo"}
-          </button>
+  className={`btn-certificado ${objetivoAlcanzado ? "" : "btn-disabled"}`}
+  disabled={!objetivoAlcanzado}
+  onClick={() => {
+    if (objetivoAlcanzado) {
+      Swal.fire({
+        icon: "info",
+        title: "🎓 Constancia disponible",
+        text: "Dirígete al menú de Constancias y haz clic en 'Descargar' para obtener tu certificado.",
+        confirmButtonText: "ok",
+        confirmButtonColor: "#35b40eff"
+      });
+    }
+  }}
+>
+  {objetivoAlcanzado
+    ? "Descargar Certificado"
+    : "Descarga disponible al alcanzar el objetivo"}
+</button>
+
 
           <div
             className="progress-bar"

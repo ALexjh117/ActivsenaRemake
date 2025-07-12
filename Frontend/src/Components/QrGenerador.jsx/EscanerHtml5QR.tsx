@@ -163,7 +163,17 @@ const QRScannerHtml5 = () => {
 
   return (
     <div className="qr-container">
-      <h2 className="qr-title">Escanea tu asistencia o alquiler</h2>
+      
+   <div className="qr-intro">
+  <h2 className="qr-title">📲 Escanea tu código QR</h2>
+  <p className="qr-description">
+    Usa tu cámara para registrar <strong>asistencia</strong> a eventos o realizar <strong>alquileres</strong> de elementos de forma rápida y segura.
+  </p>
+  <p className="qr-note">
+    Asegúrate de que el QR esté enfocado y con buena iluminación para una lectura correcta.
+  </p>
+</div>
+
 
       {!escaneando && !exito && (
         <button onClick={iniciarEscaneo} className="qr-btn">

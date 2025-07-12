@@ -1,126 +1,144 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import html2pdf from "html2pdf.js";
+import QRCode from "qrcode";
+import axios from "axios";
 import "./style/Constancia.css";
 
-const ConstanciaSENA = ({ totalHoras = 0, objetivo = 80 }) => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    documento: "",
-    nivel: "",
-    especialidad: "",
-    ciudad: "",
-    dia: "",
-    mes: "",
-    año: "",
-  });
+const objetivo = 80;
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const ConstanciaSENA = () => {
+  const [datos, setDatos] = useState(null);
+  const [totalHoras, setTotalHoras] = useState(0);
+  const [estadoConstancia, setEstadoConstancia] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const qrRef = useRef(null);
+
+  const idCertificado = `SENA-${Date.now()}`;
+  const urlVerificacion = `https://activsena.com/certificados/verificar/${idCertificado}`;
+
+  const handleDescargarPDF = () => {
+    const elemento = document.querySelector(".constancia-container");
+    html2pdf()
+      .set({
+        margin: 0.5,
+        filename: `Constancia_${datos?.Nombre || "Aprendiz"}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      })
+      .from(elemento)
+      .save();
   };
 
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const id = decoded.IdUsuario;
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const { data } = await axios.get(`http://localhost:3001/api/usuario/${id}`, config);
+        setDatos(data);
+
+        const asistencias = await axios.get(
+          `http://localhost:3001/api/asistencia/usuario/${id}`,
+          config
+        );
+        const total = asistencias.data
+          .filter((a) => a.AsiEstado === "Completa")
+          .reduce((sum, a) => sum + (a.AsiHorasAsistidas || 0), 0);
+        setTotalHoras(total);
+
+        const constanciaRes = await axios.get(
+          `http://localhost:3001/api/constancia/usuario/${id}`,
+          config
+        );
+        setEstadoConstancia(constanciaRes.data?.ConstanciaEstado);
+
+        QRCode.toCanvas(qrRef.current, urlVerificacion, {
+          width: 100,
+          margin: 1,
+        });
+      } catch (err) {
+        console.error("❌ Error cargando datos de usuario o asistencia", err);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    cargarDatos();
+  }, []);
+
+  if (cargando) return <p className="cargando">🔄 Cargando datos...</p>;
+  if (!datos) return <p className="cargando">❌ Error cargando datos del usuario.</p>;
+
   const haCumplido = totalHoras >= objetivo;
+  const progreso = Math.min((totalHoras / objetivo) * 100, 100).toFixed(0);
+  const nombreCompleto = `${datos.Nombre} ${datos.Apellido}`;
 
   return (
     <div className="constancia-wrapper">
+      <div className="progreso-info">
+        <p>
+          Has completado <strong>{totalHoras}</strong> de <strong>{objetivo}</strong> horas lúdicas.
+        </p>
+        <div className="barra-progreso">
+          <div className="progreso" style={{ width: `${progreso}%` }}>{progreso}%</div>
+        </div>
+        {haCumplido && <p className="estado-aprobado">✅ Puedes generar tu constancia</p>}
+      </div>
+
       {haCumplido ? (
         <div className="constancia-container">
           <h1 className="titulo">CONSTANCIA DE HORAS LÚDICAS</h1>
 
           <p className="texto">
-            El Servicio Nacional de Aprendizaje - <span className="negrita">SENA</span> certifica que el aprendiz:
-          </p>
-
-          <input
-            type="text"
-            name="nombre"
-            className="input-text"
-            placeholder="Nombre del Aprendiz"
-            value={formData.nombre}
-            onChange={handleChange}
-          />
-
-          <p className="texto">
-            Identificado con el documento No.{" "}
-            <input
-              type="text"
-              name="documento"
-              className="input-text"
-              placeholder="Número de Documento"
-              value={formData.documento}
-              onChange={handleChange}
-            />
-            , ha cumplido satisfactoriamente con el total de <strong>{objetivo} horas</strong> lúdicas requeridas durante su proceso de formación.
+            El SENA certifica que el aprendiz <strong>{nombreCompleto}</strong>, identificado con el documento No.{" "}
+            <strong>{datos.IdentificacionUsuario}</strong>, ha cumplido satisfactoriamente con el total de{" "}
+            <strong>{objetivo} horas</strong> lúdicas requeridas durante su proceso de formación.
           </p>
 
           <p className="texto">
-            Su proceso de formación corresponde al nivel{" "}
-            <input
-              type="text"
-              name="nivel"
-              className="input-text"
-              placeholder="Nivel de Formación"
-              value={formData.nivel}
-              onChange={handleChange}
-            />{" "}
-            en la especialidad de{" "}
-            <input
-              type="text"
-              name="especialidad"
-              className="input-text"
-              placeholder="Especialidad"
-              value={formData.especialidad}
-              onChange={handleChange}
-            />.
+            Pertenece a la ficha <strong>{datos.aprendiz?.Ficha}</strong>, jornada{" "}
+            <strong>{datos.aprendiz?.Jornada}</strong>, del programa de formación{" "}
+            <strong>{datos.aprendiz?.ProgramaFormacion}</strong>.
           </p>
 
           <p className="texto">
-            Se expide la presente constancia en{" "}
-            <input
-              type="text"
-              name="ciudad"
-              className="input-text"
-              placeholder="Ciudad"
-              value={formData.ciudad}
-              onChange={handleChange}
-            />
-            , a los{" "}
-            <input
-              type="text"
-              name="dia"
-              className="input-text"
-              placeholder="Día"
-              value={formData.dia}
-              onChange={handleChange}
-            />{" "}
-            días del mes de{" "}
-            <input
-              type="text"
-              name="mes"
-              className="input-text"
-              placeholder="Mes"
-              value={formData.mes}
-              onChange={handleChange}
-            />{" "}
-            de{" "}
-            <input
-              type="text"
-              name="año"
-              className="input-text"
-              placeholder="Año"
-              value={formData.año}
-              onChange={handleChange}
-            />.
+            Constancia generada el <strong>{new Date().toLocaleDateString()}</strong> con ID de verificación{" "}
+            <strong>{idCertificado}</strong>.
           </p>
 
-          <div className="firmas">
-            <div>
-              <p className="subrayado">Firma Coordinador Académico</p>
-              <p className="nombre-firma">Nombre Coordinador</p>
-            </div>
-            <div>
-              <p className="subrayado">Firma Director Regional</p>
-              <p className="nombre-firma">Nombre Director</p>
-            </div>
+          <div className="qr-section">
+            <p>
+              <strong>Verificación digital:</strong>
+            </p>
+            <canvas ref={qrRef} />
           </div>
+
+          {estadoConstancia === "Aprobado" && (
+            <div className="firmas">
+              <div>
+                <p className="subrayado">Firma Coordinador Académico</p>
+                <p className="nombre-firma">Nombre Coordinador</p>
+              </div>
+              <div>
+                <p className="subrayado">Firma Director Regional</p>
+                <p className="nombre-firma">Nombre Director</p>
+              </div>
+            </div>
+          )}
+
+          <button className="btn-descargar" onClick={handleDescargarPDF}>
+            📄 Descargar Constancia PDF
+          </button>
         </div>
       ) : (
         <div className="mensaje-no-cumplido">
@@ -128,7 +146,7 @@ const ConstanciaSENA = ({ totalHoras = 0, objetivo = 80 }) => {
           <p>
             Actualmente has completado <strong>{totalHoras}</strong> de <strong>{objetivo}</strong> horas requeridas.
           </p>
-          <p>¡Sigue participando en las actividades lúdicas y pronto podrás generar tu certificado! 💪</p>
+          <p>¡Sigue participando y pronto podrás descargar tu certificado! 💪</p>
         </div>
       )}
     </div>

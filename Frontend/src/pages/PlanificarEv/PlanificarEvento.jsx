@@ -11,16 +11,23 @@ function EventPlanner() {
   const [eventLocation, setEventLocation] = useState("");
   const [eventResources, setEventResources] = useState("");
 
+<<<<<<< HEAD
   const [availableActivities, setAvailableActivities] = useState([]);
   const [selectedActivities, setSelectedActivities] = useState([]);
 
   const [eventImage, setEventImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
+=======
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         const res = await axios.get("http://localhost:3001/api/actividad");
+<<<<<<< HEAD
+=======
+        console.log("🧪 Actividades desde backend:", res.data);
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
         setAvailableActivities(res.data);
       } catch (error) {
         console.error("❌ Error cargando actividades:", error);
@@ -61,6 +68,7 @@ function EventPlanner() {
 
     try {
       const token = localStorage.getItem("token");
+<<<<<<< HEAD
       if (!token) {
         alert("⚠️ Debes iniciar sesión.");
         return;
@@ -85,6 +93,30 @@ function EventPlanner() {
       });
 
       const IdPlanificarE = res.data.planificacion.IdPlanificarE;
+=======
+      const res = await axios.post(
+        "http://localhost:3001/api/planificacionevento",
+        {
+          NombreEvento: eventName,
+          FechaEvento: eventDate,
+          TipoEvento: eventType,
+          LugarDeEvento: eventLocation,
+          Recursos: eventResources,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const IdPlanificarE = res.data.planificacion.IdPlanificarE;
+
+      await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
+        IdPlanificarE,
+        actividades: selectedActivities,
+      });
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
 
       // 2. Asociar actividades
       await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
@@ -92,9 +124,12 @@ function EventPlanner() {
         actividades: selectedActivities
       });
 
+<<<<<<< HEAD
       alert("✅ Evento planificado y actividades asociadas correctamente.");
 
       // Limpiar campos
+=======
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
       setEventName("");
       setEventDate("");
       setEventType("");
@@ -102,8 +137,12 @@ function EventPlanner() {
       setEventLocation("");
       setEventResources("");
       setSelectedActivities([]);
+<<<<<<< HEAD
       setEventImage(null);
       setImagePreview(null);
+=======
+      setEventResources("");
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
     } catch (error) {
       console.error("❌ Error al crear evento:", error);
       alert("Ocurrió un error al crear el evento.");
@@ -111,6 +150,7 @@ function EventPlanner() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="container">
       <h1 className="title">📅 Planificador de eventos</h1>
       <div className="form-container">
@@ -154,22 +194,67 @@ function EventPlanner() {
           value={eventResources}
           onChange={(e) => setEventResources(e.target.value)}
         />
+=======
+    <div className="planificar-evento-container">
+      <h1 className="planificar-evento-title">📅 Planificador de eventos</h1>
+      <div className="planificar-evento-form">
+        <input
+          type="text"
+          placeholder="Nombre del evento"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+        />
+        <input
+          type="date"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Tipo de evento"
+          value={eventType}
+          onChange={(e) => setEventType(e.target.value)}
+        />
+        <textarea
+          placeholder="Recursos necesarios"
+          value={eventResources}
+          onChange={(e) => setEventResources(e.target.value)}
+        />
+        <textarea
+          placeholder="Descripción"
+          value={eventDescription}
+          onChange={(e) => setEventDescription(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Ubicación"
+          value={eventLocation}
+          onChange={(e) => setEventLocation(e.target.value)}
+        />
 
-        <div className="activity-select">
-          <h3>🎯 Selecciona actividades para este evento:</h3>
-          {availableActivities.map((act) => (
-            <label key={act.IdActividad} className="activity-checkbox">
-              <input
-                type="checkbox"
-                checked={selectedActivities.includes(act.IdActividad)}
-                onChange={() => handleActivityToggle(act.IdActividad)}
-              />
-              {act.NombreActi}
-            </label>
-          ))}
-        </div>
+      <div className="planificar-evento-actividades">
+  <h3>🎯 Actividades disponibles:</h3>
+  <div className="planificar-evento-grid">
+    {availableActivities.map((act) => (
+      <label key={act.IdActividad} className="planificar-evento-card">
+        <input
+          type="checkbox"
+          checked={selectedActivities.includes(act.IdActividad)}
+          onChange={() => handleActivityToggle(act.IdActividad)}
+        />
+        <span>{act.NombreActi}</span>
+      </label>
+    ))}
+  </div>
+</div>
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
 
+
+<<<<<<< HEAD
         <button className="add-button" onClick={addEvent}>
+=======
+        <button className="planificar-evento-boton" onClick={addEvent}>
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
           ➕ Agregar Evento
         </button>
       </div>
