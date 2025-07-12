@@ -96,6 +96,7 @@ static crearPlanificacion = async (req: Request, res: Response) => {
     } = req.body;
 
     const IdUsuario = req.usuario?.IdUsuario;
+    const image = req.file?.filename
 
     // Validar campos requeridos
     if (!NombreEvento || !FechaEvento || !LugarDeEvento || !IdUsuario) {
@@ -117,6 +118,7 @@ static crearPlanificacion = async (req: Request, res: Response) => {
       Recursos: Recursos || null,
       TipoEvento,
       IdUsuario,
+      ImagenEvento: image,
       IdGestionE: nuevaGestion.IdGestionE
     });
 

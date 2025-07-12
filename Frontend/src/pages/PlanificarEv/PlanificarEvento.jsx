@@ -9,18 +9,28 @@ function EventPlanner() {
   const [eventType, setEventType] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventLocation, setEventLocation] = useState("");
-  const [availableActivities, setAvailableActivities] = useState([]);
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const [eventResources, setEventResources] = useState("");
 
+<<<<<<< HEAD
+  const [availableActivities, setAvailableActivities] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
+
+  const [eventImage, setEventImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+=======
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         const res = await axios.get("http://localhost:3001/api/actividad");
+<<<<<<< HEAD
+=======
         console.log("🧪 Actividades desde backend:", res.data);
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
         setAvailableActivities(res.data);
       } catch (error) {
-        console.error("Error cargando actividades:", error);
+        console.error("❌ Error cargando actividades:", error);
       }
     };
 
@@ -35,6 +45,14 @@ function EventPlanner() {
     );
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEventImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const addEvent = async () => {
     if (
       !eventName.trim() ||
@@ -43,11 +61,39 @@ function EventPlanner() {
       !eventDescription.trim() ||
       !eventLocation.trim() ||
       selectedActivities.length === 0
-    )
+    ) {
+      alert("⚠️ Completa todos los campos obligatorios.");
       return;
+    }
 
     try {
       const token = localStorage.getItem("token");
+<<<<<<< HEAD
+      if (!token) {
+        alert("⚠️ Debes iniciar sesión.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("NombreEvento", eventName);
+      formData.append("FechaEvento", eventDate);
+      formData.append("TipoEvento", eventType);
+      formData.append("LugarDeEvento", eventLocation);
+      formData.append("Recursos", eventResources);
+      if (eventImage) {
+        formData.append("ImagenEvento", eventImage);
+      }
+
+      // 1. Crear planificación de evento
+      const res = await axios.post("http://localhost:3001/api/planificacionevento", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const IdPlanificarE = res.data.planificacion.IdPlanificarE;
+=======
       const res = await axios.post(
         "http://localhost:3001/api/planificacionevento",
         {
@@ -70,22 +116,85 @@ function EventPlanner() {
         IdPlanificarE,
         actividades: selectedActivities,
       });
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
 
-      alert("✅ Evento creado y actividades asociadas con éxito");
+      // 2. Asociar actividades
+      await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
+        IdPlanificarE,
+        actividades: selectedActivities
+      });
 
+<<<<<<< HEAD
+      alert("✅ Evento planificado y actividades asociadas correctamente.");
+
+      // Limpiar campos
+=======
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
       setEventName("");
       setEventDate("");
       setEventType("");
       setEventDescription("");
       setEventLocation("");
-      setSelectedActivities([]);
       setEventResources("");
+      setSelectedActivities([]);
+<<<<<<< HEAD
+      setEventImage(null);
+      setImagePreview(null);
+=======
+      setEventResources("");
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
     } catch (error) {
       console.error("❌ Error al crear evento:", error);
+      alert("Ocurrió un error al crear el evento.");
     }
   };
 
   return (
+<<<<<<< HEAD
+    <div className="container">
+      <h1 className="title">📅 Planificador de eventos</h1>
+      <div className="form-container">
+
+        {imagePreview && (
+          <img src={imagePreview} alt="imagen eventos" className="planificar-imgs"/>
+        )}
+
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+
+        <input
+          type="text"
+          placeholder="Nombre del evento"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+        />
+        <input
+          type="date"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Tipo de evento"
+          value={eventType}
+          onChange={(e) => setEventType(e.target.value)}
+        />
+        <textarea
+          placeholder="Descripción"
+          value={eventDescription}
+          onChange={(e) => setEventDescription(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Ubicación"
+          value={eventLocation}
+          onChange={(e) => setEventLocation(e.target.value)}
+        />
+        <textarea
+          placeholder="Recursos necesarios para el evento"
+          value={eventResources}
+          onChange={(e) => setEventResources(e.target.value)}
+        />
+=======
     <div className="planificar-evento-container">
       <h1 className="planificar-evento-title">📅 Planificador de eventos</h1>
       <div className="planificar-evento-form">
@@ -138,9 +247,14 @@ function EventPlanner() {
     ))}
   </div>
 </div>
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
 
 
+<<<<<<< HEAD
+        <button className="add-button" onClick={addEvent}>
+=======
         <button className="planificar-evento-boton" onClick={addEvent}>
+>>>>>>> a3fc5abcbd99b9565e9f3eb3fd5d3250924ebd63
           ➕ Agregar Evento
         </button>
       </div>

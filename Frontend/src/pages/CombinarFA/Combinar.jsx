@@ -1,12 +1,16 @@
 import React from 'react'
-import Feedback from '../Feedback/Feedbacks'
-import Comentarios from '../Aprobar/Comentarios'
+import CarruselFeedback from '../CarouselFeedback/CarruselFeedback'
+import ComentariosFeedback from '../Comentariosss/ComentariosFeedback'
+import './styles/combinarStyles.css'
 
 export default function Combinar() {
   return (
     <>
-    <Feedback />
-    <Comentarios />
+    <div><h1>FEEDBACKS OF EVENTS</h1></div>
+    <div className='combinar-container'>
+      <CarruselFeedback />
+      <ComentariosFeedback />
+    </div>
     </>
   )
 }
