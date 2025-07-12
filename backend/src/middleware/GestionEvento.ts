@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { body, param, validationResult } from "express-validator";
 
 export const validateGestionId = async (req: Request, res: Response, next: NextFunction) => {
-    await param("id")
+    await param("IdGestionE")
         .isInt().withMessage("El ID debe ser un número entero.")
         .custom(value => value > 0).withMessage("El ID debe ser mayor a 0.")
         .run(req);

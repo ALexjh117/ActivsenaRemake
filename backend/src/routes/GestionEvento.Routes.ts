@@ -10,7 +10,7 @@ GestionEventoRoute.get("/",
     handleInputErrors,
     GestionEventoController.getAll)
 
-GestionEventoRoute.get("/:id", 
+GestionEventoRoute.get("/:IdGestionE", 
     validateGestionId,
     handleInputErrors,
     GestionEventoController.getGestionEventoId)
@@ -20,18 +20,18 @@ GestionEventoRoute.post("/",
     handleInputErrors,
     GestionEventoController.crearGestioEvento)
 
-GestionEventoRoute.put("/:id", 
+GestionEventoRoute.put("/:IdGestionE", 
     validateGestionId,
     validateGestionEventoBody,
     handleInputErrors,
     GestionEventoController.actualizarGestionEventoId)
 
-GestionEventoRoute.delete("/:id",
+GestionEventoRoute.delete("/:IdGestionE",
     validateGestionId,
     handleInputErrors,
     GestionEventoController.eliminarGestionEventoId)
 
-GestionEventoRoute.put("/aprobar/:id", verificarToken, GestionEventoController.aprobarGestionEvento);
+GestionEventoRoute.put("/aprobar/:IdGestionE", verificarToken, GestionEventoController.aprobarGestionEvento);
 
 
 export default GestionEventoRoute

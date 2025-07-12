@@ -3,17 +3,31 @@ import { PlanificacionEventoControllers } from '../controllers/PlanificacionEven
 import { body } from 'express-validator';
 import { handleInputErrors } from '../middleware/validation';
 import { authenticate } from '../middleware/auth'; // <-- aquí usas tu middleware
+import { upload } from '../Uploads/Upload';
 
 const router = Router();
 
 router.post(
   '/',
   authenticate,
+  upload.single("ImagenEvento"),
   body('NombreEvento').notEmpty().withMessage('El nombre del evento es requerido'),
   body('FechaEvento').notEmpty().withMessage('La fecha es requerida'),
   body('LugarDeEvento').notEmpty().withMessage('La ubicación es requerida'),
   handleInputErrors,
   PlanificacionEventoControllers.crearPlanificacion
 );
+
+/*router.post(
+  '/',
+  
+  (req, res, next) =>{
+    console.log("Midleware Alcanzado");
+    console.log("Body:", req.body);
+    console.log("File:", req.file)
+  },
+  handleInputErrors,
+  PlanificacionEventoControllers.crearPlanificacion
+)*/
 
 export default router;

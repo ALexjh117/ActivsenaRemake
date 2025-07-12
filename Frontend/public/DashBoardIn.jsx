@@ -30,6 +30,7 @@ import "../src/styles/ColaViento.css";
 import "../src/styles/Resposive.css";
 import "../src/styles/global.css";
 import Instructor from "../src/pages/SolicitudApoyo/Instructor";
+import RevisionEvents from "../src/pages/RevisionEventos/RevisionEvents";
 
 
 export default function DashBoard() {
@@ -74,7 +75,7 @@ export default function DashBoard() {
         {contenidoActual === "planevento" && <PlanificarEvento />}
         {contenidoActual === "registro" && <RegistroA />}
         {contenidoActual === "cartacontacto" && <CartaContacto />}
-        {contenidoActual === "chromagrid" && <ChromaGrid />}
+        {contenidoActual === "revisioneventos" &&<RevisionEvents />}
         {contenidoActual === "solicitudapoyoinstructor" && <Instructor/>}
         {contenidoActual === "chatai" && <ChatAI />}
         {contenidoActual === "perfil" && <HomeDash />}

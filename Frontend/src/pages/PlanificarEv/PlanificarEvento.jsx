@@ -9,22 +9,21 @@ function EventPlanner() {
   const [eventType, setEventType] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [eventLocation, setEventLocation] = useState("");
-  const [availableActivities, setAvailableActivities] = useState([]);
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const [eventResources, setEventResources] = useState("");
 
+  const [availableActivities, setAvailableActivities] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
+
+  const [eventImage, setEventImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
-    // Cargar actividades disponibles al montar
     const fetchActivities = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/api/actividad")
-
-          console.log("🧪 Actividades desde backend:", res.data);// Ajusta tu endpoint real
-        setAvailableActivities(res.data); // ✅ Esto ya es un array directamente
-
+        const res = await axios.get("http://localhost:3001/api/actividad");
+        setAvailableActivities(res.data);
       } catch (error) {
-        console.error("Error cargando actividades:", error);
+        console.error("❌ Error cargando actividades:", error);
       }
     };
 
@@ -39,6 +38,14 @@ function EventPlanner() {
     );
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEventImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const addEvent = async () => {
     if (
       !eventName.trim() ||
@@ -47,46 +54,59 @@ function EventPlanner() {
       !eventDescription.trim() ||
       !eventLocation.trim() ||
       selectedActivities.length === 0
-    )
+    ) {
+      alert("⚠️ Completa todos los campos obligatorios.");
       return;
+    }
 
     try {
-      // 1. Crear evento (planificación)
-// 1. Crear evento (planificación)
-const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("⚠️ Debes iniciar sesión.");
+        return;
+      }
 
-const res = await axios.post("http://localhost:3001/api/planificacionevento", {
-  NombreEvento: eventName,
-  FechaEvento: eventDate,
-  TipoEvento: eventType, 
-  LugarDeEvento: eventLocation,
-  Recursos: eventResources,
-}, {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-});
+      const formData = new FormData();
+      formData.append("NombreEvento", eventName);
+      formData.append("FechaEvento", eventDate);
+      formData.append("TipoEvento", eventType);
+      formData.append("LugarDeEvento", eventLocation);
+      formData.append("Recursos", eventResources);
+      if (eventImage) {
+        formData.append("ImagenEvento", eventImage);
+      }
 
-const IdPlanificarE = res.data.planificacion.IdPlanificarE;
+      // 1. Crear planificación de evento
+      const res = await axios.post("http://localhost:3001/api/planificacionevento", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-// 2. Asociar actividades al evento creado
-await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
-  IdPlanificarE,
-  actividades: selectedActivities
-});
+      const IdPlanificarE = res.data.planificacion.IdPlanificarE;
 
-      alert("✅ Evento creado y actividades asociadas con éxito");
+      // 2. Asociar actividades
+      await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
+        IdPlanificarE,
+        actividades: selectedActivities
+      });
 
-      // Limpiar todo
+      alert("✅ Evento planificado y actividades asociadas correctamente.");
+
+      // Limpiar campos
       setEventName("");
       setEventDate("");
       setEventType("");
       setEventDescription("");
       setEventLocation("");
+      setEventResources("");
       setSelectedActivities([]);
-
+      setEventImage(null);
+      setImagePreview(null);
     } catch (error) {
       console.error("❌ Error al crear evento:", error);
+      alert("Ocurrió un error al crear el evento.");
     }
   };
 
@@ -94,17 +114,46 @@ await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
     <div className="container">
       <h1 className="title">📅 Planificador de eventos</h1>
       <div className="form-container">
-        <input type="text" placeholder="Nombre del evento" value={eventName} onChange={(e) => setEventName(e.target.value)} />
-        <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-        <input type="text" placeholder="Tipo de evento" value={eventType} onChange={(e) => setEventType(e.target.value)} />
-       <textarea
-  placeholder="Recursos necesarios para el evento"
-  value={eventResources}
-  onChange={(e) => setEventResources(e.target.value)}
-/>
 
-        <textarea placeholder="Descripción" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)} />
-        <input type="text" placeholder="Ubicación" value={eventLocation} onChange={(e) => setEventLocation(e.target.value)} />
+        {imagePreview && (
+          <img src={imagePreview} alt="imagen eventos" className="planificar-imgs"/>
+        )}
+
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+
+        <input
+          type="text"
+          placeholder="Nombre del evento"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+        />
+        <input
+          type="date"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Tipo de evento"
+          value={eventType}
+          onChange={(e) => setEventType(e.target.value)}
+        />
+        <textarea
+          placeholder="Descripción"
+          value={eventDescription}
+          onChange={(e) => setEventDescription(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Ubicación"
+          value={eventLocation}
+          onChange={(e) => setEventLocation(e.target.value)}
+        />
+        <textarea
+          placeholder="Recursos necesarios para el evento"
+          value={eventResources}
+          onChange={(e) => setEventResources(e.target.value)}
+        />
 
         <div className="activity-select">
           <h3>🎯 Selecciona actividades para este evento:</h3>
@@ -120,7 +169,9 @@ await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
           ))}
         </div>
 
-        <button className="add-button" onClick={addEvent}>➕ Agregar Evento</button>
+        <button className="add-button" onClick={addEvent}>
+          ➕ Agregar Evento
+        </button>
       </div>
     </div>
   );
