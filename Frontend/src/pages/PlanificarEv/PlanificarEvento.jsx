@@ -3,6 +3,7 @@ import axios from "axios";
 import "./styles/styles.css";
 
 function EventPlanner() {
+  // Estados para la información del evento
   const [events, setEvents] = useState([]);
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -11,6 +12,15 @@ function EventPlanner() {
   const [eventLocation, setEventLocation] = useState("");
   const [eventResources, setEventResources] = useState("");
 
+  // Estados para actividades
+  const [availableActivities, setAvailableActivities] = useState([]);
+  const [selectedActivities, setSelectedActivities] = useState([]);
+
+  // Estados para la imagen del evento
+  const [eventImage, setEventImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // Fetch actividades disponibles al cargar el componente
   useEffect(() => {
     const fetchActivities = async () => {
       try {
@@ -25,6 +35,7 @@ function EventPlanner() {
     fetchActivities();
   }, []);
 
+  // Función para manejar la selección/deselección de actividades
   const handleActivityToggle = (id) => {
     setSelectedActivities((prev) =>
       prev.includes(id)
@@ -33,6 +44,7 @@ function EventPlanner() {
     );
   };
 
+  // Función para manejar el cambio de imagen
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -41,6 +53,7 @@ function EventPlanner() {
     }
   };
 
+  // Función para agregar el evento
   const addEvent = async () => {
     if (
       !eventName.trim() ||
@@ -56,35 +69,41 @@ function EventPlanner() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:3001/api/planificacionevento",
-        {
-          NombreEvento: eventName,
-          FechaEvento: eventDate,
-          TipoEvento: eventType,
-          LugarDeEvento: eventLocation,
-          Recursos: eventResources,
+      if (!token) {
+        alert("⚠️ Debes iniciar sesión.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("NombreEvento", eventName);
+      formData.append("FechaEvento", eventDate);
+      formData.append("TipoEvento", eventType);
+      formData.append("LugarDeEvento", eventLocation);
+      formData.append("Recursos", eventResources);
+
+      if (eventImage) {
+        formData.append("ImagenEvento", eventImage);
+      }
+
+      // 1. Crear planificación de evento
+      const res = await axios.post("http://localhost:3001/api/planificacionevento", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
 
       const IdPlanificarE = res.data.planificacion.IdPlanificarE;
 
+      // 2. Asociar actividades
       await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
         IdPlanificarE,
         actividades: selectedActivities,
       });
 
-      // 2. Asociar actividades
-      await axios.post("http://localhost:3001/api/eventoactividad/asociar", {
-        IdPlanificarE,
-        actividades: selectedActivities
-      });
+      alert("✅ Evento planificado y actividades asociadas correctamente.");
 
+      // Limpiar campos
       setEventName("");
       setEventDate("");
       setEventType("");
@@ -92,7 +111,8 @@ function EventPlanner() {
       setEventLocation("");
       setEventResources("");
       setSelectedActivities([]);
-      setEventResources("");
+      setEventImage(null);
+      setImagePreview(null);
     } catch (error) {
       console.error("❌ Error al crear evento:", error);
       alert("Ocurrió un error al crear el evento.");
@@ -103,6 +123,7 @@ function EventPlanner() {
     <div className="planificar-evento-container">
       <h1 className="planificar-evento-title">📅 Planificador de eventos</h1>
       <div className="planificar-evento-form">
+        {/* Formulario del evento */}
         <input
           type="text"
           placeholder="Nombre del evento"
@@ -137,23 +158,30 @@ function EventPlanner() {
           onChange={(e) => setEventLocation(e.target.value)}
         />
 
-      <div className="planificar-evento-actividades">
-  <h3>🎯 Actividades disponibles:</h3>
-  <div className="planificar-evento-grid">
-    {availableActivities.map((act) => (
-      <label key={act.IdActividad} className="planificar-evento-card">
-        <input
-          type="checkbox"
-          checked={selectedActivities.includes(act.IdActividad)}
-          onChange={() => handleActivityToggle(act.IdActividad)}
-        />
-        <span>{act.NombreActi}</span>
-      </label>
-    ))}
-  </div>
-</div>
+        {/* Vista previa de imagen */}
+        {imagePreview && (
+          <img src={imagePreview} alt="imagen evento" className="planificar-imgs" />
+        )}
+        <input type="file" accept="image/*" onChange={handleImageChange} />
 
+        {/* Actividades disponibles */}
+        <div className="planificar-evento-actividades">
+          <h3>🎯 Actividades disponibles:</h3>
+          <div className="planificar-evento-grid">
+            {availableActivities.map((act) => (
+              <label key={act.IdActividad} className="planificar-evento-card">
+                <input
+                  type="checkbox"
+                  checked={selectedActivities.includes(act.IdActividad)}
+                  onChange={() => handleActivityToggle(act.IdActividad)}
+                />
+                <span>{act.NombreActi}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
+        {/* Botón para agregar el evento */}
         <button className="planificar-evento-boton" onClick={addEvent}>
           ➕ Agregar Evento
         </button>
