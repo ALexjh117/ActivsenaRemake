@@ -1,4 +1,3 @@
-/* Anuncio Card Styles */
 .anuncio-card-home {
   background-color: var(--white-home);
   padding: 30px;
@@ -59,31 +58,62 @@
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
-  .anuncio-icon-home {
-      width: 60px;
-      height: 60px;
-      font-size: 25px;
+@media (max-width: 992px) {
+  .anuncio-card-home {
+    padding: 25px;
   }
-  
+}
+
+@media (max-width: 768px) {
+  .anuncio-card-home {
+    padding: 20px;
+  }
+
+  .anuncio-icon-home {
+    width: 60px;
+    height: 60px;
+    font-size: 25px;
+  }
+
   .anuncio-card-home h3 {
-      font-size: 20px;
+    font-size: 20px;
   }
 }
 
 @media (max-width: 576px) {
   .anuncio-card-home {
-      padding: 20px;
+    padding: 20px;
+    text-align: center;
   }
-  
+
   .anuncio-icon-home {
-      width: 50px;
-      height: 50px;
-      font-size: 20px;
-      margin-bottom: 15px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    margin: 0 auto 15px;
   }
-  
+
   .anuncio-card-home h3 {
-      font-size: 18px;
+    font-size: 18px;
+  }
+
+  .anuncio-link-home {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .anuncio-card-home {
+    padding: 15px;
+  }
+
+  .anuncio-card-home h3 {
+    font-size: 16px;
+  }
+
+  .anuncio-icon-home {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
   }
 }

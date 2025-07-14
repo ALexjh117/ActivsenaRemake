@@ -6,16 +6,15 @@
   position: fixed;
   top: 0;
   left: 0;
- 
+
   width: 100%;
   z-index: 1000;
 }
 
 .header-wrapper-home {
   display: flex;
-  justify-content: last baseline;  /*cambiar para acomodar espacio de los elementos de header home*/
+  justify-content: last baseline; /*cambiar para acomodar espacio de los elementos de header home*/
   align-items: center;
-  
 }
 
 .logo-home a {
@@ -79,47 +78,85 @@
   transition: var(--transition-home);
 }
 
-/* Responsive Styles */
+.imagenlogo {
+  object-fit: cover;
+  width: 120px;
+  height: 80px;
+  transition: var(--transition-home);
+}
+
 @media (max-width: 768px) {
-  .menu-toggle-home {
-      display: block;
-  }
-  
-  .nav-menu-home {
-      position: fixed;
-      top: 80px;
-      left: -100%;
-      flex-direction: column;
-      background-color: var(--white-home);
-      width: 100%;
-      text-align: center;
-      transition: var(--transition-home);
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-      padding: 20px 0;
-      z-index: 999;
-  }
-  
-  .nav-menu-home.active {
-      left: 0;
-  }
-  
-  .nav-menu-home li {
-      margin: 15px 0;
-  }
-  
-  .nav-menu-home li a {
-      justify-content: center;
+  .imagenlogo {
+    width: 100px;
+    height: 60px;
   }
 }
 
-.imagenlogo{
-  object-fit: cover;
-  margin-left: -50px;
- width: 150px;
- height: 100px;
+@media (max-width: 576px) {
+  .imagenlogo {
+    width: 80px;
+    height: 50px;
+  }
 }
 
 .home-logo-titulo {
   display: flex;
+}
 
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .header-wrapper-home {
+    justify-content: space-between;
+  }
+
+  .nav-menu-home li {
+    margin-left: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header-home {
+    padding: 8px 0;
+  }
+
+  .menu-toggle-home {
+    display: block;
+  }
+
+  .nav-menu-home {
+    position: fixed;
+    top: 70px;
+    left: -100%;
+    flex-direction: column;
+    background-color: var(--white-home);
+    width: 100%;
+    text-align: center;
+    transition: var(--transition-home);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    z-index: 999;
+  }
+
+  .nav-menu-home.active {
+    left: 0;
+  }
+
+  .nav-menu-home li {
+    margin: 15px 0;
+  }
+
+  .nav-menu-home li a {
+    justify-content: center;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .home-logo-titulo {
+    align-items: center;
+  }
+
+  .home-logo-titulo span {
+    font-size: 20px;
+  }
 }

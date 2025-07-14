@@ -16,7 +16,6 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 20px;
-  
 }
 
 .footer-logo-waso-home {
@@ -45,7 +44,7 @@
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  
+
   color: var(--white-home);
   transition: var(--transition-home);
 }
@@ -58,12 +57,12 @@
   font-size: 20px;
   margin-bottom: 20px;
   position: relative;
-  
+
   padding-bottom: 10px;
 }
 
 .footer-title-home::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -73,7 +72,6 @@
 }
 
 .footer-links-home li {
-  
   margin-bottom: 10px;
 }
 
@@ -90,11 +88,9 @@
 .footer-contact-item-home {
   display: flex;
   margin-bottom: 15px;
-  
 }
 
 .footer-contact-icon-home {
-
   color: var(--primary-color-home);
   margin-right: 10px;
 }
@@ -114,44 +110,86 @@
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .footer-content-home {
-      grid-template-columns: 1fr;
-      gap: 40px;
+    gap: 25px;
   }
-  
+}
+
+@media (max-width: 992px) {
+  .footer-content-home {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-footer-home {
+    padding: 60px 0 20px;
+  }
+
+  .footer-content-home {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
   .footer-about-home {
-      margin-bottom: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .footer-links-home,
+  .footer-contact-home {
+    text-align: center;
+  }
+
+  .footer-title-home::after {
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
 @media (max-width: 576px) {
   .site-footer-home {
-      padding: 50px 0 20px;
+    padding: 50px 0 20px;
   }
-  
+
+  .footer-logo-home {
+    font-size: 24px;
+  }
+
   .footer-social-home {
-      justify-content: center;
+    justify-content: center;
   }
-  
-  .footer-links-home,
-  .footer-contact-home {
-      text-align: center;
-  }
-  
-  .footer-title-home::after {
-      left: 50%;
-      transform: translateX(-50%);
-  }
-  
+
   .footer-contact-item-home {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
   }
-  
+
   .footer-contact-icon-home {
-      margin-right: 0;
-      margin-bottom: 10px;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .footer-title-home {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-logo-home {
+    font-size: 20px;
+  }
+
+  .footer-title-home {
+    font-size: 16px;
+  }
+
+  .footer-social-icon-home {
+    width: 35px;
+    height: 35px;
   }
 }
 .footer-social-icon-home svg {
@@ -160,5 +198,5 @@
   transition: color 0.3s ease;
 }
 .footer-social-icon-home:hover svg {
-  color: #0a0a0a; 
+  color: #0a0a0a;
 }

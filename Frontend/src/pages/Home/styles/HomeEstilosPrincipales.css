@@ -22,17 +22,21 @@ html {
 }
 
 .body-home {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: var(--text-color-home);
   background-color: var(--white-home);
 }
 
-.h1-home, .h2-home, .h3-home, .h4-home, .h5-home, .h6-home {
+.h1-home,
+.h2-home,
+.h3-home,
+.h4-home,
+.h5-home,
+.h6-home {
   font-weight: 700;
   line-height: 1.3;
-  
 }
 
 .p-home {
@@ -54,7 +58,8 @@ html {
   height: auto;
 }
 
-.ul-home, .li-home {
+.ul-home,
+.li-home {
   list-style: none;
 }
 
@@ -62,8 +67,33 @@ html {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  margin-left: 89px;
-  padding: 0 0px;
+  padding: 0 20px;
+}
+
+/* Responsive container adjustments */
+@media (max-width: 1200px) {
+  .container-home {
+    max-width: 960px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container-home {
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-home {
+    max-width: 540px;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-home {
+    padding: 0 10px;
+  }
 }
 
 /* Responsive Styles */
@@ -71,12 +101,12 @@ html {
   .hero-title-home {
     font-size: 48px;
   }
-  
+
   .about-content-home,
   .contact-content-home {
     grid-template-columns: 1fr;
   }
-  
+
   .experience-box-home {
     position: relative;
     bottom: auto;
@@ -89,7 +119,7 @@ html {
   .menu-toggle-home {
     display: block;
   }
-  
+
   .nav-menu-home {
     position: fixed;
     top: 80px;
@@ -103,23 +133,23 @@ html {
     padding: 20px 0;
     z-index: 999;
   }
-  
+
   .nav-menu-home.active {
     left: 0;
   }
-  
+
   .nav-menu-home li {
     margin: 15px 0;
   }
-  
+
   .nav-menu-home li a {
     justify-content: center;
   }
-  
+
   .hero-title-home {
     font-size: 36px;
   }
-  
+
   .hero-controls-home {
     bottom: 20px;
     right: 20px;
@@ -130,27 +160,53 @@ html {
   .hero-title-home {
     font-size: 28px;
   }
-  
+
   .btn-home {
     padding: 12px 20px;
   }
-  
+
   .section-title-home,
   .section-header-home h2 {
     font-size: 28px;
   }
 }
 
-.icon-clock-home:before { content: "🕒"; }
-.icon-phone-home:before { content: "📞"; }
-.icon-facebook-home:before { content: "f"; }
-.icon-twitter-home:before { content: "t"; }
-.icon-pinterest-home:before { content: "p"; }
-.icon-youtube-home:before { content: "y"; }
-.icon-play-home:before { content: "▶"; }
-.icon-arrow-left-home:before { content: "←"; }
-.icon-arrow-right-home:before { content: "→"; }
-.icon-check-home:before { content: "✓"; }
-.icon-location-home:before { content: "📍"; }
-.icon-email-home:before { content: "✉"; }
-.icon-arrow-right-long-home:before { content: "→"; }
+.icon-clock-home:before {
+  content: "🕒";
+}
+.icon-phone-home:before {
+  content: "📞";
+}
+.icon-facebook-home:before {
+  content: "f";
+}
+.icon-twitter-home:before {
+  content: "t";
+}
+.icon-pinterest-home:before {
+  content: "p";
+}
+.icon-youtube-home:before {
+  content: "y";
+}
+.icon-play-home:before {
+  content: "▶";
+}
+.icon-arrow-left-home:before {
+  content: "←";
+}
+.icon-arrow-right-home:before {
+  content: "→";
+}
+.icon-check-home:before {
+  content: "✓";
+}
+.icon-location-home:before {
+  content: "📍";
+}
+.icon-email-home:before {
+  content: "✉";
+}
+.icon-arrow-right-long-home:before {
+  content: "→";
+}
