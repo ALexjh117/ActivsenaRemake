@@ -28,6 +28,8 @@ export class PerfilInstructor extends Model {
 
   @Column({ type: DataType.STRING(150), allowNull: true })
   declare ubicacion: string;
+@Column({ type: DataType.TEXT, allowNull: true })
+declare imagenUbicacion: string;
 
   @Column({ type: DataType.TEXT, allowNull: true })
   declare imagen: string; // base64 o url

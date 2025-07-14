@@ -22,7 +22,7 @@ import Administrador from "../src/pages/SolicitudApoyo/Administrador";
 import CambiarRol from "../src/pages/CambiarRol/CambiarRol";
 import DashThemed from "../src/pages/Dashtheme/DashThemed";
 import AdminConstancias from "../src/pages/ConstanciaCertificado/Admin/AdminConstancias";
-
+import PlanificarEventosAdmin from "../src/pages/PlanificarEv/Admin/PlanificarEventosAdmin"
 import ResumenIA from "../src/Components/ResumenIA/ResumenIA";
 
 // Estilos globales
@@ -122,6 +122,7 @@ export default function DashBoard() {
         {contenidoActual === "solicitudapoyo" && <Administrador />}
         {contenidoActual === "gestioncatalogo" && <GestionCatalogo />}
         {contenidoActual === "formulariocatalogo" && <FormularioCatalogo />}
+        {contenidoActual === "planificareventosadmin" && <PlanificarEventosAdmin/>}
          {contenidoActual === "adminconstancias" && <AdminConstancias />}
         {contenidoActual === "temas" && (
           <DashThemed

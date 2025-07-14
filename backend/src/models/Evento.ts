@@ -55,6 +55,8 @@ declare QRSalida: string;
 @ForeignKey(() => Usuario)
 @Column({ type: DataType.INTEGER, allowNull: true })
 declare IdUsuario: number;
+@BelongsTo(() => PlanificacionEvento, { foreignKey: 'IdPlanificarE', as: 'PlanificacionEvento' })
+declare planificacion: PlanificacionEvento;
 
 @BelongsTo(() => Usuario, { foreignKey: "IdUsuario" })
 declare creador: Usuario;

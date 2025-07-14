@@ -11,13 +11,14 @@ const router = Router();
 router.get('/', EventoControllers.getEventoAll);
 
 // Obtener un evento por ID
+
+router.get("/publicos", EventoControllers.obtenerEventosPublicos);
+router.get("/usuario/:id", verificarToken, EventoControllers.obtenerEventosPorUsuario);
 router.get('/:IdEvento',
   validateIdEvento,
   handleInputErrors,
   EventoControllers.getIdEvento
 );
-
-router.get("/usuario/:id", verificarToken, EventoControllers.obtenerEventosPorUsuario);
 // Crear un nuevo evento (valida campos y nombre único)
 router.post('/',
   validateEventoBody,

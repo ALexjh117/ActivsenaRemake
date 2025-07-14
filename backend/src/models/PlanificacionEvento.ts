@@ -1,7 +1,9 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo ,HasOne} from 'sequelize-typescript';
 import { GestionEvento } from './GestionEvento';
 import { Usuario } from './Usuario';
+import { Evento } from './Evento';
 @Table({ tableName: 'planificacionevento' })
+
 export class PlanificacionEvento extends Model {
   @Column({ primaryKey: true, autoIncrement: true })
   declare IdPlanificarE: number;
@@ -23,13 +25,16 @@ export class PlanificacionEvento extends Model {
   declare IdGestionE: number;
 @Column({ type: DataType.STRING(100), allowNull: false })
 declare TipoEvento: string;
+@Column({ type: DataType.STRING(255), allowNull: true })
+declare ImagenEvento: string;
 
   @BelongsTo(() => GestionEvento)
   declare gestionEvento: GestionEvento;
   @ForeignKey(() => Usuario)
 @Column({ type: DataType.INTEGER, allowNull: false })
 declare IdUsuario: number;
-
+@HasOne(() => Evento, { foreignKey: 'IdPlanificarE', as: 'evento' })
+declare evento: Evento;
 @BelongsTo(() => Usuario)
 declare usuario: Usuario;
 

@@ -38,7 +38,7 @@ UsuarioRouter.get(
   authenticate,
   UsuarioController.usertraer
 );
-UsuarioRouter.put('/usuarios/:id', UsuarioController.actualizarTelefono);
+UsuarioRouter.put('/:id', UsuarioController.actualizarTelefono);
 // Obtener usuario por ID
 UsuarioRouter.get(
   "/:id",
@@ -58,7 +58,10 @@ UsuarioRouter.post(
 );
 UsuarioRouter.post(
   '/crear-usuario',
-  upload.single('imagen'), // ⬅ este es el campo del form-data
+  upload.fields([
+    { name: 'imagenUbicacion', maxCount: 1 },
+    { name: 'imagenPerfil', maxCount: 1 },
+  ]),
   UsuarioController.registrarUsuarioPorAdmin
 );
 

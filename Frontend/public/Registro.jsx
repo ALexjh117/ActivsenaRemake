@@ -13,9 +13,10 @@ const Registro = () => {
     Contrasena: '',
     profesion: '',
     ubicacion: '',
-    imagen: '',
+    imagenUbicacion: null,
+    imagenPerfil: null,
     aceptaTerminos: false,
-    Rol: '', // "Administrador" o "Instructor"
+    Rol: '',
   });
 
   const [errores, setErrores] = useState({});
@@ -30,7 +31,7 @@ const Registro = () => {
     switch (nombre) {
       case 'IdentificacionUsuario':
         if (!valor) nuevosErrores[nombre] = 'Campo obligatorio';
-        else if (!/^\d{1,50}$/.test(valor)) nuevosErrores[nombre] = 'Debe contener solo números';
+        else if (!/^\d{1,50}$/.test(valor)) nuevosErrores[nombre] = 'Solo números';
         else delete nuevosErrores[nombre];
         break;
       case 'Nombre':
@@ -57,37 +58,55 @@ const Registro = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const nuevoValor = type === 'checkbox' ? checked : value;
+    const { name, value, type, checked, files } = e.target;
 
-    setFormulario({ ...formulario, [name]: nuevoValor });
+    if (type === 'file') {
+      setFormulario({ ...formulario, [name]: files[0] });
+    } else {
+      const nuevoValor = type === 'checkbox' ? checked : value;
+      setFormulario({ ...formulario, [name]: nuevoValor });
 
-    if (type !== 'checkbox') validarCampo(name, value);
+      if (type !== 'checkbox') validarCampo(name, value);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCargando(true);
 
+    // Validar campos obligatorios
     Object.keys(formulario).forEach((campo) => {
-      if (campo !== 'Telefono' && campo !== 'aceptaTerminos') {
+      if (
+        campo !== 'Telefono' &&
+        campo !== 'aceptaTerminos' &&
+        campo !== 'imagenUbicacion' &&
+        campo !== 'imagenPerfil'
+      ) {
         validarCampo(campo, formulario[campo]);
       }
     });
 
     if (Object.keys(errores).length === 0 && formulario.aceptaTerminos && formulario.Rol) {
       try {
-        const response = await api.post('/usuario/crear-usuario', formulario);
+        const formData = new FormData();
+        for (const key in formulario) {
+          if (formulario[key] !== null) {
+            formData.append(key, formulario[key]);
+          }
+        }
+
+        await api.post('/usuario/crear-usuario', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
 
         setMensaje('✅ Registro exitoso.');
         setTipoMensaje('exito');
 
         setTimeout(() => {
-          if (formulario.Rol === 'Administrador') navigate('/dash');
-          else if (formulario.Rol === 'Instructor') navigate('/dashin');
+          navigate('/Cuenta');
         }, 2000);
-      } catch (error) {
-        console.error('Error al registrar:', error);
+      } catch (err) {
+        console.error('❌ Error al registrar:', err);
         setMensaje('❌ Error al registrar.');
         setTipoMensaje('error');
       }
@@ -103,163 +122,81 @@ const Registro = () => {
     <div className="contenedor-registro">
       <h2 className="tituloUnico registro-activsena">Registrar Usuario (Admin o Instructor)</h2>
 
-      <form className="formulario-registro" onSubmit={handleSubmit}>
-        {/* Identificación */}
+      <form className="formulario-registro" onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="grupo-campo-registro">
           <label>Identificación*</label>
-          <input
-            type="text"
-            name="IdentificacionUsuario"
-            value={formulario.IdentificacionUsuario}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="text" name="IdentificacionUsuario" value={formulario.IdentificacionUsuario} onChange={handleChange} />
           {errores.IdentificacionUsuario && <p>{errores.IdentificacionUsuario}</p>}
         </div>
 
-        {/* Nombre y Apellido */}
         <div className="grupo-campo-registro">
           <label>Nombre*</label>
-          <input
-            type="text"
-            name="Nombre"
-            value={formulario.Nombre}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="text" name="Nombre" value={formulario.Nombre} onChange={handleChange} />
           {errores.Nombre && <p>{errores.Nombre}</p>}
         </div>
 
         <div className="grupo-campo-registro">
           <label>Apellido*</label>
-          <input
-            type="text"
-            name="Apellido"
-            value={formulario.Apellido}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="text" name="Apellido" value={formulario.Apellido} onChange={handleChange} />
           {errores.Apellido && <p>{errores.Apellido}</p>}
         </div>
 
-        {/* Correo */}
         <div className="grupo-campo-registro">
           <label>Correo electrónico*</label>
-          <input
-            type="email"
-            name="Correo"
-            value={formulario.Correo}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="email" name="Correo" value={formulario.Correo} onChange={handleChange} />
           {errores.Correo && <p>{errores.Correo}</p>}
         </div>
 
-        {/* Teléfono */}
         <div className="grupo-campo-registro">
           <label>Teléfono (opcional)</label>
-          <input
-            type="tel"
-            name="Telefono"
-            value={formulario.Telefono}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="tel" name="Telefono" value={formulario.Telefono} onChange={handleChange} />
         </div>
 
-        {/* Contraseña */}
         <div className="grupo-campo-registro">
           <label>Contraseña*</label>
-          <input
-            type="password"
-            name="Contrasena"
-            value={formulario.Contrasena}
-            onChange={handleChange}
-            className="campo-input-registro"
-          />
+          <input type="password" name="Contrasena" value={formulario.Contrasena} onChange={handleChange} />
           {errores.Contrasena && <p>{errores.Contrasena}</p>}
         </div>
 
-        {/* Selección de Rol */}
         <div className="grupo-campo-registro">
           <label>Rol*</label>
-          <select name="Rol" value={formulario.Rol} onChange={handleChange} className="campo-input-registro" required>
+          <select name="Rol" value={formulario.Rol} onChange={handleChange} required>
             <option value="">Selecciona un rol</option>
             <option value="Administrador">Administrador</option>
             <option value="Instructor">Instructor</option>
           </select>
         </div>
 
-        {/* SOLO SI ES INSTRUCTOR */}
+        {/* CAMPOS EXCLUSIVOS DE INSTRUCTOR */}
         {formulario.Rol === 'Instructor' && (
           <>
-            {/* Profesión */}
             <div className="grupo-campo-registro">
               <label>Profesión*</label>
-              <input
-                type="text"
-                name="profesion"
-                value={formulario.profesion}
-                onChange={handleChange}
-                className="campo-input-registro"
-                required
-              />
+              <input type="text" name="profesion" value={formulario.profesion} onChange={handleChange} required />
             </div>
 
-            {/* Ubicación */}
             <div className="grupo-campo-registro">
               <label>Ubicación*</label>
-              <input
-                type="text"
-                name="ubicacion"
-                value={formulario.ubicacion}
-                onChange={handleChange}
-                className="campo-input-registro"
-                required
-              />
+              <input type="text" name="ubicacion" value={formulario.ubicacion} onChange={handleChange} required />
             </div>
 
-            {/* Imagen */}
             <div className="grupo-campo-registro">
-              <label>Imagen del lugar (base64)</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
+              <label>Imagen del lugar (Ubicación)*</label>
+              <input type="file" name="imagenUbicacion" accept="image/*" onChange={handleChange} required />
+            </div>
 
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setFormulario(prev => ({ ...prev, imagen: reader.result }));
-                  };
-                  reader.readAsDataURL(file);
-                }}
-                className="campo-input-registro"
-              />
-              {formulario.imagen && (
-                <img
-                  src={formulario.imagen}
-                  alt="Vista previa"
-                  style={{ maxWidth: '200px', marginTop: '10px', borderRadius: '10px' }}
-                />
-              )}
+            <div className="grupo-campo-registro">
+              <label>Imagen de perfil del instructor*</label>
+              <input type="file" name="imagenPerfil" accept="image/*" onChange={handleChange} required />
             </div>
           </>
         )}
 
-        {/* Términos y condiciones */}
         <div className="grupo-campo-registro">
-          <input
-            type="checkbox"
-            name="aceptaTerminos"
-            checked={formulario.aceptaTerminos}
-            onChange={handleChange}
-          />
+          <input type="checkbox" name="aceptaTerminos" checked={formulario.aceptaTerminos} onChange={handleChange} />
           <label>Acepto los términos y condiciones</label>
         </div>
 
-        {/* Botón */}
         <button type="submit" className="boton-registro" disabled={cargando}>
           {cargando ? 'Registrando...' : 'Registrar'}
         </button>

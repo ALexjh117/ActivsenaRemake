@@ -24,15 +24,26 @@ export class UsuarioController {
   };
 
   // Obtener un usuario por su ID
- static getUsuarioId = async (req: Request, res: Response) => {
+static getUsuarioId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
     const usuario = await Usuario.findByPk(id, {
       include: [
         {
           model: Aprendiz,
-          attributes: ["Ficha", "Jornada", "ProgramaFormacion"],
+          as:"perfilAprendiz",
+          attributes: ["Ficha", "Jornada", "ProgramaFormacion"]
         },
+        {
+          model: RolUsuario,
+          attributes: ["NombreRol"]
+        },
+        {
+          model: PerfilInstructor, 
+          as: "perfilInstructor",
+          attributes: ["profesion", "ubicacion", "imagen"]
+        }
       ],
     });
 
@@ -47,7 +58,6 @@ export class UsuarioController {
     res.status(500).json({ error: "Hubo un error al buscar el usuario." });
   }
 };
-
 
   // Crear un nuevo usuario
   static crearUsuario = async (req: Request, res: Response) => {
@@ -182,46 +192,69 @@ export class UsuarioController {
   };
 
   // Iniciar sesión
-  static login = async (req: Request, res: Response) => {
-    const { Correo, Contrasena } = req.body;
+static login = async (req: Request, res: Response) => {
+  const { Correo, Contrasena } = req.body;
 
-    const usuario = await Usuario.findOne({ where: { Correo } });
+  const usuario = await Usuario.findOne({
+    where: { Correo },
+    include: [
+      {
+        model: Aprendiz,
+        attributes: ["Ficha", "Jornada", "ProgramaFormacion"]
+      },
+      {
+        model: PerfilInstructor,
+        attributes: ["profesion", "ubicacion", "imagen"]
+      }
+    ]
+  });
 
-    if (!usuario) {
-      res.status(409).json({ error: "Usuario no encontrado" });
-      return;
-    }
+  if (!usuario) {
+   res.status(409).json({ error: "Usuario no encontrado" });
+   return;
+  }
 
-    if (!usuario.confirmed) {
-      res.status(403).json({ error: "La cuenta no ha sido confirmada" });
-      return;
-    }
+  if (!usuario.confirmed) {
+    res.status(403).json({ error: "La cuenta no ha sido confirmada" });
+    return;
+  }
 
-    const isContrasenaCorrecta = await checkcontrasena(
-      Contrasena,
-      usuario.Contrasena
-    );
+  const isContrasenaCorrecta = await checkcontrasena(Contrasena, usuario.Contrasena);
+  if (!isContrasenaCorrecta) {
+   res.status(401).json({ error: "Contraseña incorrecta" });
+   return;
+  }
 
-    if (!isContrasenaCorrecta) {
-      res.status(401).json({ error: "Contraseña incorrecta" });
-      return;
-    }
+  const token = generateJWT(usuario.IdUsuario, usuario.IdRol);
 
-    const token = generateJWT(usuario.IdUsuario, usuario.IdRol);
-
-res.status(200).json({
-  token,
-  usuario: {
+  const userInfo: any = {
     IdUsuario: usuario.IdUsuario,
     Nombre: usuario.Nombre,
+    Apellido: usuario.Apellido,
     Correo: usuario.Correo,
+    Telefono: usuario.Telefono,
     IdRol: usuario.IdRol
- 
-  }
-});
-
-
   };
+
+  if (usuario.IdRol === 2 && usuario.aprendiz) {
+    userInfo.Ficha = usuario.aprendiz.Ficha;
+    userInfo.ProgramaFormacion = usuario.aprendiz.ProgramaFormacion;
+    userInfo.Jornada = usuario.aprendiz.Jornada;
+  }
+
+ if (usuario.IdRol === 3 && usuario.perfilInstructor) {
+  userInfo.Profesion = usuario.perfilInstructor.profesion;
+  userInfo.Ubicacion = usuario.perfilInstructor.ubicacion;
+  userInfo.Imagen = usuario.perfilInstructor.imagen;
+}
+
+
+  res.status(200).json({
+    token,
+    usuario: userInfo
+  });
+};
+
 
   // Solicitar cambio de contraseña
   static forgotContrasena = async (req: Request, res: Response) => {
@@ -329,6 +362,7 @@ res.status(200).json({
 
 // src/controllers/UsuarioController.ts
 static actualizarTelefono = async (req: Request, res: Response) => {
+    console.log("➡ Actualizando teléfono..."); // A
   const { id } = req.params;
   const { Telefono } = req.body;
 
@@ -379,6 +413,11 @@ static cambiarRolUsuario = async (req: Request, res: Response) => {
 // UsuarioController.ts
 // UsuarioController.ts
 static registrarUsuarioPorAdmin = async (req: Request, res: Response) => {
+  
+    console.log("Archivos recibidos:", req.files);  // <--- Aquí
+
+
+
   try {
     const {
       IdentificacionUsuario,
@@ -407,8 +446,19 @@ static registrarUsuarioPorAdmin = async (req: Request, res: Response) => {
     }
 
     const hashed = await hashPassword(Contrasena || "123456");
-    const imagenPath = req.file ? `/uploads/usuarios/${req.file.filename}` : null;
 
+    // Manejo correcto de archivos con multer.fields()
+    const archivos = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    const imagenPerfilArchivo = archivos?.['imagenPerfil'] ? archivos['imagenPerfil'][0] : null;
+    const imagenUbicacionArchivo = archivos?.['imagenUbicacion'] ? archivos['imagenUbicacion'][0] : null;
+
+    const imagenPerfilPath = imagenPerfilArchivo ? `/uploads/usuarios/${imagenPerfilArchivo.filename}` : null;
+    const imagenUbicacionPath = imagenUbicacionArchivo ? `/uploads/usuarios/${imagenUbicacionArchivo.filename}` : null;
+console.log("📷 Imagen perfil path:", imagenPerfilPath);
+console.log("📍 Imagen ubicación path:", imagenUbicacionPath);
     const usuario = await Usuario.create({
       IdentificacionUsuario,
       Nombre,
@@ -431,16 +481,15 @@ static registrarUsuarioPorAdmin = async (req: Request, res: Response) => {
         UsuarioId: usuario.IdUsuario,
         profesion,
         ubicacion,
-        imagen: imagenPath,
+        imagen: imagenPerfilPath,       // Foto perfil
+        imagenUbicacion: imagenUbicacionPath,  // Foto ubicación (campo nuevo)
       });
     }
 
     res.json({ mensaje: `✅ Usuario ${Rol} creado correctamente.` });
-    return;
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Error al registrar usuario" });
-    return;
   }
 };
 }

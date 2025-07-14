@@ -354,7 +354,7 @@ static obtenerAsistenciasPorActividad = async (req: Request, res: Response) => {
             },
             {
               model: Aprendiz,
-              as: "aprendiz",
+              as: "perfilAprendiz",
               attributes: ["Ficha", "ProgramaFormacion", "Jornada"],
             },
           ],
@@ -537,7 +537,7 @@ static getAsistenciaPorEvento = async (req: Request, res: Response) => {
             },
             {
               model: Aprendiz,
-              as: "aprendiz",
+              as: "perfilAprendiz",
               attributes: ["Ficha", "ProgramaFormacion", "Jornada"],
             },
           ],

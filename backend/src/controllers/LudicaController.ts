@@ -204,7 +204,7 @@ export class LudicaController {
       include: [
         {
           model: Aprendiz,
-          as: "aprendiz", // también usa el alias correcto
+          as: "perfilAprendiz", // también usa el alias correcto
           attributes: ["Ficha", "ProgramaFormacion", "Jornada"],
         },
       ],

@@ -33,6 +33,8 @@ import { revisarAsistenciasIncompletas } from "./cron/RevisarAsistenciasIncomple
 import PerfilInstructorRouter from "./routes/PerfilInstructor.Routes";
 import aprendizRoutes from "./routes/Aprendiz.routes";
 import EventoActividadRoutes from "./routes/EventoActividad.Routes";
+
+
 async function connectDB() {
   try {
     await db.authenticate();
@@ -65,6 +67,7 @@ app.use(express.static(rutaPublic));
 app.use("/qrcodes", express.static(path.join(__dirname, "../public/qrcodes")));
 //acepta peticiones hasta de 10mb
 app.use(express.json({ limit: "10mb" }));
+
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(express.json());

@@ -46,11 +46,13 @@ const PerfilInstructorForm = () => {
       try {
         const res = await axios.get(`http://localhost:3001/api/perfil-instructor/${id}`);
         if (res.data) {
-          setFormData({
-            profesion: res.data.profesion || '',
-            ubicacion: res.data.ubicacion || '',
-            imagen: res.data.imagen || '',
-          });
+         const imagenEsBase64 = res.data.imagen?.startsWith("data:image");
+setFormData({
+  profesion: res.data.profesion || '',
+  ubicacion: res.data.ubicacion || '',
+  imagen: imagenEsBase64 ? res.data.imagen : `http://localhost:3001${res.data.imagen}` || '',
+});
+
         }
       } catch {
         console.warn("⚠️ Aún no existe perfil.");
@@ -59,8 +61,15 @@ const PerfilInstructorForm = () => {
 
     const fetchInstructores = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/perfil-instructor`);
-        setInstructores(res.data);
+      const res = await axios.get(`http://localhost:3001/api/perfil-instructor`);
+const instructoresConImagenUrl = res.data.map((inst: Instructor) => ({
+  ...inst,
+  imagen: inst.imagen?.startsWith("data:image")
+    ? inst.imagen
+    : inst.imagen ? `http://localhost:3001${inst.imagen}` : '',
+}));
+setInstructores(instructoresConImagenUrl);
+
       } catch {
         console.error("❌ Error al cargar instructores.");
       }

@@ -12,6 +12,7 @@ const ConstanciaSENA = () => {
   const [estadoConstancia, setEstadoConstancia] = useState(null);
   const [cargando, setCargando] = useState(true);
   const qrRef = useRef(null);
+  const fetched = useRef(false);
 
   const idCertificado = `SENA-${Date.now()}`;
   const urlVerificacion = `https://activsena.com/certificados/verificar/${idCertificado}`;
@@ -30,6 +31,9 @@ const ConstanciaSENA = () => {
   };
 
   useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+
     const cargarDatos = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -38,29 +42,46 @@ const ConstanciaSENA = () => {
         const decoded = JSON.parse(atob(token.split(".")[1]));
         const id = decoded.IdUsuario;
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
+        const cacheUsuario = localStorage.getItem("cache_usuario");
+        const cacheAsistencias = localStorage.getItem("cache_asistencias");
+        const cacheConstancia = localStorage.getItem("cache_constancia");
 
-        const { data } = await axios.get(`http://localhost:3001/api/usuario/${id}`, config);
-        setDatos(data);
+        if (cacheUsuario && cacheAsistencias && cacheConstancia) {
+          setDatos(JSON.parse(cacheUsuario));
+          const asistencias = JSON.parse(cacheAsistencias);
+          const total = asistencias
+            .filter((a) => a.AsiEstado === "Completa")
+            .reduce((sum, a) => sum + (a.AsiHorasAsistidas || 0), 0);
+          setTotalHoras(total);
+          setEstadoConstancia(JSON.parse(cacheConstancia));
+        } else {
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
 
-        const asistencias = await axios.get(
-          `http://localhost:3001/api/asistencia/usuario/${id}`,
-          config
-        );
-        const total = asistencias.data
-          .filter((a) => a.AsiEstado === "Completa")
-          .reduce((sum, a) => sum + (a.AsiHorasAsistidas || 0), 0);
-        setTotalHoras(total);
+          const usuarioRes = await axios.get(`http://localhost:3001/api/usuario/${id}`, config);
+          setDatos(usuarioRes.data);
+          localStorage.setItem("cache_usuario", JSON.stringify(usuarioRes.data));
 
-        const constanciaRes = await axios.get(
-          `http://localhost:3001/api/constancia/usuario/${id}`,
-          config
-        );
-        setEstadoConstancia(constanciaRes.data?.ConstanciaEstado);
+          const asistenciasRes = await axios.get(
+            `http://localhost:3001/api/asistencia/usuario/${id}`,
+            config
+          );
+          const total = asistenciasRes.data
+            .filter((a) => a.AsiEstado === "Completa")
+            .reduce((sum, a) => sum + (a.AsiHorasAsistidas || 0), 0);
+          setTotalHoras(total);
+          localStorage.setItem("cache_asistencias", JSON.stringify(asistenciasRes.data));
+
+          const constanciaRes = await axios.get(
+            `http://localhost:3001/api/constancia/usuario/${id}`,
+            config
+          );
+          setEstadoConstancia(constanciaRes.data?.ConstanciaEstado);
+          localStorage.setItem("cache_constancia", JSON.stringify(constanciaRes.data?.ConstanciaEstado));
+        }
 
         QRCode.toCanvas(qrRef.current, urlVerificacion, {
           width: 100,
@@ -106,9 +127,9 @@ const ConstanciaSENA = () => {
           </p>
 
           <p className="texto">
-            Pertenece a la ficha <strong>{datos.aprendiz?.Ficha}</strong>, jornada{" "}
-            <strong>{datos.aprendiz?.Jornada}</strong>, del programa de formación{" "}
-            <strong>{datos.aprendiz?.ProgramaFormacion}</strong>.
+            Pertenece a la ficha <strong>{datos.perfilAprendiz?.Ficha}</strong>, jornada{" "}
+            <strong>{datos.perfilAprendiz?.Jornada}</strong>, del programa de formación{" "}
+            <strong>{datos.perfilAprendiz?.ProgramaFormacion}</strong>.
           </p>
 
           <p className="texto">

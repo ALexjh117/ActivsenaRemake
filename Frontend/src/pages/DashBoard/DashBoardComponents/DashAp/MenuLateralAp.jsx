@@ -73,7 +73,7 @@ export default function MenuLateral({ menuAbierto, toggleMenu, setContenidoActua
       {/* Menú principal */}
       <nav className="menudash">
 
-        <button onClick={() => setContenidoActual("userviewin")} className="opciondash">
+        <button onClick={() => setContenidoActual("userviewap")} className="opciondash">
           <FaHome className="iconodash" /> Inicio
         </button>
 

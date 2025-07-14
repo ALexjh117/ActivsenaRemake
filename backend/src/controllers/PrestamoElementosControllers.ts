@@ -15,7 +15,7 @@ export class PrestamoElementosControllers {
             include: [
               {
                 model: Aprendiz,
-                as: "aprendiz",
+                as: "perfilAprendiz",
                 attributes: ["Ficha", "Jornada", "ProgramaFormacion"],
               },
             ],

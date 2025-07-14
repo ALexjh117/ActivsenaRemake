@@ -23,19 +23,26 @@ import MisActividades from "../src/pages/Actividades/Instructor/MisActividades";
 import MisLudicas from "../src/pages/RegistroLudicas/MisLudicas";
 import MisEventos from "../src/pages/Aplicacion/Instructor/MisEventos"
 import AsistenciasActividad from "../src/pages/Asistencia/Instructor/AsistenciasActividad";
-// import UserView from "../src/pages/UserView/UserView"; // Descomenta si lo necesitas
+import Instructor from "../src/pages/SolicitudApoyo/Instructor";
 
 import "../src/styles/BotHp.css";
 import "../src/styles/ColaViento.css";
 import "../src/styles/Resposive.css";
 import "../src/styles/global.css";
-import Instructor from "../src/pages/SolicitudApoyo/Instructor";
-
 
 export default function DashBoard() {
   const [menuAbierto, setMenuAbierto] = useState(true);
   const [contenidoActual, setContenidoActual] = useState("userviewin");
   const [idSeleccionada, setIdSeleccionada] = useState(null);
+  const [actualizarPerfil, setActualizarPerfil] = useState(false);
+
+
+  // ✅ Nueva función que evita cambios repetidos innecesarios
+  const handleSetContenido = (nuevoContenido) => {
+    if (contenidoActual !== nuevoContenido) {
+      setContenidoActual(nuevoContenido);
+    }
+  };
 
   const toggleMenu = () => {
     setMenuAbierto(!menuAbierto);
@@ -46,27 +53,31 @@ export default function DashBoard() {
       <MenuLateralIn
         menuAbierto={menuAbierto}
         toggleMenu={toggleMenu}
-        setContenidoActual={setContenidoActual}
+        setContenidoActual={handleSetContenido}
       />
 
       <main className="contenidodash">
         <NavbarIn
           toggleMenu={toggleMenu}
-          setContenidoActual={setContenidoActual}
+          setContenidoActual={handleSetContenido}
         />
 
         {contenidoActual === "userviewin" && (
-          <UserViewIn setContenidoActual={setContenidoActual} />
-        )}
+  <UserViewIn
+    setContenidoActual={handleSetContenido}
+    actualizarPerfil={actualizarPerfil}
+  />
+)}
+
         {contenidoActual === "actividades" && (
           <Actividades
-            setContenidoActual={setContenidoActual}
+            setContenidoActual={handleSetContenido}
             setIdSeleccionada={setIdSeleccionada}
           />
         )}
         {contenidoActual === "aplicacion" && <Aplicacion />}
         {contenidoActual === "plan" && <Planificar />}
-        {contenidoActual === "registrarl" && <Registroludicas/>}
+        {contenidoActual === "registrarl" && <Registroludicas />}
         {contenidoActual === "feedback" && <Feedbacks />}
         {contenidoActual === "comprobar" && <Combinar />}
         {contenidoActual === "calendarioactividades" && <CalendarioActividades />}
@@ -75,26 +86,28 @@ export default function DashBoard() {
         {contenidoActual === "registro" && <RegistroA />}
         {contenidoActual === "cartacontacto" && <CartaContacto />}
         {contenidoActual === "chromagrid" && <ChromaGrid />}
-        {contenidoActual === "solicitudapoyoinstructor" && <Instructor/>}
+        {contenidoActual === "solicitudapoyoinstructor" && <Instructor />}
         {contenidoActual === "chatai" && <ChatAI />}
         {contenidoActual === "perfil" && <HomeDash />}
-        {contenidoActual === "registroactividades" && <RegistroActividades/>}
-          {contenidoActual === "registroLudicas" && <Registroludicas/>}
-  {contenidoActual === "misactividades" && <MisActividades/>}
-   {contenidoActual === "misludicas" && <MisLudicas/>}
-    {contenidoActual === "miseventos" && <MisEventos/>}
-        {contenidoActual === "config" && <ConfigViewIn />}
-       
+        {contenidoActual === "registroactividades" && <RegistroActividades />}
+        {contenidoActual === "registroLudicas" && <Registroludicas />}
+        {contenidoActual === "misactividades" && <MisActividades />}
+        {contenidoActual === "misludicas" && <MisLudicas />}
+        {contenidoActual === "miseventos" && <MisEventos />}
+       {contenidoActual === "config" && (
+  <ConfigViewIn
+    setContenidoActual={handleSetContenido}
+    setActualizarPerfil={setActualizarPerfil}
+    
+  />
+)}
+
         {contenidoActual === "asistenciasactividad" && (
           <AsistenciasActividad IdActividad={idSeleccionada} />
         )}
-        {/* Si llegas a usar este componente, descomenta la línea de importación también */}
-        {/* {contenidoActual === "userview" && (
-          <UserView setContenidoActual={setContenidoActual} />
-        )} */}
       </main>
 
-      <ActivBot irAChatai={() => setContenidoActual("chatai")} />
+      <ActivBot irAChatai={() => handleSetContenido("chatai")} />
     </section>
   );
 }

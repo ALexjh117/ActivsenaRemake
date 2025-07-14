@@ -18,31 +18,50 @@ const Instructor = () => {
 
   useEffect(() => {
     const id = obtenerIdInstructor();
-    if (id) {
-      axios.get(`http://localhost:3001/api/usuarios/${id}`)
+    const token = localStorage.getItem('token');
+
+    if (id && token) {
+      axios.get(`http://localhost:3001/api/usuario/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then(res => {
           setInstructor(res.data);
           setTelefono(res.data.Telefono || '');
         })
         .catch(err => console.error("Error al obtener el instructor:", err));
 
-      axios.get('http://localhost:3001/api/solicitudapoyo')
+      axios.get('http://localhost:3001/api/solicitudapoyo', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then((res) => setSolicitudes(res.data))
         .catch((err) => console.error(err));
     }
   }, []);
 
   const actualizarTelefono = () => {
-    if (!instructor) return;
+    console.log("📣 Click en botón de actualizar");
+    const token = localStorage.getItem('token');
+
+    if (!instructor || !token) return;
 
     if (!/^\d{10}$/.test(telefono)) {
       alert("Número inválido. Debe tener exactamente 10 dígitos.");
       return;
     }
 
-    axios.put(`http://localhost:3001/api/usuarios/${instructor.IdUsuario}`, {
-      Telefono: telefono
-    })
+    axios.put(
+      `http://localhost:3001/api/usuario/${instructor.IdUsuario}`,
+      { Telefono: telefono },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
       .then(() => {
         alert("Número actualizado correctamente");
       })
@@ -55,13 +74,18 @@ const Instructor = () => {
   const manejarCambio = async (solicitud) => {
     try {
       const IdInstructor = obtenerIdInstructor();
-      if (!IdInstructor) {
-        alert("Error: no se pudo obtener el ID del instructor logueado");
+      const token = localStorage.getItem('token');
+      if (!IdInstructor || !token) {
+        alert("Error: no se pudo obtener el ID del instructor o token");
         return;
       }
 
       await axios.put(`http://localhost:3001/api/solicitudapoyo/${solicitud.IdSolicitud}`, {
         Estado: solicitud.estado
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       await axios.post(`http://localhost:3001/api/historial`, {
@@ -69,11 +93,19 @@ const Instructor = () => {
         EstadoNuevo: solicitud.estado || solicitud.Estado,
         Comentario: solicitud.comentario || '',
         IdUsuario: IdInstructor
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       alert('Solicitud actualizada y registrada en historial');
 
-      const res = await axios.get('http://localhost:3001/api/solicitudapoyo');
+      const res = await axios.get('http://localhost:3001/api/solicitudapoyo', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setSolicitudes(res.data);
 
     } catch (error) {
@@ -98,10 +130,9 @@ const Instructor = () => {
         <div key={index} className="solicitud">
           <h3>
             {s.usuario?.Nombre} - {s.TipoAyuda}
-          <span className={`badge ${((s.estado || s.Estado) || '').replace(/\s/g, '')}`}>
-  {s.estado || s.Estado}
-</span>
-
+            <span className={`badge ${((s.estado || s.Estado) || '').replace(/\s/g, '')}`}>
+              {s.estado || s.Estado}
+            </span>
           </h3>
 
           <p>{s.Descripcion}</p>
@@ -125,8 +156,10 @@ const Instructor = () => {
             value={s.estado || s.Estado}
             onChange={(e) =>
               setSolicitudes((prev) =>
-                prev.map((sol, i) =>
-                  i === index ? { ...sol, estado: e.target.value } : sol
+                prev.map((sol) =>
+                  sol.IdSolicitud === s.IdSolicitud
+                    ? { ...sol, estado: e.target.value }
+                    : sol
                 )
               )
             }

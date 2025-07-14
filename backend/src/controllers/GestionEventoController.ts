@@ -81,6 +81,7 @@ export class GestionEventoController {
 static aprobarGestionEvento = async (req: Request, res: Response): Promise<void> => {
   try {
     const idGestion = parseInt(req.params.id);
+    console.log("📌 ID de gestión recibido:", idGestion);
     const IdUsuario = req.usuario?.IdUsuario;
 
     if (!IdUsuario) {
@@ -145,7 +146,9 @@ static aprobarGestionEvento = async (req: Request, res: Response): Promise<void>
       DescripcionEvento: `Evento aprobado automáticamente`,
       QREntrada: qrEntrada,
       QRSalida: qrSalida,
-      IdUsuario: IdUsuario
+      IdUsuario: planificacion.IdUsuario, //
+      ImagenEvento: planificacion.ImagenEvento
+
     });
 
     res.status(200).json({

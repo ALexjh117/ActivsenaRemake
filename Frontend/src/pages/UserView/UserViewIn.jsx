@@ -1,5 +1,4 @@
-import React from "react";
-import avatar from "../DashBoard/img/avatar.png";
+import React, { useEffect, useState } from "react";
 import ludicaImg from "./img/bl.png";
 import ludicaImg2 from "./img/ft.png";
 import ludicaImg3 from "./img/gm.png";
@@ -8,173 +7,125 @@ import EventoImg from "./img/director.png";
 import EventoImg2 from "./img/cacao.jpg";
 import EventoImg3 from "./img/academia.jpg";
 import EventoImg4 from "./img/emprende.png";
-import logo from "./img/image.png"
-
+import logo from "./img/image.png";
 
 import "./styles/UserView.css";
+import axios from "axios";
 
+export default function InstructorView({ setContenidoActual, actualizarPerfil }) {
+  const [usuario, setUsuario] = useState(null);
 
+  const fetchUsuario = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const id = payload.IdUsuario;
 
+      const res = await axios.get(`http://localhost:3001/api/usuario/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
+      setUsuario(res.data);
+      console.log("👨‍🏫 Usuario instructor completo:", res.data);
+    } catch (err) {
+      console.error("Error cargando instructor:", err);
+    }
+  };
 
+  useEffect(() => {
+      console.log("⚡ actualizando perfil desde useEffect");
+    fetchUsuario();
+  }, [actualizarPerfil]); // 👈 se vuelve a ejecutar al cambiar el perfil
 
-export default function UserViewIn({ setContenidoActual }) {
   return (
     <section className="UserContenedor">
-      <div className="UserCuadro UserInfo">
-        <img src={avatar} alt="Avatar" className="UserAvatar" />
-        <h2 className="UserNombre"><strong>Nombre: </strong>John Pecados Banderas</h2>
-        <p className="UserRol"><strong>Aprendizaje: </strong>Análisis y Desarrollo de Software</p>
-        <p className="UserRol"><strong>Rol: </strong>Administrador</p>
-        <p className="UserRol"><strong>Ficha: </strong>2763872</p>
-        <p className="UserRol"><strong>Jornada: </strong>Diurna</p>
-        <p className="UserRol"><strong>Numero: </strong>3227691061</p>
-        <p className="UserCorreo"><strong>Correo Electrónico: </strong>Pecados@soy.sena.edu.co</p>
-        <img src={logo} className="UserLogo"  alt="" />
-        
-        <button className="UserBoton" onClick={() => setContenidoActual("config")}>
-          Editar perfil
-        </button>
-      </div>
+      {!usuario ? (
+        <p>Cargando datos...</p>
+      ) : (
+        <div className="UserCuadro UserInfo">
+          {usuario.perfilInstructor?.imagen && (
+  <img
+    src={
+      usuario.perfilInstructor.imagen.startsWith("data:image")
+        ? usuario.perfilInstructor.imagen
+        : `http://localhost:3001${usuario.perfilInstructor.imagen}`
+    }
+    alt="Foto del instructor"
+    className="UserAvatarCustom"
+  />
+)}
 
+          <h2 className="UserNombre">
+            <strong>Nombre: </strong>{usuario.Nombre} {usuario.Apellido}
+          </h2>
+          <p><strong>Profesión:</strong> {usuario.perfilInstructor?.profesion || "No asignada"}</p>
+          <p><strong>Ubicación:</strong> {usuario.perfilInstructor?.ubicacion || "No asignada"}</p>
+          <p className="UserRol"><strong>Rol: </strong>{usuario?.rol?.NombreRol || "Sin rol"}</p>
+          <p className="UserRol"><strong>Teléfono Corporativo: </strong>{usuario?.instructor?.TelefonoCorporativo || "No aplica"}</p>
+          <p className="UserRol"><strong>Teléfono Personal: </strong>{usuario.Telefono || "No aplica"}</p>
+          <p className="UserCorreo"><strong>Correo Electrónico: </strong>{usuario.Correo}</p>
+          <img src={logo} className="UserLogo" alt="Logo" />
+          <button className="UserBoton" onClick={() => setContenidoActual("config")}>
+            Editar perfil
+          </button>
+        </div>
+      )}
 
+      {/* Lúdicas */}
       <div className="UserCuadro UserLudicas">
         <h3 className="UserTitulo">Lúdicas</h3>
         <div className="UserTarjetas">
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Baile Caucano</h4>
-                <img src={ludicaImg} alt="Fútbol" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 ¡INSCRIPCIONES ABIERTAS!</p>
-                <p>🕒 Hora: 8:00 AM - 12:00 PM</p>
-                <p>📍 Lugar: Donde se baila :P</p>
-                <p>🎯 Tipo: Recreativa</p>
-                <p>Baile Baile Baile Baile Baile Baile .</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Fútbol Recreativo</h4>
-                <img src={ludicaImg2} alt="Fútbol" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 ¡INSCRIPCIONES ABIERTAS!</p>
-                <p>🕒 Hora: 8:00 AM - 12:00 PM</p>
-                <p>📍 Lugar: Cancha múltiple</p>
-                <p>🎯 Tipo: Recreativa</p>
-                <p>Futbol Futbol Futbol Futbol Futbol Futbol.</p>
+          {[
+            { titulo: "Baile Caucano", img: ludicaImg, hora: "8:00 AM - 12:00 PM", lugar: "Donde se baila :P", tipo: "Recreativa", desc: "Baile Baile Baile Baile Baile Baile." },
+            { titulo: "Fútbol Recreativo", img: ludicaImg2, hora: "8:00 AM - 12:00 PM", lugar: "Cancha múltiple", tipo: "Recreativa", desc: "Futbol Futbol Futbol Futbol Futbol Futbol." },
+            { titulo: "Gimnasio Sena", img: ludicaImg3, hora: "8:00 AM - 12:00 PM", lugar: "Sabrá Dios 👌", tipo: "Recreativa", desc: "GimBro GimBro GimBro GimBro GimBro." },
+            { titulo: "Música y Artes", img: ludicaImg4, hora: "2:00 PM - 5:00 PM", lugar: "No se", tipo: "Cultural", desc: "Music Music Music Music Music Music." },
+          ].map((ludica, i) => (
+            <div className="flip-card-user" key={i}>
+              <div className="flip-card-inner-user">
+                <div className="flip-card-front-user">
+                  <h4 className="card-title-user">{ludica.titulo}</h4>
+                  <img src={ludica.img} alt={ludica.titulo} className="card-img-user" />
+                </div>
+                <div className="flip-card-back-user">
+                  <p>📅 ¡INSCRIPCIONES ABIERTAS!</p>
+                  <p>🕒 Hora: {ludica.hora}</p>
+                  <p>📍 Lugar: {ludica.lugar}</p>
+                  <p>🎯 Tipo: {ludica.tipo}</p>
+                  <p>{ludica.desc}</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Gimnasio Sena</h4>
-                <img src={ludicaImg3} alt="Fútbol" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 ¡INSCRIPCIONES ABIERTAS!</p>
-                <p>🕒 Hora: 8:00 AM - 12:00 PM</p>
-                <p>📍 Lugar: Sabra Dios 👌</p>
-                <p>🎯 Tipo: Recreativa</p>
-                <p>GimBro GimBro GimBro GimBro GimBro.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Musica y Artes</h4>
-                <img src={ludicaImg4} alt="Juegos" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 ¡INSCRIPCIONES ABIERTAS!</p>
-                <p>🕒 Hora: 2:00 PM - 5:00 PM</p>
-                <p>📍 Lugar: no se </p>
-                <p>🎯 Tipo: Cultural</p>
-                <p>Music Music Music Music Music Music .</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
+      {/* Eventos */}
       <div className="UserCuadro UserEventos">
         <h3 className="UserTitulo">Eventos Semanales!</h3>
         <div className="UserTarjetas">
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Charla Motivacional</h4>
-                <img src={EventoImg} alt="Feria" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 Fecha: 20 de junio 2025</p>
-                <p>🕒 Hora: 10:00 AM - 11:30 AM</p>
-                <p>📍 Lugar: Sala múltiple</p>
-                <p>🎯 Tipo: Formativa</p>
-                <p>Este hombre fue el que descubrio la vacuna contra el Covid-19 entre otros logros viajo a la luna en el apolo 11 siendo el primer hombre en llegara la luna, luego de eso se convirtio en oficial de policia corrigiendo a los maleantes. Un ejemplo a seguir .</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Feria Del Cacao 🍫</h4>
-                <img src={EventoImg2} alt="Feria" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 Fecha: 20 de junio 2025</p>
-                <p>🕒 Hora: 10:00 AM - 3:00 PM</p>
-                <p>📍 Lugar: Sala múltiple</p>
-                <p>🎯 Tipo: Formativa</p>
-                <p>Exposición de proyectos por aprendices de diferentes programas.</p>
+          {[
+            { titulo: "Charla Motivacional", img: EventoImg, fecha: "20 de junio 2025", hora: "10:00 AM - 11:30 AM", lugar: "Sala múltiple", tipo: "Formativa", desc: "Este hombre fue el que descubrió la vacuna contra el Covid-19... (historia motivacional)." },
+            { titulo: "Feria Del Cacao 🍫", img: EventoImg2, fecha: "20 de junio 2025", hora: "10:00 AM - 3:00 PM", lugar: "Sala múltiple", tipo: "Formativa", desc: "Exposición de proyectos por aprendices de diferentes programas." },
+            { titulo: "Academia", img: EventoImg3, fecha: "20 de junio 2025", hora: "10:00 AM - 3:00 PM", lugar: "Sala múltiple", tipo: "Formativa", desc: "Exposición de proyectos por aprendices de diferentes programas." },
+            { titulo: "Feria del Emprendimiento", img: EventoImg4, fecha: "25 de junio 2025", hora: "7:00 AM - 5:00 PM", lugar: "Ambiente de Software", tipo: "Competencia", desc: "Desarrollo de apps en tiempo récord por equipos SENA." },
+          ].map((evento, i) => (
+            <div className="flip-card-user" key={i}>
+              <div className="flip-card-inner-user">
+                <div className="flip-card-front-user">
+                  <h4 className="card-title-user">{evento.titulo}</h4>
+                  <img src={evento.img} alt={evento.titulo} className="card-img-user" />
+                </div>
+                <div className="flip-card-back-user">
+                  <p>📅 Fecha: {evento.fecha}</p>
+                  <p>🕒 Hora: {evento.hora}</p>
+                  <p>📍 Lugar: {evento.lugar}</p>
+                  <p>🎯 Tipo: {evento.tipo}</p>
+                  <p>{evento.desc}</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Academia</h4>
-                <img src={EventoImg3} alt="Feria" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 Fecha: 20 de junio 2025</p>
-                <p>🕒 Hora: 10:00 AM - 3:00 PM</p>
-                <p>📍 Lugar: Sala múltiple</p>
-                <p>🎯 Tipo: Formativa</p>
-                <p>Exposición de proyectos por aprendices de diferentes programas.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flip-card-user">
-            <div className="flip-card-inner-user">
-              <div className="flip-card-front-user">
-                <h4 className="card-title-user">Feria del Emprendimiento</h4>
-                <img src={EventoImg4} alt="Hackaton" className="card-img-user" />
-              </div>
-              <div className="flip-card-back-user">
-                <p>📅 Fecha: 25 de junio 2025</p>
-                <p>🕒 Hora: 7:00 AM - 5:00 PM</p>
-                <p>📍 Lugar: Ambiente de Software</p>
-                <p>🎯 Tipo: Competencia</p>
-                <p>Desarrollo de apps en tiempo récord por equipos SENA.</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

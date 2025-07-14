@@ -47,7 +47,7 @@ export default function HeroHomeSection() {
             Gestiona, <span className="highlight-home">Diviértete</span> en la plataforma más innovadora
           </h1>
           <div className="hero-actions-home">
-            <a href="/registro" className="btn-home btn-primary-home a-home">Registrarse</a>
+            <a href="/Cuenta" className="btn-home btn-primary-home a-home">Registrarse</a>
 
             <Link to="/Cuenta" className="btn-home btn-primary-home a-home">
               Iniciar Sesión

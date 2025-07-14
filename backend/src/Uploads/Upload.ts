@@ -1,12 +1,20 @@
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
+import fs from "fs";
 import { Request } from "express";
+
+// Ruta donde se guardarán los archivos
+const uploadDir = path.join(__dirname, "../../uploads/usuarios");
+
+// Crear carpeta si no existe
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });  // recursive para crear todas las carpetas necesarias
+}
 
 // Configuración del almacenamiento
 const storage = multer.diskStorage({
   destination: function (_req: Request, _file: Express.Multer.File, cb) {
-cb(null, path.join(__dirname, "../../uploads"));
-
+    cb(null, uploadDir);
   },
   filename: function (_req: Request, file: Express.Multer.File, cb) {
     const ext = path.extname(file.originalname);

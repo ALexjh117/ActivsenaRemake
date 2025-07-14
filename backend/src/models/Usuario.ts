@@ -67,13 +67,15 @@ export class Usuario extends Model {
   @Default(false)
   @Column({ type: DataType.BOOLEAN })
   declare confirmed: boolean;
+@Column({ type: DataType.STRING, allowNull: true })
+declare FotoPerfil: string | null;
 
   //  Asociación correcta con RolUsuario
   @BelongsTo(() => RolUsuario, { foreignKey: "IdRol", as: "rol" })
   declare rol: RolUsuario;
 
   // Asociación con Aprendiz directamente desde Usuario
-  @HasOne(() => Aprendiz, { foreignKey: "IdUsuario" })
+  @HasOne(() => Aprendiz, { foreignKey: "IdUsuario",as:"perfilAprendiz" })
   declare aprendiz?: Aprendiz;
 
   // Relaciones adicionales
@@ -96,8 +98,8 @@ export class Usuario extends Model {
   declare relUsuarioFeedbacks: RelUsuarioFeedback[];
   @HasMany(() => Actividad, { foreignKey: "IdUsuario" })
   declare actividades: Actividad[];
-  @HasOne(() => PerfilInstructor, { foreignKey: "UsuarioId", as: "perfil" })
-  declare perfil: PerfilInstructor;
+  @HasOne(() => PerfilInstructor, { foreignKey: "UsuarioId", as: "perfilInstructor" })
+  declare perfilInstructor: PerfilInstructor;
 
   @HasMany(() => SolicitudApoyo)
   declare solicitudesApoyo: SolicitudApoyo[];

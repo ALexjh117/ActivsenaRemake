@@ -43,7 +43,7 @@ static async crearPerfil(req: Request, res: Response) {
       include: [
         {
           model: PerfilInstructor,
-          as:'perfil',
+          as:'perfilInstructor',
           attributes: ['profesion', 'ubicacion', 'imagen'],
         },
         {
@@ -55,7 +55,7 @@ static async crearPerfil(req: Request, res: Response) {
     });
 
     const resultado = instructores.map(instructor => {
-      const perfil = instructor.perfil;
+      const perfil = instructor.perfilInstructor;
       const rol = instructor.rol;
 
       return {

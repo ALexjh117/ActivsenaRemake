@@ -128,7 +128,8 @@ const idUsuarioLogueado = obtenerIdUsuario();
     }
   };
 
-  const actividadesConImagen = actividadesSemana.filter((a) => a.Imagen);
+
+const actividadesConImagen = actividades.filter((a) => a.Imagen);
 
   const puedeComentar = actividadSeleccionada && (() => {
   const ahora = new Date();

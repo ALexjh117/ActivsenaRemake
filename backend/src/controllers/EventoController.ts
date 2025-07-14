@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import { Evento } from "../models/Evento";
 import { RelUsuarioEvento } from "../models/RelUsuarioEvento";
 import { Usuario } from "../models/Usuario";
+import { PlanificacionEvento } from "../models/PlanificacionEvento";
+import { PerfilInstructor } from "../models/PerfilInstructor";
 // quien creo el evento: un usuario , y a los eventos asistidos de ese usuario
 export class EventoControllers {
     static getEventoAll = async (req: Request, res: Response) => {
@@ -142,5 +144,46 @@ static async obtenerMisEventos(req: Request, res: Response) {
     res.status(500).json({ error: 'Error del servidor' });
   }
 }
-}
+  static async obtenerEventosPublicos(req: Request, res: Response) {
+    try {
+      const eventos = await Evento.findAll({
+        order: [['FechaInicio', 'DESC']],
+        attributes: [
+          'IdEvento',
+          'NombreEvento',
+          'FechaInicio',
+          'FechaFin',
+          'HoraInicio',
+          'HoraFin',
+          'UbicacionEvento',
+          'DescripcionEvento',
+          'createdAt'
+        ],
+        
+        include: [
+          {
+            model: PlanificacionEvento,
+            as:'PlanificacionEvento',
+            attributes: ['IdPlanificarE','ImagenEvento'], // puedes agregar más si necesitas
+            include: [
+              {
+                model: Usuario,
+                attributes: ['Nombre', 'Apellido'],
+                include:[
+                  {
+              model: PerfilInstructor,
+               attributes: ['imagen'],
+              }]
+              }
+            ]
+          }
+        ]
+      });
 
+      res.json(eventos);
+    } catch (error) {
+      console.error("❌ Error al obtener eventos públicos:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
+}

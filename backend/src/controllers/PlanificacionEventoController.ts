@@ -1,31 +1,58 @@
 import type { Request, Response } from "express";
 import { PlanificacionEvento } from "../models/PlanificacionEvento"; // Importa el modelo adecuado
 import { GestionEvento } from "../models/GestionEvento";
-
+import { Usuario } from "../models/Usuario";
+import { RolUsuario } from "../models/RolUsuario";
+import { PerfilInstructor } from "../models/PerfilInstructor";
 import { error } from "console";
 // esto esta bien , falta es traer al usuario quiem hizo esta peticion 
 export class PlanificacionEventoControllers {
 
 
-    static getPlanificarEventoAll = async (req: Request, res: Response) => {
-        try {
-            console.log('Desde GET /api/planificarEvento');
-
-          
-            const eventos = await PlanificacionEvento.findAll({
-                order: [
-                    ['FechaEvento', 'ASC'], 
-                ],
-            });
-
-            res.json(eventos); 
-        } catch (error) {
-            console.error(error); 
-            res.status(500).json({ error: 'Hubo un error' }); 
+  static getPlanificarEventoAll = async (req: Request, res: Response) => {
+  try {
+    const eventos = await PlanificacionEvento.findAll({
+        attributes: [
+    'IdPlanificarE',
+    'NombreEvento',
+    'FechaEvento',
+    'LugarDeEvento',
+    'ImagenEvento', // 👈 Asegúrate de incluir esto
+    'Recursos',
+    'TipoEvento',
+    'IdUsuario',
+    'IdGestionE'
+  ],
+      include: [
+        {
+          model: Usuario,
+          attributes: ['IdUsuario', 'Nombre', 'Apellido', 'Correo'],
+          include: [
+            {
+              model: RolUsuario,
+              attributes: ['NombreRol']
+            },
+            {
+              association: 'perfilInstructor', 
+              attributes: ['ubicacion', 'profesion','imagen'] 
+            }
+          ]
+        },
+        {
+          model: GestionEvento,
+          attributes: ['Aprobar' , 'IdGestionE']
         }
-    };
+      ],
+      order: [['FechaEvento', 'ASC']]
+    });
 
-    
+    res.json(eventos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Hubo un error al traer las planificaciones' });
+  }
+};
+
     static getIdPlanificarEvento = async (req: Request, res: Response) => {
         try {
             const { IdPlanificarE } = req.params;
@@ -84,8 +111,7 @@ export class PlanificacionEventoControllers {
 
 static crearPlanificacion = async (req: Request, res: Response) => {
   try {
-    console.log("📌 Middleware alcanzado - crearPlanificacion");
-
+   console.log("Archivo recibido multer:", req.file);
     const {
       NombreEvento,
       FechaEvento,
@@ -96,6 +122,7 @@ static crearPlanificacion = async (req: Request, res: Response) => {
     } = req.body;
 
     const IdUsuario = req.usuario?.IdUsuario;
+        const imagenEvento = req.file ? `uploads/${req.file.filename}` : null;
 
     // Validar campos requeridos
     if (!NombreEvento || !FechaEvento || !LugarDeEvento || !IdUsuario) {
@@ -117,7 +144,8 @@ static crearPlanificacion = async (req: Request, res: Response) => {
       Recursos: Recursos || null,
       TipoEvento,
       IdUsuario,
-      IdGestionE: nuevaGestion.IdGestionE
+      IdGestionE: nuevaGestion.IdGestionE,
+      ImagenEvento: req.file?.filename || null //  Aquí lo corriges
     });
 
     res.status(201).json({
