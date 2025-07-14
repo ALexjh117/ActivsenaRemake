@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #4a6bff;
-  --secondary-color: #6c757d;
-  --accent-color: #ff6b6b;
-  --light-color: #f8f9fa;
-  --dark-color: #2d3436;
+  --primary-color: #5edd3e;       /* Verde SENA */
+  --secondary-color: #0753df;     /* Verde suave */
+  --accent-color: #0b3d2e;        /* Verde oscuro para íconos y detalles */
+  --light-color: #ffffff;         /* Blanco puro */
+  --bg-color: #f4fdf7;            /* Fondo general */
   --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
 }
@@ -13,7 +13,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f4f6fb;
+  background-color: var(--bg-color);
   overflow-x: hidden;
 }
 
@@ -24,14 +24,14 @@
 }
 
 .ludicas-title {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   font-weight: bold;
-  color: var(--dark-color);
+  color: var(--accent-color);
   margin-bottom: 0.5rem;
 }
 
 .ludicas-subtitle {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--secondary-color);
   margin-bottom: 2rem;
 }
@@ -41,20 +41,19 @@
   display: flex;
   max-width: 500px;
   margin: 0 auto;
+  box-shadow: var(--card-shadow);
+  border-radius: 30px;
+  overflow: hidden;
+  background-color: var(--light-color);
 }
 
 .search-barr input {
   flex: 1;
   padding: 0.8rem 1.2rem;
-  border: 2px solid #dee2e6;
-  border-radius: 30px 0 0 30px;
+  border: none;
   font-size: 1rem;
   outline: none;
-  transition: var(--transition);
-}
-
-.search-barr input:focus {
-  border-color: var(--primary-color);
+  color: var(--accent-color);
 }
 
 .search-btn {
@@ -62,13 +61,12 @@
   color: white;
   border: none;
   padding: 0 1.5rem;
-  border-radius: 0 30px 30px 0;
   cursor: pointer;
   transition: var(--transition);
 }
 
 .search-btn:hover {
-  background-color: #3752c8;
+  background-color: var(--accent-color);
 }
 
 /* Grid de tarjetas */
@@ -81,7 +79,7 @@
 
 /* Tarjeta */
 .ludicas-card {
-  background: white;
+  background: var(--light-color);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--card-shadow);
@@ -116,7 +114,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.4));
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.35));
 }
 
 .ludicas-card-content {
@@ -126,9 +124,9 @@
 
 /* Título e info */
 .card-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: var(--dark-color);
+  color: var(--accent-color);
 }
 
 .card-info {
@@ -154,7 +152,7 @@
 
 .schedule-title {
   font-weight: 600;
-  color: var(--dark-color);
+  color: var(--accent-color);
   margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
@@ -180,7 +178,7 @@
   content: "•";
   position: absolute;
   left: 0;
-  color: var(--accent-color);
+  color: var(--primary-color);
 }
 
 /* Botón */
@@ -205,7 +203,7 @@
 }
 
 .ludicas-btn:hover {
-  background-color: #3752c8;
+  background-color: var(--accent-color);
   transform: translateY(-2px);
 }
 
@@ -214,7 +212,7 @@
   text-align: center;
   margin-top: 4rem;
   padding-top: 2rem;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid #cce5d4;
   color: var(--secondary-color);
 }
 
@@ -231,11 +229,143 @@
 /* Responsive */
 @media (max-width: 768px) {
   .ludicas-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .ludicas-grid {
     flex-direction: column;
     align-items: center;
   }
+}
+/* Badge dentro de la tarjeta */
+.categoria-badge {
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Filtro de Categorías */
+.categorias-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.categoria-btn {
+  padding: 0.6rem 1.2rem;
+  background-color: white;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.categoria-btn.active,
+.categoria-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+.categoria-badge {
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.categorias-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.categoria-btn {
+  padding: 0.6rem 1.2rem;
+  background-color: white;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.categoria-btn.active,
+.categoria-btn:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.modal-close:hover {
+  background: #e54848;
+}
+
+.modal-img {
+  width: 100%;
+  margin-top: 1rem;
+  border-radius: 12px;
+  object-fit: cover;
+  max-height: 300px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

@@ -16,11 +16,9 @@ const Instructor = () => {
   const [telefono, setTelefono] = useState('');
   const [instructor, setInstructor] = useState(null);
 
-  // Obtener datos del instructor y solicitudes
   useEffect(() => {
     const id = obtenerIdInstructor();
     if (id) {
-      // Datos del instructor
       axios.get(`http://localhost:3001/api/usuarios/${id}`)
         .then(res => {
           setInstructor(res.data);
@@ -28,25 +26,21 @@ const Instructor = () => {
         })
         .catch(err => console.error("Error al obtener el instructor:", err));
 
-      // Solicitudes de apoyo
       axios.get('http://localhost:3001/api/solicitudapoyo')
         .then((res) => setSolicitudes(res.data))
         .catch((err) => console.error(err));
     }
   }, []);
 
-  // Actualizar número de contacto
   const actualizarTelefono = () => {
     if (!instructor) return;
 
-    // Validación del número
     if (!/^\d{10}$/.test(telefono)) {
       alert("Número inválido. Debe tener exactamente 10 dígitos.");
       return;
     }
 
-   axios.put(`http://localhost:3001/api/usuarios/${instructor.IdUsuario}`, {
-
+    axios.put(`http://localhost:3001/api/usuarios/${instructor.IdUsuario}`, {
       Telefono: telefono
     })
       .then(() => {
@@ -58,7 +52,6 @@ const Instructor = () => {
       });
   };
 
-  // Guardar cambios en solicitud
   const manejarCambio = async (solicitud) => {
     try {
       const IdInstructor = obtenerIdInstructor();
@@ -67,12 +60,10 @@ const Instructor = () => {
         return;
       }
 
-      // Actualizar solicitud
       await axios.put(`http://localhost:3001/api/solicitudapoyo/${solicitud.IdSolicitud}`, {
         Estado: solicitud.estado
       });
 
-      // Registrar historial
       await axios.post(`http://localhost:3001/api/historial`, {
         IdSolicitud: solicitud.IdSolicitud,
         EstadoNuevo: solicitud.estado || solicitud.Estado,
@@ -82,7 +73,6 @@ const Instructor = () => {
 
       alert('Solicitud actualizada y registrada en historial');
 
-      // Refrescar solicitudes
       const res = await axios.get('http://localhost:3001/api/solicitudapoyo');
       setSolicitudes(res.data);
 
@@ -92,7 +82,7 @@ const Instructor = () => {
   };
 
   return (
-    <div>
+    <div className="instructor-container">
       <div className="form-contacto">
         <h3>📞 Mi número de contacto</h3>
         <input
@@ -106,7 +96,14 @@ const Instructor = () => {
 
       {solicitudes.map((s, index) => (
         <div key={index} className="solicitud">
-          <h3>{s.usuario?.Nombre} - {s.TipoAyuda}</h3>
+          <h3>
+            {s.usuario?.Nombre} - {s.TipoAyuda}
+          <span className={`badge ${((s.estado || s.Estado) || '').replace(/\s/g, '')}`}>
+  {s.estado || s.Estado}
+</span>
+
+          </h3>
+
           <p>{s.Descripcion}</p>
 
           <label>Comentario al aprendiz:</label>

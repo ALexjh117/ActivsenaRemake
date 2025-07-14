@@ -9,6 +9,9 @@ export class EventoControllers {
             console.log('Desde GET/api/evento');
 
             const eventos = await Evento.findAll({ 
+                include:[{
+                  model:Usuario, as:'creador', attributes:['Nombre'] //SE REALIZA PARA OBTNENER EL NAME DEL USAURIO EN LA INTERFAZ DE EVENTOS APROBADOS
+                }],
                 order: [
                     ['createdAt', 'ASC'],
                 ], 

@@ -21,8 +21,8 @@ import FormularioCatalogo from "../src/pages/AlquierAP/FormularioCatalogo";
 import Administrador from "../src/pages/SolicitudApoyo/Administrador";
 import CambiarRol from "../src/pages/CambiarRol/CambiarRol";
 import DashThemed from "../src/pages/Dashtheme/DashThemed";
+import AdminConstancias from "../src/pages/ConstanciaCertificado/Admin/AdminConstancias";
 
-// ✅ Nuevo: componente de resumen IA
 import ResumenIA from "../src/Components/ResumenIA/ResumenIA";
 
 // Estilos globales
@@ -122,6 +122,7 @@ export default function DashBoard() {
         {contenidoActual === "solicitudapoyo" && <Administrador />}
         {contenidoActual === "gestioncatalogo" && <GestionCatalogo />}
         {contenidoActual === "formulariocatalogo" && <FormularioCatalogo />}
+         {contenidoActual === "adminconstancias" && <AdminConstancias />}
         {contenidoActual === "temas" && (
           <DashThemed
             esTemaHalloween={esTemaHalloween}

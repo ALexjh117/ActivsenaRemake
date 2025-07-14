@@ -46,6 +46,9 @@ declare QREntrada: string;
 @Column({ type: DataType.TEXT, allowNull: true })
 declare QRSalida: string;
 
+@Column({type: DataType.STRING, allowNull:true})
+declare ImagenEvento: string;
+
   @HasMany(() => Notificaciones)
   declare notificaciones: Notificaciones[];
 

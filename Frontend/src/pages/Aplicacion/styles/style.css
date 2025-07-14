@@ -1,5 +1,5 @@
-/* Estilos globales */
-body.evento-app-body {
+
+.evento-app-body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
@@ -7,20 +7,20 @@ body.evento-app-body {
   color: #2c3e50;
 }
 
-/* Contenedor Principal */
+
 .evento-app-contenedor-principal {
   display: flex;
   min-height: 100vh;
   background-color: #ffffff;
 }
 
-/* Contenido Principal */
+
 .evento-app-contenido-principal {
   flex: 1;
   padding: 30px;
 }
 
-/* Cabecera */
+
 .evento-app-cabecera {
   display: flex;
   justify-content: space-between;
@@ -49,7 +49,7 @@ body.evento-app-body {
   background-color: #187bcd;
 }
 
-/* Sección de Historias */
+
 .evento-app-seccion-historias {
   margin-bottom: 30px;
 }
@@ -96,7 +96,7 @@ body.evento-app-body {
   color: #2d3436;
 }
 
-/* Botones de acción */
+
 .evento-app-seccion-botones-accion {
   display: flex;
   flex-wrap: wrap;
@@ -119,7 +119,7 @@ body.evento-app-body {
   background-color: #3edb0e;
 }
 
-/* Feed de Eventos */
+
 .evento-app-seccion-feed {
   margin-bottom: 30px;
 }
@@ -185,7 +185,7 @@ body.evento-app-body {
   margin-bottom: 10px;
 }
 
-/* Botones de acción de evento */
+
 .evento-app-acciones-evento {
   display: flex;
   gap: 10px;
@@ -219,7 +219,7 @@ body.evento-app-body {
   background-color: #d35400;
 }
 
-/* Feedback */
+
 .evento-app-feedback-evento {
   margin-top: 15px;
 }
@@ -255,7 +255,7 @@ body.evento-app-body {
   background-color: #c0392b;
 }
 
-/* Título Introductorio */
+
 .titulo-intro {
   color: #2d3436;
   font-size: 2rem;
@@ -263,7 +263,7 @@ body.evento-app-body {
   margin-bottom: 1rem;
 }
 
-/* Scroll Historias */
+
 .evento-app-carrusel-historias::-webkit-scrollbar {
   height: 8px;
 }
@@ -271,3 +271,38 @@ body.evento-app-body {
   background: #bbb;
   border-radius: 10px;
 }
+
+
+.evento-app-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.evento-app-modal-contenido {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+
+.evento-app-cerrar-modal {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+

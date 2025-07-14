@@ -3,7 +3,7 @@ import { body, param } from 'express-validator';
 import { handleInputErrors } from '../middleware/validation';
 import { validateConstanciaBody, validateIdConstancia, validateIdConstanciaYaExiste } from '../middleware/Constancia';
 import { ConstanciaControllers } from '../controllers/ConstanciaController';
-
+import { verificarToken } from "../middleware/VerificarToken";
 const router = Router();
 
 // Obtener todas las constancias
@@ -18,13 +18,7 @@ router.get(
 );
 
 // Crear una nueva constancia
-router.post(
-  '/',
-  validateIdConstanciaYaExiste,  // Validación para verificar si la constancia ya existe
-  validateConstanciaBody,        // Validación para los datos del cuerpo
-  handleInputErrors,             // Middleware para manejar los errores de validación
-  ConstanciaControllers.crearConstancia
-);
+router.post("/", verificarToken, ConstanciaControllers.crearConstancia);
 
 // Actualizar una constancia por ID
 router.put(
@@ -35,6 +29,12 @@ router.put(
   ConstanciaControllers.actualizarIdConstancia
 );
 
+router.get("/usuario/:idUsuario", ConstanciaControllers.obtenerPorUsuario);
+
+router.get("/api/constancias", ConstanciaControllers.listarConstancias);
+router.put("/aprobar/:id", ConstanciaControllers.aprobarConstancia);
+router.get("/admin/todas", ConstanciaControllers.listarTodas);
+
 // Eliminar una constancia por ID
 router.delete(
   '/:ConstanciaId',
@@ -42,5 +42,8 @@ router.delete(
   handleInputErrors,            // Middleware para manejar los errores de validación
   ConstanciaControllers.eliminarIdConstancia
 );
+
+
+
 
 export default router;

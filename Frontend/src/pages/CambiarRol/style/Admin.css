@@ -48,3 +48,80 @@ select:focus {
   border-color: #007bff;
   outline: none;
 }
+select {
+  transition: border 0.2s, box-shadow 0.3s;
+}
+
+select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.usuario-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usuario-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+.cambiar-rol-container {
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 40px auto;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.cambiar-rol-container h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Tabla de roles */
+.tabla-roles {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla-roles th,
+.tabla-roles td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.tabla-roles th {
+  background-color: #007bff;
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.tabla-roles tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tabla-roles tr:hover {
+  background-color: #f1f7ff;
+}
+
+.tabla-roles select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  background-color: #fff;
+}

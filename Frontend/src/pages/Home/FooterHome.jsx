@@ -25,7 +25,7 @@ export default function FooterHome() {
         <a href="https://www.x.com" className="footer-social-icon-home">
        <FontAwesomeIcon icon={faTwitter} />
       </a>
-      <a href="www.youtube.com" className="footer-social-icon-home">
+      <a href="https://www.youtube.com" className="footer-social-icon-home">
       <FontAwesomeIcon icon={faYoutube} />
    </a>
       </div>

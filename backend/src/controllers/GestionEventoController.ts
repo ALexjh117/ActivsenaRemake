@@ -7,7 +7,7 @@ import * as QRCode from "qrcode";
 
 //esto esta bien 
 export class GestionEventoController {
-    static getAll = async (req : Request, res : Response) => {
+    /*static getAll = async (req : Request, res : Response) => {
         try {   
             const GestionesEventos = await GestionEvento.findAll({
                 order : [
@@ -19,12 +19,26 @@ export class GestionEventoController {
         } catch (error) {
             res.status(500).json({error : "Hubo un error "})
         }
+    }*/
+
+    static getAll = async (req: Request, res :Response) =>{
+      try{
+          const gestionarEventos = await GestionEvento.findAll({
+            include:[{ model: PlanificacionEvento, include: [Usuario]}],
+            order:[['createdAt', 'ASC']]
+          });
+          res.status(200).json(gestionarEventos)
+          return
+      }catch(error){
+          console.error('ERROR AL OBTENER GETSIONES:', error)
+          res.status(500).json({error : 'Ocurrio un error'})
+      }
     }
 
     static getGestionEventoId = async (req : Request, res : Response) => {
         try {
-            const {id} = req.params
-            const Gestion = await GestionEvento.findByPk(id)
+            const {IdGestionE} = req.params
+            const Gestion = await GestionEvento.findByPk(IdGestionE)
             if (!Gestion) {
                 res.status(404).json({error: "Gestion de Evento no encontrada."})
             }
@@ -47,8 +61,8 @@ export class GestionEventoController {
 
     static actualizarGestionEventoId = async (req : Request, res : Response) => {
         try {
-            const {id} = req.params
-            const GestionActualizar = await GestionEvento.findByPk(id)
+            const {IdGestionE} = req.params
+            const GestionActualizar = await GestionEvento.findByPk(IdGestionE)
             if (!GestionActualizar) {
                 res.status(404).json({error : "Gestion de Evento no encontrada."})
             }
@@ -63,8 +77,8 @@ export class GestionEventoController {
 
     static eliminarGestionEventoId = async (req : Request, res : Response) => {
         try {
-            const {id} = req.params
-            const GestionBorrar = await GestionEvento.findByPk(id)
+            const {IdGestionE} = req.params
+            const GestionBorrar = await GestionEvento.findByPk(IdGestionE)
             if (!GestionBorrar) {
                 res.status(404).json({error : "Gestion de Evento no encontrada."})
                 return
@@ -80,7 +94,7 @@ export class GestionEventoController {
 
 static aprobarGestionEvento = async (req: Request, res: Response): Promise<void> => {
   try {
-    const idGestion = parseInt(req.params.id);
+    const idGestion = parseInt(req.params.IdGestionE);
     const IdUsuario = req.usuario?.IdUsuario;
 
     if (!IdUsuario) {
@@ -142,6 +156,7 @@ static aprobarGestionEvento = async (req: Request, res: Response): Promise<void>
       HoraFin: "17:00",
       UbicacionEvento: planificacion.LugarDeEvento,
       IdPlanificarE: planificacion.IdPlanificarE,
+      ImagenEvento: planificacion.ImagenEvento,
       DescripcionEvento: `Evento aprobado automáticamente`,
       QREntrada: qrEntrada,
       QRSalida: qrSalida,

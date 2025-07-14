@@ -1,15 +1,14 @@
-# dependencias de Node.js en frontend y backend
-/node_modules
-Frontend/node_modules/
-backend/node_modules/
+./node_modules
+./Frontend/node_modules/
+./backend/node_modules/
 
 # archivos de build de frontend (si usa Vite, por ejemplo)
-Frontend/dist/
-backend/dist/
+./Frontend/dist/
+./backend/dist/
 
 # archivos temporales de frontend
-Frontend/.cache/
-backend/.cache/
+./Frontend/.cache/
+./backend/.cache/
 
 # archivos de logs
 logs/

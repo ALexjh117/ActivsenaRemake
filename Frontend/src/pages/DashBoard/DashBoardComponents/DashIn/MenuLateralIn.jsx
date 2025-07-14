@@ -105,7 +105,7 @@ export default function MenuLateralIn({ menuAbierto, setContenidoActual }) {
                 <FaCheckSquare className="iconodash" /> Registro Ludicas
               </button>
             
-               <button onClick={() => setContenidoActual("chromagrid")} className="opciondash">
+               <button onClick={() => setContenidoActual("revisioneventos")} className="opciondash">
                 <FaThumbsUp className="iconodash" /> Aprobados
               </button>
               
@@ -126,15 +126,8 @@ export default function MenuLateralIn({ menuAbierto, setContenidoActual }) {
           </button>
           {openSection.aprendices && (
             <>
-              <button onClick={() => setContenidoActual("registro")} className="opciondash">
-                <FaQrcode className="iconodash" /> Registro QR
-              </button>
-              <button onClick={() => setContenidoActual("aprendiz")} className="opciondash">
-                <FaIdBadge className="iconodash" /> Constancia
-              </button>
-               <button onClick={() => setContenidoActual("asistenciasactividad")} className="opciondash">
-                <FaClipboardList className="iconodash" /> Asistencias por Actividad
-              </button>
+          
+      
               <button onClick={() => setContenidoActual("solicitudapoyoinstructor")} className="opciondash">
                 <FaClipboardList className="iconodash" /> Apoyos
               </button>

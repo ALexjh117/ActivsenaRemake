@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, AllowNull } from 'sequelize-typescript';
 import { GestionEvento } from './GestionEvento';
 import { Usuario } from './Usuario';
 @Table({ tableName: 'planificacionevento' })
@@ -17,6 +17,9 @@ export class PlanificacionEvento extends Model {
 
   @Column({ type: DataType.TEXT, allowNull: true })
   declare Recursos: string;
+
+  @Column({type: DataType.STRING, allowNull: true})
+  declare ImagenEvento: string; //IMAGEN
 
   @ForeignKey(() => GestionEvento)
   @Column({ type: DataType.INTEGER, allowNull: false })
