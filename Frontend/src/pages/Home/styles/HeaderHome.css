@@ -90,6 +90,9 @@
     width: 100px;
     height: 60px;
   }
+  .logo-home {
+    margin-right: 8%;
+  }
 }
 
 @media (max-width: 576px) {

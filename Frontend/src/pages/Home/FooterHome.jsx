@@ -16,16 +16,16 @@ export default function FooterHome() {
             </div>
             <p>Somos una firma de consultoría de negocios profesional dedicada a ayudar a las empresas a crecer y tener éxito en el mercado competitivo actual.</p>
             <div className="footer-social-home">
-          <a href="#" className="footer-social-icon-home">
+          <a href="https://www.facebook.com" className="footer-social-icon-home">
            <FontAwesomeIcon icon={faFacebook} />
         </a>
-         <a href="#" className="footer-social-icon-home">
+         <a href="https://www.pinterest.com" className="footer-social-icon-home">
         <FontAwesomeIcon icon={faPinterest} />
         </a>
-        <a href="#" className="footer-social-icon-home">
+        <a href="https://www.x.com" className="footer-social-icon-home">
        <FontAwesomeIcon icon={faTwitter} />
       </a>
-      <a href="#" className="footer-social-icon-home">
+      <a href="www.youtube.com" className="footer-social-icon-home">
       <FontAwesomeIcon icon={faYoutube} />
    </a>
       </div>
@@ -34,11 +34,12 @@ export default function FooterHome() {
           <div className="footer-links-home">
             <h3 className="footer-title-home h3-home">Enlaces Rápidos</h3>
             <ul className='ul-home'>
-              <li className='li-home'><a href="#home" className='a-home'>Inicio</a></li>
-              <li className='li-home'><a href="#about" className='a-home'>Nosotros</a></li>
-              <li className='li-home'><a href="#services" className='a-home'>Servicios</a></li>
-              <li className='li-home'><a href="#projects" className='a-home'>Proyectos</a></li>
-              <li className='li-home'><a href="#contact" className='a-home'>Contacto</a></li>
+              <li className='li-home'><a href="/" className='a-home'>Inicio</a></li>
+              <li className='li-home'><a href="/#about" className='a-home'>Nosotros</a></li>
+              <li className='li-home'><a href="/#anuncios" className='a-home'>Anuncios</a></li>
+              <li className='li-home'><a href="/#projects" className='a-home'>Proyectos</a></li>
+              <li className='li-home'><a href="/apoyo-sostenimiento" className='a-home'>Apoyos de Sostenimiento</a></li>
+              <li className='li-home'><a href="/#contact" className='a-home'>Contacto</a></li>
             </ul>
           </div>
           <div className="footer-contact-home">
@@ -48,14 +49,14 @@ export default function FooterHome() {
                 <i className="icon-location-home i-home"></i>
               </div>
               <div className="footer-contact-text-home">
-                123 Calle Negocios, Suite 100, Popayan,Cauca, Colombia 28001
+                Popayan, Cauca, Colombia 
               </div>
             </div>
             <div className="footer-contact-item-home">
               <div className="footer-contact-icon-home">
                 <i className="icon-phone-home i-home" ></i>
               </div>
-              <div className="footer-contact-text-home">
+              <div className="footer-contact-text-home" href="tel:+573226637578">
                 +57 3226637578
               </div>
             </div>
@@ -63,8 +64,8 @@ export default function FooterHome() {
               <div className="footer-contact-icon-home">
                 <i className="icon-email-home i-home"></i>
               </div>
-              <div className="footer-contact-text-home">
-                activsena@contacto.com
+              <div className="footer-contact-text-home" href="mailto:activsena.gmail.com">
+                activsena@gmail.com
               </div>
             </div>
           </div>

@@ -1,14 +1,14 @@
-/* Footer Styles */
 .site-footer-home {
   background-color: var(--dark-bg-home);
   color: var(--white-home);
   padding: 70px 0 20px;
+  text-align: justify;
 }
-
+/*  Aqui se modifica el ancho de los elementos*/
 .footer-content-home {
+  width: 100vw;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: 1fr 1px 1fr;
   margin-bottom: 50px;
 }
 
@@ -29,6 +29,7 @@
 .footer-about-home p {
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 20px;
+  width: 80%;
 }
 
 .footer-social-home {
@@ -82,7 +83,7 @@
 
 .footer-links-home a:hover {
   color: var(--primary-color-home);
-  padding-left: 5px;
+
 }
 
 .footer-contact-item-home {
@@ -110,7 +111,16 @@
 }
 
 /* Responsive Styles */
+<<<<<<< Updated upstream
 @media (max-width: 1200px) {
+=======
+@media (max-width: 768px) {
+    .site-footer-home p {
+    width: 65%;
+    text-align: justify;
+    padding-right: 50px;
+  }
+>>>>>>> Stashed changes
   .footer-content-home {
     gap: 25px;
   }
@@ -149,8 +159,9 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 468px) {
   .site-footer-home {
+<<<<<<< Updated upstream
     padding: 50px 0 20px;
   }
 
@@ -162,6 +173,29 @@
     justify-content: center;
   }
 
+=======
+      padding: 50px 0px 0px;
+      text-align: justify;
+  }
+
+  .site-footer-home p {
+    width: 65%;
+    text-align: justify;
+    padding-right: 50px;
+  }
+  
+  .footer-links-home,
+  .footer-contact-home {
+      text-align: center;
+      padding-right: 38%;
+  }
+  
+  .footer-title-home::after {
+      left: 50%;
+      transform: translateX(-50%);
+  }
+  
+>>>>>>> Stashed changes
   .footer-contact-item-home {
     flex-direction: column;
     align-items: center;
