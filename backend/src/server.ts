@@ -33,7 +33,7 @@ import { revisarAsistenciasIncompletas } from "./cron/RevisarAsistenciasIncomple
 import PerfilInstructorRouter from "./routes/PerfilInstructor.Routes";
 import aprendizRoutes from "./routes/Aprendiz.routes";
 import EventoActividadRoutes from "./routes/EventoActividad.Routes";
-
+import ReaccionEventoRouter from './routes/ReaccionEvento.Routes';
 
 async function connectDB() {
   try {
@@ -75,6 +75,7 @@ app.use("/api/actividad", ActividadRouter);
 app.use("/api/alquilerelementos", AlquilerElementosRouter);
 app.use("/api/asistencia", AsistenciaRouter);
 app.use("/api/constancia", ConstanciaRouter);
+app.use('/api/reacciones', ReaccionEventoRouter);
 app.use("/api/consultaia", ConsultaIARouter);
 app.use("/api/evento", EventoRouter);
 app.use("/api/gestionevento", GestionEventoRouter);

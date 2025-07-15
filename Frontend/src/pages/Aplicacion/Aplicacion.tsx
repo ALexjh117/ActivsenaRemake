@@ -12,6 +12,7 @@ import img7 from "./img/img2.jpg";
 
 // Tipos
 interface Usuario {
+  IdUsuario: number;
   Nombre: string;
   Apellido: string;
   perfilInstructor?: {
@@ -37,58 +38,138 @@ interface EventoConDatos {
   PlanificacionEvento?: PlanificacionEvento;
 }
 
-// Imágenes por defecto en caso de que no haya imagen subida
 const imagenes = [img2, img3, img4, img5, img6, img7];
 
-// Ruta de imagen de evento
 const obtenerRutaImagenEvento = (nombre: string | undefined, idx: number) =>
-  nombre
-    ? `http://localhost:3001/uploads/usuarios/${nombre}`
-    : imagenes[idx % imagenes.length];
+  nombre ? `http://localhost:3001/uploads/usuarios/${nombre}` : imagenes[idx % imagenes.length];
 
-const obtenerRutaImagenPerfil = (ruta: string | undefined) => {
-  return ruta ? `http://localhost:3001${ruta}` : img6;
-};
-
-
+const obtenerRutaImagenPerfil = (ruta: string | undefined) =>
+  ruta ? `http://localhost:3001${ruta}` : img6;
 
 const Aplicacion = () => {
   const [eventosPublicos, setEventosPublicos] = useState<EventoConDatos[]>([]);
   const [modalEvento, setModalEvento] = useState<EventoConDatos | null>(null);
+  const [reacciones, setReacciones] = useState<Record<number, { like: number; dislike: number }>>({});
+  const [miReaccion, setMiReaccion] = useState<Record<number, "like" | "dislike" | null>>({});
+  const [detallesReacciones, setDetallesReacciones] = useState<
+    { IdUsuario: number; Nombre: string; Apellido: string; Tipo: "like" | "dislike" }[]
+  >([]);
+
+  // Obtener ID del usuario desde localStorage (simulación de sesión)
+  const token = localStorage.getItem("token");
+const decoded: any = token ? JSON.parse(atob(token.split(".")[1])) : {};
+const idUsuario = decoded?.IdUsuario;
+
+
+  const cargarEventosYReacciones = async () => {
+    try {
+      const res = await axios.get("http://localhost:3001/api/evento/publicos");
+      setEventosPublicos(res.data);
+
+      const reaccionesPorEvento = await Promise.all(
+        res.data.map((evento: EventoConDatos) =>
+          axios.get(`http://localhost:3001/api/reacciones/evento/${evento.IdEvento}`)
+        )
+      );
+
+      const reaccionesMap: Record<number, { like: number; dislike: number }> = {};
+      const misReacciones: Record<number, "like" | "dislike" | null> = {};
+
+      res.data.forEach((evento: EventoConDatos, idx: number) => {
+        const { likes, dislikes, detalles } = reaccionesPorEvento[idx].data;
+        reaccionesMap[evento.IdEvento] = { like: likes, dislike: dislikes };
+        const yo = detalles.find((r: any) => r.usuario?.IdUsuario === idUsuario);
+        misReacciones[evento.IdEvento] = yo?.Tipo || null;
+      });
+
+      setReacciones(reaccionesMap);
+      setMiReaccion(misReacciones);
+    } catch (err) {
+      console.error("❌ Error al cargar eventos o reacciones:", err);
+    }
+  };
+
+  const cargarDetallesReacciones = async (idEvento: number) => {
+    try {
+      const res = await axios.get(`http://localhost:3001/api/reacciones/evento/${idEvento}/detalles`);
+      const data = res.data.map((r: any) => ({
+        IdUsuario: r.usuario.IdUsuario,
+        Nombre: r.usuario.Nombre,
+        Apellido: r.usuario.Apellido,
+        Tipo: r.Tipo,
+      }));
+      setDetallesReacciones(data);
+    } catch (error) {
+      console.error("❌ Error al cargar detalles de reacciones:", error);
+    }
+  };
+const manejarReaccion = async (idEvento: number, tipo: "like" | "dislike") => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.post(
+      "http://localhost:3001/api/reacciones",
+      {
+        IdEvento: idEvento,
+        Tipo: tipo,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // resto igual
+    setMiReaccion((prev) => ({ ...prev, [idEvento]: tipo }));
+
+    setReacciones((prev) => {
+      const actual = prev[idEvento] || { like: 0, dislike: 0 };
+      const nuevo = { ...actual };
+
+      if (tipo === "like") {
+        if (miReaccion[idEvento] === "dislike") nuevo.dislike--;
+        if (miReaccion[idEvento] !== "like") nuevo.like++;
+      } else {
+        if (miReaccion[idEvento] === "like") nuevo.like--;
+        if (miReaccion[idEvento] !== "dislike") nuevo.dislike++;
+      }
+
+      return { ...prev, [idEvento]: nuevo };
+    });
+  } catch (err) {
+    console.error("❌ Error al reaccionar:", err);
+  }
+};
+
+ 
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/evento/publicos")
-      .then((res) => {
-        console.log("📦 Eventos públicos con planificadores:", res.data);
-        setEventosPublicos(res.data);
-      })
-      .catch((err) =>
-        console.error("❌ Error al cargar eventos públicos:", err)
-      );
+    cargarEventosYReacciones();
   }, []);
 
   return (
     <div className="evento-app-body">
       <div className="evento-app-contenedor-principal">
         <main className="evento-app-contenido-principal">
-          {/* CABECERA */}
           <header className="evento-app-cabecera">
             <h2 className="evento-app-titulo-seccion">Novedades</h2>
           </header>
 
-          {/* CARRUSEL DE HISTORIAS */}
           <section className="evento-app-seccion-historias">
             <div className="evento-app-carrusel-historias">
               {eventosPublicos.map((evento, idx) => (
                 <div
-                  className="evento-app-historia"
                   key={evento.IdEvento}
-                  onClick={() => setModalEvento(evento)}
+                  className="evento-app-historia"
+                  onClick={() => {
+                    setModalEvento(evento);
+                    cargarDetallesReacciones(evento.IdEvento);
+                  }}
                 >
                   <img
                     src={obtenerRutaImagenEvento(evento.PlanificacionEvento?.ImagenEvento, idx)}
-                    alt={`Evento ${evento.NombreEvento}`}
+                    alt={evento.NombreEvento}
                     style={{ width: "100%", height: "120px", objectFit: "cover" }}
                   />
                   <p>{evento.NombreEvento}</p>
@@ -97,7 +178,6 @@ const Aplicacion = () => {
             </div>
           </section>
 
-          {/* INTRODUCCIÓN Y BOTONES */}
           <h1 className="titulo-intro">¿Qué piensas hacer hoy?</h1>
           <section className="evento-app-seccion-botones-accion">
             <button className="evento-app-boton-accion">Apoyos</button>
@@ -106,37 +186,55 @@ const Aplicacion = () => {
             <button className="evento-app-boton-accion">ChatIA</button>
           </section>
 
-          {/* FEED DE EVENTOS */}
           <h2 className="evento-app-titulo-seccion">Eventos Semanales</h2>
           <section className="evento-app-seccion-feed">
             <div className="evento-app-lista-eventos">
               {eventosPublicos.map((evento, idx) => (
                 <div
-                  className="evento-app-tarjeta-evento"
                   key={evento.IdEvento}
-                  onClick={() => setModalEvento(evento)}
+                  className="evento-app-tarjeta-evento"
+                  onClick={() => {
+                    setModalEvento(evento);
+                    cargarDetallesReacciones(evento.IdEvento);
+                  }}
                 >
                   <div className="evento-app-cabecera-evento">
                     <img
                       src={obtenerRutaImagenEvento(evento.PlanificacionEvento?.ImagenEvento, idx)}
-                      alt={`Imagen de ${evento.NombreEvento}`}
+                      alt={evento.NombreEvento}
                       className="evento-app-foto-usuario"
                       style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover" }}
                     />
                     <div className="evento-app-info-usuario">
                       <p className="evento-app-nombre-usuario">{evento.NombreEvento}</p>
                       <p className="evento-app-fecha-evento">
-                        {new Date(evento.FechaInicio).toLocaleDateString("es-CO")} -{" "}
-                        {evento.HoraInicio} a {evento.HoraFin}
+                        {new Date(evento.FechaInicio).toLocaleDateString("es-CO")} - {evento.HoraInicio} a {evento.HoraFin}
                       </p>
                     </div>
                   </div>
                   <div className="evento-app-contenido-evento">
-                    <p className="evento-app-descripcion-evento">{evento.DescripcionEvento}</p>
-                    <p className="evento-app-ubicacion-evento">📍 {evento.UbicacionEvento}</p>
+                    <p>{evento.DescripcionEvento}</p>
+                    <p>📍 {evento.UbicacionEvento}</p>
                   </div>
                   <div className="evento-app-acciones-evento">
-                    <button className="evento-app-boton-me-gusta">👍 Me gusta</button>
+                    <button
+                      className={`evento-app-boton-me-gusta ${miReaccion[evento.IdEvento] === "like" ? "activo" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        manejarReaccion(evento.IdEvento, "like");
+                      }}
+                    >
+                      👍 Me gusta ({reacciones[evento.IdEvento]?.like || 0})
+                    </button>
+                    <button
+                      className={`evento-app-boton-disgusto ${miReaccion[evento.IdEvento] === "dislike" ? "activo" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        manejarReaccion(evento.IdEvento, "dislike");
+                      }}
+                    >
+                      👎 No me gusta ({reacciones[evento.IdEvento]?.dislike || 0})
+                    </button>
                     <button className="evento-app-boton-comentar">Feedback</button>
                   </div>
                 </div>
@@ -146,18 +244,12 @@ const Aplicacion = () => {
         </main>
       </div>
 
-      {/* MODAL DETALLE DE EVENTO */}
+      {/* MODAL DETALLE */}
       {modalEvento && (
         <div className="evento-app-modal">
           <div className="evento-app-modal-contenido">
-            <button
-              className="evento-app-modal-cerrar"
-              onClick={() => setModalEvento(null)}
-            >
-              ❌
-            </button>
+            <button className="evento-app-modal-cerrar" onClick={() => setModalEvento(null)}>❌</button>
 
-            {/* Imagen destacada */}
             <div className="evento-app-modal-banner">
               <img
                 src={obtenerRutaImagenEvento(
@@ -169,7 +261,6 @@ const Aplicacion = () => {
               />
             </div>
 
-            {/* Título y detalles */}
             <h2 className="evento-app-modal-titulo">{modalEvento.NombreEvento}</h2>
             <div className="evento-app-modal-detalles">
               <p><strong>📅 Fecha:</strong> {new Date(modalEvento.FechaInicio).toLocaleDateString()}</p>
@@ -177,12 +268,10 @@ const Aplicacion = () => {
               <p><strong>📍 Lugar:</strong> {modalEvento.UbicacionEvento}</p>
             </div>
 
-            {/* Descripción */}
             <div className="evento-app-modal-descripcion">
               <p>{modalEvento.DescripcionEvento}</p>
             </div>
 
-            {/* Planificador */}
             <div className="evento-app-modal-organizador">
               <h4>👤 Planificado por:</h4>
               {modalEvento.PlanificacionEvento?.usuario ? (
@@ -200,6 +289,21 @@ const Aplicacion = () => {
               ) : (
                 <p>No disponible</p>
               )}
+            </div>
+
+            <div className="evento-app-modal-reacciones">
+              <h4>👍 Usuarios que dieron Me gusta:</h4>
+              <ul>
+                {detallesReacciones.filter((r) => r.Tipo === "like").map((u) => (
+                  <li key={u.IdUsuario}>{u.Nombre} {u.Apellido}</li>
+                ))}
+              </ul>
+              <h4>👎 Usuarios que dieron No me gusta:</h4>
+              <ul>
+                {detallesReacciones.filter((r) => r.Tipo === "dislike").map((u) => (
+                  <li key={u.IdUsuario}>{u.Nombre} {u.Apellido}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

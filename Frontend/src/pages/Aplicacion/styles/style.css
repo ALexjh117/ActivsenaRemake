@@ -476,3 +476,149 @@ body.evento-app-body {
   object-fit: cover;
   border-radius: 50%;
 }
+.evento-app-boton-me-gusta.activo {
+  background-color: #4caf50;
+  color: white;
+}
+
+.evento-app-boton-no-me-gusta.activo {
+  background-color: #f44336;
+  color: white;
+}
+.evento-app-modal-reacciones {
+  margin-top: 20px;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.evento-app-modal-reacciones h4 {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.evento-app-modal-reacciones ul {
+  list-style: none;
+  padding-left: 15px;
+}
+
+.evento-app-modal-reacciones li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+/* Fondo del modal */
+.evento-app-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Contenedor del modal */
+.evento-app-modal-contenido {
+  background-color: #fff;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Botón de cerrar */
+.evento-app-modal-cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Título principal */
+.evento-app-modal-titulo {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.8rem;
+  color: #222;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Banner del evento */
+.evento-app-modal-banner img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Sección de detalles */
+.evento-app-modal-detalles p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Descripción del evento */
+.evento-app-modal-descripcion {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #444;
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+}
+
+/* Planificador */
+.evento-app-modal-organizador {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.evento-app-modal-perfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 0.5rem;
+}
+
+.evento-app-modal-perfil img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Reacciones */
+.evento-app-modal-reacciones {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.evento-app-modal-reacciones h4 {
+  margin: 0.6rem 0 0.4rem;
+  font-size: 1rem;
+  color: #222;
+}
+
+.evento-app-modal-reacciones ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 1rem;
+}
+
+.evento-app-modal-reacciones li {
+  font-size: 0.95rem;
+  padding: 0.2rem 0;
+  color: #333;
+}
