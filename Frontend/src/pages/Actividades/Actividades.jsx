@@ -123,7 +123,7 @@ const idUsuarioLogueado = obtenerIdUsuario();
       setCalificacion(0);
       abrirModal(actividadSeleccionada);
     } catch (error) {
-      console.error("Error al enviar feedback:", error);
+      console.error("Error al Enviar feedback:", error);
       alert("❌ Hubo un error al enviar el feedback.");
     }
   };
