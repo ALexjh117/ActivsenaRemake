@@ -67,7 +67,7 @@ const [year, month, day] = activityData.date.split("-");
 const fechaSeleccionada = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
 
 if (fechaSeleccionada < hoySinHora) {
-  alert("⚠️ No puedes registrar una actividad en una fecha pasada.");
+  alert(" No puedes registrar una actividad en una fecha pasada.");
   return;
 }
 
@@ -80,7 +80,7 @@ if (fechaSeleccionada < hoySinHora) {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("⚠️ Debes iniciar sesión.");
+      alert(" Debes iniciar sesión.");
       return;
     }
 
@@ -90,12 +90,12 @@ if (fechaSeleccionada < hoySinHora) {
       const rolUsuario = decoded?.rol;
 
       if (rolUsuario !== 3) {
-        alert("⚠️ Solo los instructores pueden registrar actividades.");
+        alert(" Solo los instructores pueden registrar actividades.");
         return;
       }
 
       if (!idUsuario) {
-        alert("⚠️ No se pudo identificar al usuario.");
+        alert(" No se pudo identificar al usuario.");
         return;
       }
 
@@ -147,47 +147,45 @@ if (fechaSeleccionada < hoySinHora) {
 
   return (
     <div className="activity-wrapper">
-      <div className="image-container">
-        <img src={activityData.image} alt="Vista previa" className="preview-image" />
-        <input type="file" name="image" accept="Image/*" onChange={handleImageChange} />
-      </div>
+
+
 
       <div className="activity-container">
-        <h2>📅 Registro de Actividad</h2>
+        <h2> Registro de Actividad</h2>
         <form onSubmit={handleSubmit}>
           <label>
-            🏆 Nombre de la actividad
+             Nombre de la actividad
             <input type="text" name="activityName" value={activityData.activityName} onChange={handleChange} required />
           </label>
 
           <label>
-            📝 Descripción
+             Descripción
             <textarea name="description" value={activityData.description} onChange={handleChange} rows="3" required />
           </label>
 
           <label>
-            📅 Fecha
+             Fecha
             <input type="date" name="date" value={activityData.date} onChange={handleChange} required />
           </label>
 
           <div className="time-container">
             <label>
-              ⏰ Hora de inicio
+               Hora de inicio
               <input type="time" name="startTime" value={activityData.startTime} onChange={handleChange} required />
             </label>
             <label>
-              ⏳ Hora de fin
+               Hora de fin
               <input type="time" name="endTime" value={activityData.endTime} onChange={handleChange} required />
             </label>
           </div>
 
           <label>
-            📍 Ubicación
+             Ubicación
             <input type="text" name="location" value={activityData.location} onChange={handleChange} required />
           </label>
 
           <label>
-            📌 Evento
+             Evento
             <select name="IdEvento" value={activityData.IdEvento} onChange={handleChange}>
               <option value="">-- Sin evento asociado --</option>
               {eventos.map((evento) => (
@@ -197,32 +195,36 @@ if (fechaSeleccionada < hoySinHora) {
               ))}
             </select>
           </label>
-          <label>
+<label>
   🗂 Tipo
- <select name="tipoLudica" value={activityData.tipoLudica} onChange={handleChange} required>
-  <option value="">-- Selecciona una opción --</option>
-  <option value="Noticia">📢 SINDESENA</option>
-  <option value="Cultural">🎭 Cultural</option>
-  <option value="Deportiva">🏅 Deportiva</option>
-  <option value="Recreativa">🎲 Recreativa</option>
-</select>
+  <select name="tipoLudica" value={activityData.tipoLudica} onChange={handleChange} required>
+    <option value="">-- Selecciona una opción --</option>
+    <option value="Noticia"> SINDESENA</option>
+    <option value="Cultural"> Cultural</option>
+    <option value="Deportiva"> Deportiva</option>
+    <option value="Recreativa"> Recreativa</option>
+  </select>
 
-{activityData.tipoLudica === "Noticia" && (
+  {activityData.tipoLudica === "Noticia" && (
+    <div style={{ marginTop: "10px" }}>
+      <img
+        src={sindesenaLogo}
+        alt="Logo SINDESENA"
+        style={{ width: "120px", height: "auto" }}
+      />
+      <p style={{ fontWeight: "bold", color: "#333" }}>SINDESENA</p>
+    </div>
+  )}
 
-  <div style={{ marginTop: "10px" }}>
-    <img
-      src={sindesenaLogo}
-      alt="Logo SINDESENA"
-      style={{ width: "120px", height: "auto" }}
-    />
-    <p style={{ fontWeight: "bold", color: "#333" }}>SINDESENA</p>
+  {}
+  <div className="image-container" style={{ marginTop: "20px" }}>
+    <img src={activityData.image} alt="Vista previa" className="preview-image" />
+    <div className="file-input-wrapper">
+      <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
+    </div>
   </div>
-)}
-
 </label>
-
-
-          <button type="submit">✅ Registrar Actividad</button>
+          <button type="submit"> Registrar Actividad</button>
         </form>
       </div>
 

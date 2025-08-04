@@ -14,7 +14,7 @@
    
   /*SideBar*/
   width: 250px;
-  background: #dadbda;
+  background: #5eb319;
   color: rgb(0, 0, 0);
   padding: 20px;
   
@@ -76,7 +76,7 @@
   padding: 14px 30px;
 
   /* Colores */
-  background: linear-gradient(90deg, #3edb0e, #3edb0e);
+  background: linear-gradient(90deg, #5eb319, #3edb0e);
   color: white;
   font-family: 'Segoe UI', sans-serif;
   font-size: 1.1rem;
@@ -213,7 +213,7 @@
 
 .Clogodash {
   border-radius: 30px;
-  background-color: #3ddf3d;
+  background-color: #5eb319;   /* cambio de colores */
   display: flex;
   align-items: center;
   justify-content: space-between;
